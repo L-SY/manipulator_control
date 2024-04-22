@@ -1,0 +1,480 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- This URDF was automatically created by SolidWorks to URDF Exporter! Originally created by Stephen Brawner (brawner@gmail.com) 
+     Commit Version: 1.6.0-4-g7f85cfe  Build Version: 1.6.7995.38578
+     For more information, please see http://wiki.ros.org/sw_urdf_exporter -->
+<robot name="qz_arm">
+  <gazebo>
+    <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
+      <robotNamespace>/</robotNamespace>
+      <robotSimType>gazebo_ros_control/DefaultRobotHWSim</robotSimType>
+    </plugin>
+  </gazebo>
+
+  <link name="world"/>
+  <link
+    name="base_link">
+    <inertial>
+      <origin
+        xyz="-0.0106301474610337 -0.000199553410443472 0.0371964687357703"
+        rpy="0 0 0" />
+      <mass
+        value="0.775915004746176" />
+      <inertia
+        ixx="0.00069985128784508"
+        ixy="5.34514790296098E-06"
+        ixz="1.76381070205361E-06"
+        iyy="0.000855522012998859"
+        iyz="3.90737393820019E-06"
+        izz="0.00105821881122613" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://qz_assets/meshes/base_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.898039215686275 0.917647058823529 0.929411764705882 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://qz_assets/meshes/base_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="fixed_base" type="fixed">
+      <parent link="world"/>
+      <child link="base_link"/>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+    </joint>
+  <link
+    name="link1">
+    <inertial>
+      <origin
+        xyz="7.26461828952265E-05 -0.00180358882481513 -0.0040245749975828"
+        rpy="0 0 0" />
+      <mass
+        value="0.557107161361679" />
+      <inertia
+        ixx="0.000301325021461403"
+        ixy="-2.99503777737959E-07"
+        ixz="4.81746133283817E-07"
+        iyy="0.000250217605970197"
+        iyz="1.4954777872345E-05"
+        izz="0.000325679218873344" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://qz_assets/meshes/link1.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.898039215686275 0.917647058823529 0.929411764705882 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://qz_assets/meshes/link1.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="joint1"
+    type="revolute">
+    <origin
+      xyz="0 0 0.1127"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="link1" />
+    <axis
+      xyz="0 0 1" />
+    <limit
+      lower="-3.14"
+      upper="2.09"
+      effort="110"
+      velocity="110" />
+  </joint>
+  <link
+    name="link2">
+    <inertial>
+      <origin
+        xyz="0.224925446535114 0.00478588811228768 0.00802387316222566"
+        rpy="0 0 0" />
+      <mass
+        value="0.646248710360021" />
+      <inertia
+        ixx="0.000351883145335031"
+        ixy="-7.83178613766434E-05"
+        ixz="8.22450930417901E-05"
+        iyy="0.00195260270078009"
+        iyz="1.74744972718265E-05"
+        izz="0.00195686017210086" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://qz_assets/meshes/link2.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://qz_assets/meshes/link2.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="joint2"
+    type="revolute">
+    <origin
+      xyz="0 0 0"
+      rpy="-1.5708 -0.38678 3.1416" />
+    <parent
+      link="link1" />
+    <child
+      link="link2" />
+    <axis
+      xyz="0 0 1" />
+    <limit
+      lower="-2.96"
+      upper="0.17"
+      effort="110"
+      velocity="110" />
+  </joint>
+  <link
+    name="link3">
+    <inertial>
+      <origin
+        xyz="0.200547330964236 -3.3627325386365E-05 0.00194896157935489"
+        rpy="0 0 0" />
+      <mass
+        value="0.445563107671385" />
+      <inertia
+        ixx="0.000167369776419882"
+        ixy="-4.81065732240346E-07"
+        ixz="1.77949638222263E-06"
+        iyy="0.000672322925427126"
+        iyz="-9.83781152049909E-08"
+        izz="0.000686599433660339" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://qz_assets/meshes/link3.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://qz_assets/meshes/link3.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="joint3"
+    type="revolute">
+    <origin
+      xyz="0.27009 1.3718E-05 0"
+      rpy="0 0 -2.7548" />
+    <parent
+      link="link2" />
+    <child
+      link="link3" />
+    <axis
+      xyz="0 0 1" />
+    <limit
+      lower="-0.087"
+      upper="3.14"
+      effort="110"
+      velocity="110" />
+  </joint>
+  <link
+    name="link4">
+    <inertial>
+      <origin
+        xyz="0.00150295453973709 5.83997713102176E-07 -0.00232966914421601"
+        rpy="0 0 0" />
+      <mass
+        value="0.345884858675684" />
+      <inertia
+        ixx="0.000133803031406746"
+        ixy="-7.29531827066913E-09"
+        ixz="-2.46487819854503E-07"
+        iyy="0.000121204730748505"
+        iyz="9.89248496280094E-10"
+        izz="0.000125010151603045" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://qz_assets/meshes/link4.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.898039215686275 0.917647058823529 0.929411764705882 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://qz_assets/meshes/link4.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="joint4"
+    type="revolute">
+    <origin
+      xyz="0.30854 0.0027492 0.00019049"
+      rpy="-1.5708 0 -1.5708" />
+    <parent
+      link="link3" />
+    <child
+      link="link4" />
+    <axis
+      xyz="0 0 1" />
+    <limit
+      lower="-2.96"
+      upper="2.96"
+      effort="110"
+      velocity="110" />
+  </joint>
+  <link
+    name="link5">
+    <inertial>
+      <origin
+        xyz="0.0506197654888128 6.95119841378662E-06 -0.000909972285324662"
+        rpy="0 0 0" />
+      <mass
+        value="0.18663635710924" />
+      <inertia
+        ixx="0.000101780959048711"
+        ixy="-1.53592986463846E-08"
+        ixz="5.24140905704508E-08"
+        iyy="8.2787133363287E-05"
+        iyz="-1.71995563550468E-08"
+        izz="8.59347793251101E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://qz_assets/meshes/link5.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.898039215686275 0.917647058823529 0.929411764705882 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://qz_assets/meshes/link5.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="joint5"
+    type="revolute">
+    <origin
+      xyz="0 0 0"
+      rpy="0 -1.5708 0" />
+    <parent
+      link="link4" />
+    <child
+      link="link5" />
+    <axis
+      xyz="0 0 1" />
+    <limit
+      lower="-1.74"
+      upper="1.74"
+      effort="110"
+      velocity="110" />
+  </joint>
+  <link
+    name="link6">
+    <inertial>
+      <origin
+        xyz="1.11022302462516E-16 -1.30602993697604E-15 -0.023"
+        rpy="0 0 0" />
+      <mass
+        value="0.17462115508378" />
+      <inertia
+        ixx="5.00435126944266E-05"
+        ixy="8.85914841130682E-35"
+        ixz="-1.77933387786267E-21"
+        iyy="5.00435126944266E-05"
+        iyz="-7.56774997864734E-35"
+        izz="3.85039646959735E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://qz_assets/meshes/link6.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.698039215686274 0.698039215686274 0.698039215686274 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://qz_assets/meshes/link6.STL" />
+      </geometry>
+    </collision>
+  </link>
+   <link name="EE"> </link>
+
+  <joint
+    name="joint6"
+    type="revolute">
+    <origin
+      xyz="0.0865 0 -0.0027486"
+      rpy="0 1.5708 0" />
+    <parent
+      link="link5" />
+    <child
+      link="link6" />
+    <axis
+      xyz="0 0 1" />
+    <limit
+      lower="-3.14"
+      upper="3.14"
+      effort="110"
+      velocity="110" />
+  </joint>
+
+    <joint
+        name="fixEE"
+        type="fixed">
+        <origin
+          xyz="0. 0. 0."
+          rpy="0. -1.5708 0." />
+        <parent
+          link="link6" />
+        <child
+          link="EE" />
+      </joint>
+
+  <transmission name="trans_joint1">
+      <type>transmission_interface/SimpleTransmission</type>
+      <actuator name="joint1_motor">
+          <mechanicalReduction>1.</mechanicalReduction>
+      </actuator>
+      <joint name="joint1">
+          <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
+      </joint>
+  </transmission>
+
+    <transmission name="trans_joint2">
+        <type>transmission_interface/SimpleTransmission</type>
+        <actuator name="joint2_motor">
+            <mechanicalReduction>1.</mechanicalReduction>
+        </actuator>
+        <joint name="joint2">
+            <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
+        </joint>
+    </transmission>
+      <transmission name="trans_joint3">
+          <type>transmission_interface/SimpleTransmission</type>
+          <actuator name="joint3_motor">
+              <mechanicalReduction>1.</mechanicalReduction>
+          </actuator>
+          <joint name="joint3">
+              <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
+          </joint>
+      </transmission>
+        <transmission name="trans_joint4">
+            <type>transmission_interface/SimpleTransmission</type>
+            <actuator name="joint4_motor">
+                <mechanicalReduction>1.</mechanicalReduction>
+            </actuator>
+            <joint name="joint4">
+                <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
+            </joint>
+        </transmission>
+      <transmission name="trans_joint5">
+          <type>transmission_interface/SimpleTransmission</type>
+          <actuator name="joint5_motor">
+              <mechanicalReduction>1.</mechanicalReduction>
+          </actuator>
+          <joint name="joint5">
+              <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
+          </joint>
+      </transmission>
+    <transmission name="trans_joint6">
+        <type>transmission_interface/SimpleTransmission</type>
+        <actuator name="joint6_motor">
+            <mechanicalReduction>1.</mechanicalReduction>
+        </actuator>
+        <joint name="joint6">
+            <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
+        </joint>
+    </transmission>
+
+
+</robot>
