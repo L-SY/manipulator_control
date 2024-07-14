@@ -40,7 +40,7 @@
 #include <ros/ros.h>
 #include <string>
 #include <unordered_map>
-#include <arm_common/tools/lp_filter.h>
+#include <manipulator_common/utilities/lp_filter.h>
 
 namespace can_interface
 {

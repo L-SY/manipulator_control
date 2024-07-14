@@ -24,13 +24,13 @@ include_directories(
         ${catkin_INCLUDE_DIRS}
 )
 
-file(GLOB_RECURSE sources "src/interface/can_interface/*.cpp" "src/tools/*.cpp")
+file(GLOB_RECURSE sources "src/interface/can_interface/*.cpp" "src/utilities/*.cpp")
 
 add_library(${PROJECT_NAME} SHARED ${sources})
 
 target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES})
 
-add_executable(test_can
-        test/test_can.cpp)
-
-target_link_libraries(test_can arm_common ${catkin_LIBRARIES})
+#add_executable(test_can
+#        test/test_can.cpp)
+#
+#target_link_libraries(test_can manipulator_common ${catkin_LIBRARIES})

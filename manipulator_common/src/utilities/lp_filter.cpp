@@ -35,8 +35,8 @@
 // Created by qiayuan on 1/5/21.
 //
 
-#include "arm_common/tools/lp_filter.h"
-#include "arm_common/tools/ros_param.h"
+#include "manipulator_common/utilities/lp_filter.h"
+#include "manipulator_common/utilities/ros_param.h"
 LowPassFilter::LowPassFilter(ros::NodeHandle& nh)
 {
   nh.param("lp_cutoff_frequency", cutoff_frequency_, -1.);

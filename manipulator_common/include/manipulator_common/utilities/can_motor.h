@@ -37,7 +37,7 @@
 #pragma once
 
 #include "ros_param.h"
-#include "arm_common/interface/can_interface/can_bus.h"
+#include "manipulator_common/interface/can_interface/can_bus.h"
 
 namespace can_interface
 {

@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+    <xacro:property name="scale_factor" value="1e-9"/>
+    <!-- Macro for creating links -->
+    <xacro:macro name="create_link" params="name mass ixx ixy ixz iyy iyz izz mesh_file material_name inertial_xyz='0 0 0'">
+        <link name="${name}">
+            <inertial>
+                <origin xyz="${inertial_xyz}" rpy="0 0 0"/>
+                <mass value="${mass}"/>
+                <inertia ixx="${ixx * scale_factor}" ixy="${ixy * scale_factor}" ixz="${ixz * scale_factor}"
+                         iyy="${iyy * scale_factor}" iyz="${iyz * scale_factor}" izz="${izz * scale_factor}"/>
+            </inertial>
+            <visual>
+                <origin xyz="0 0 0" rpy="0 0 0"/>
+                <geometry>
+                    <mesh filename="${mesh_file}"/>
+                </geometry>
+                <material name="${material_name}"/>
+            </visual>
+            <collision>
+                <origin xyz="0 0 0" rpy="0 0 0"/>
+                <geometry>
+                    <mesh filename="${mesh_file}"/>
+                </geometry>
+            </collision>
+        </link>
+    </xacro:macro>
+
+
+    <!-- Macro for creating joints with optional limits -->
+    <xacro:macro name="create_joint"
+                 params="name type parent child origin_xyz origin_rpy axis_xyz='0 0 1' lower='0' upper='0' effort='0' velocity='0'">
+        <joint name="${name}" type="${type}">
+            <origin xyz="${origin_xyz}" rpy="${origin_rpy}"/>
+            <parent link="${parent}"/>
+            <child link="${child}"/>
+            <!-- Conditionally add limits for revolute joints -->
+            <xacro:if value="${type == 'revolute'}">
+                <axis xyz="${axis_xyz}"/>
+                <limit lower="${lower}" upper="${upper}" effort="${effort}" velocity="${velocity}"/>
+            </xacro:if>
+        </joint>
+    </xacro:macro>
+
+
+    <xacro:macro name="create_transmission" params="joint_name mechanical_reduction='1' ">
+        <transmission name="${joint_name}_tran">
+            <type>transmission_interface/SimpleTransmission</type>
+            <joint name="${joint_name}">
+                <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+            </joint>
+            <actuator name="${joint_name}_motor">
+                <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+                <mechanicalReduction>${mechanical_reduction}</mechanicalReduction>
+            </actuator>
+        </transmission>
+    </xacro:macro>
+</robot>
