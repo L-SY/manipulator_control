@@ -11,9 +11,8 @@
     <xacro:create_transmission joint_name="joint6"/>
 
     <gazebo>
-        <plugin name="arm_ros_control" filename="libarm_hw_sim.so">
+        <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
             <robotNamespace>/</robotNamespace>
-            <robotSimType>arm_gazebo/ArmHWSim</robotSimType>
         </plugin>
     </gazebo>
 </robot>

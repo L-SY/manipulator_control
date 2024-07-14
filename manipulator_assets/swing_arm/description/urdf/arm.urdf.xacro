@@ -40,14 +40,14 @@
                        mesh_file="package://swing_arm/description/meshes/link5.stl" material_name="silver"
                        inertial_xyz="0.001992 -0.000088 -0.053421"/>
 
-    <xacro:create_link name="link6" mass="0.001" ixx="10.630412" ixy="-1.068E-10" ixz="83.57" iyy="8414.108" iyz="0.00" izz="6931.832" mesh_file="package://swing_arm/description/meshes/link6.stl" material_name="silver"/>
+    <xacro:create_link name="link6" mass="0.5" ixx="50000" ixy="-1.068E-10" ixz="83.57" iyy="8414.108" iyz="0.00" izz="6931.832" mesh_file="package://swing_arm/description/meshes/link6.stl" material_name="silver"/>
 
     <!-- Joint definitions -->
     <xacro:create_joint name="fixed_world" type="fixed" parent="world" child="base_link" origin_xyz="0 0 0" origin_rpy="0 0 0" />
-    <xacro:create_joint name="joint1" type="revolute" parent="base_link" child="link1" origin_xyz="0 0 0.07925" origin_rpy="0 0 0" axis_xyz="0 0 1" lower="-1.57" upper="1.57" effort="150" velocity="1.5"/>
-    <xacro:create_joint name="joint2" type="revolute" parent="link1" child="link2" origin_xyz="0 0 0.0365" origin_rpy="0 0 0" axis_xyz="0 1 0" lower="-1e10" upper="1e10" effort="150" velocity="40"/>
-    <xacro:create_joint name="joint3" type="revolute" parent="link2" child="link3" origin_xyz="-0.220 0 0" origin_rpy="0 0 0" axis_xyz="0 1 0" lower="-1.57" upper="0" effort="150" velocity="1.5"/>
-    <xacro:create_joint name="joint4" type="revolute" parent="link3" child="link4" origin_xyz="0.220 0 0.057" origin_rpy="0 0 0" axis_xyz="0 1 0" lower="-1.5" upper="0.5" effort="150" velocity="1.5"/>
-    <xacro:create_joint name="joint5" type="revolute" parent="link4" child="link5" origin_xyz="0.0615 0 0.0825" origin_rpy="0 0 0" axis_xyz="0 0 1" lower="-0.785" upper="0.785" effort="150" velocity="1.5"/>
-    <xacro:create_joint name="joint6" type="revolute" parent="link5" child="link6" origin_xyz="0.0285 0 -0.0825" origin_rpy="0 0 0" axis_xyz="1 0 0" lower="-1.57" upper="1.57" effort="150" velocity="1.5"/>
+    <xacro:create_joint name="joint1" type="revolute" parent="base_link" child="link1" origin_xyz="0 0 0.07925" origin_rpy="0 0 0" axis_xyz="0 0 1" lower="-1.57" upper="1.57" effort="30" velocity="1.5"/>
+    <xacro:create_joint name="joint2" type="revolute" parent="link1" child="link2" origin_xyz="0 0 0.0365" origin_rpy="0 0 0" axis_xyz="0 1 0" lower="0" upper="3.14" effort="30" velocity="1.5"/>
+    <xacro:create_joint name="joint3" type="revolute" parent="link2" child="link3" origin_xyz="-0.220 0 0" origin_rpy="0 0 0" axis_xyz="0 1 0" lower="-3.14" upper="0" effort="30" velocity="1.5"/>
+    <xacro:create_joint name="joint4" type="revolute" parent="link3" child="link4" origin_xyz="0.220 0 0.057" origin_rpy="0 0 0" axis_xyz="0 1 0" lower="-1.1" upper="0.3" effort="10" velocity="1.5"/>
+    <xacro:create_joint name="joint5" type="revolute" parent="link4" child="link5" origin_xyz="0.0615 0 0.0825" origin_rpy="0 0 0" axis_xyz="0 0 1" lower="-0.785" upper="0.785" effort="10" velocity="1.5"/>
+    <xacro:create_joint name="joint6" type="revolute" parent="link5" child="link6" origin_xyz="0.0285 0 -0.0825" origin_rpy="0 0 0" axis_xyz="1 0 0" lower="-1.57" upper="1.57" effort="10" velocity="1.5"/>
 </robot>
