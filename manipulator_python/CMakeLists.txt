@@ -16,6 +16,7 @@ catkin_package()
 catkin_install_python(
         PROGRAMS
         scripts/test_send_trajectory.py
+        scripts/test_recorder_trajectory.py
         DESTINATION
         ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
