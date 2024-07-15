@@ -13,18 +13,17 @@ class TrajectoryClient:
         self.client.wait_for_result()
         return self.client.get_result()
 
-def create_goal():
+def create_goal(joint_names, trajectory_points):
     goal = FollowJointTrajectoryGoal()
-    goal.trajectory.joint_names = ['joint1', 'joint2', 'joint3', 'joint4', 'joint5', 'joint6']
+    goal.trajectory.joint_names = joint_names
 
-    point1 = JointTrajectoryPoint()
-    point1.positions = [0.5, 0.5, -0.5, 0.2, 0.5, 0.5]
-    point1.time_from_start = rospy.Duration(2.0)
+    points = []
+    for point in trajectory_points:
+        traj_point = JointTrajectoryPoint()
+        traj_point.positions = point['positions']
+        traj_point.time_from_start = rospy.Duration(point['time_from_start'])
+        points.append(traj_point)
 
-    point2 = JointTrajectoryPoint()
-    point2.positions = [-0.5, 0.8, -1.0, -0.5, -0.5, -0.5]
-    point2.time_from_start = rospy.Duration(4.0)
-
-    goal.trajectory.points = [point1, point2]
+    goal.trajectory.points = points
 
     return goal
