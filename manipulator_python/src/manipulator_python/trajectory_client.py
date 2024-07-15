@@ -1,17 +1,26 @@
 import rospy
 import actionlib
-from control_msgs.msg import FollowJointTrajectoryAction, FollowJointTrajectoryGoal
+from control_msgs.msg import FollowJointTrajectoryAction, FollowJointTrajectoryGoal, FollowJointTrajectoryFeedback, FollowJointTrajectoryResult
 from trajectory_msgs.msg import JointTrajectoryPoint
 
 class TrajectoryClient:
-    def __init__(self):
+    def __init__(self, print_feedback=False):
         self.client = actionlib.SimpleActionClient('/controllers/arm_trajectory_controller/follow_joint_trajectory', FollowJointTrajectoryAction)
         self.client.wait_for_server()
+        self.client_feedback = None
+        self.print_feedback = print_feedback
+
+    def feedback_callback(self, feedback):
+        self.client_feedback = feedback
+        if self.print_feedback:
+            rospy.loginfo(f"Feedback: {feedback}")
 
     def send_goal(self, goal):
-        self.client.send_goal(goal)
+        self.client.send_goal(goal, feedback_cb=self.feedback_callback)
         self.client.wait_for_result()
-        return self.client.get_result()
+        result = self.client.get_result()
+        rospy.loginfo(f"Result: {result}")
+        return result
 
 def create_goal(joint_names, trajectory_points):
     goal = FollowJointTrajectoryGoal()
