@@ -21,6 +21,7 @@ def create_goal(joint_names, trajectory_points):
     for point in trajectory_points:
         traj_point = JointTrajectoryPoint()
         traj_point.positions = point['positions']
+        traj_point.velocities = point['velocities'] if 'velocities' in point else []
         traj_point.time_from_start = rospy.Duration(point['time_from_start'])
         points.append(traj_point)
 
