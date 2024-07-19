@@ -12,9 +12,9 @@ def main():
     threshold = rospy.get_param('~threshold', 0.01)
 
     if recorder_type == 'csv':
-        recorder = TrajectoryRecorderCSV(output_file, interval, threshold)
+        recorder = TrajectoryRecorderCSV(output_file, interval, threshold,False)
     elif recorder_type == 'yaml':
-        recorder = TrajectoryRecorderYAML(output_file, interval, threshold)
+        recorder = TrajectoryRecorderYAML(output_file, interval, threshold,False)
     else:
         rospy.logerr("Invalid recorder type specified: {}. Use 'csv' or 'yaml'.".format(recorder_type))
         exit(1)
