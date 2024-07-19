@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import rospy
+import os
 from manipulator_python.trajectory_client import TrajectoryClient,create_goal
 from manipulator_python.trajectory_reader import read_trajectory_from_csv,read_trajectory_from_yaml
 
@@ -19,9 +20,29 @@ def main():
     # file_path = '/home/lsy/manipulator_control/src/manipulator_python/trajectory/recorded_trajectory.csv'
     # joint_names, trajectory_points = read_trajectory_from_csv(file_path)
 
-    file_path = '/home/lsy/manipulator_control/src/manipulator_python/trajectory/recorded_trajectory.yaml'
-    joint_names, trajectory_points = read_trajectory_from_yaml(file_path)
-    goal = create_goal(joint_names,trajectory_points)
+    # file_path = '/home/lsy/manipulator_control/src/manipulator_python/trajectory/recorded_trajectory.yaml'
+    # joint_names, trajectory_points = read_trajectory_from_yaml(file_path)
+
+    file_type = rospy.get_param('~file_type', 'yaml')
+    file_path = rospy.get_param('~file_path', '../trajectory/recorded_trajectory.yaml')
+
+    if not os.path.isabs(file_path):
+        file_path = os.path.join(os.path.dirname(__file__), file_path)
+    if not os.path.exists(file_path):
+        rospy.logerr(f"File not found: {file_path}")
+        return
+
+    client = TrajectoryClient()
+
+    if file_type == 'csv':
+        joint_names, trajectory_points = read_trajectory_from_csv(file_path)
+    elif file_type == 'yaml':
+        joint_names, trajectory_points = read_trajectory_from_yaml(file_path)
+    else:
+        rospy.logerr("Invalid file type specified: {}. Use 'csv' or 'yaml'.".format(file_type))
+        return
+
+    goal = create_goal(joint_names, trajectory_points)
     result = client.send_goal(goal)
     rospy.loginfo(result)
 

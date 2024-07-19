@@ -15,13 +15,18 @@ catkin_package()
 
 catkin_install_python(
         PROGRAMS
-        scripts/test_send_trajectory.py
-        scripts/test_recorder_trajectory.py
+        scripts/send_trajectory.py
+        scripts/recorder_trajectory.py
         DESTINATION
         ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
 install(DIRECTORY src/manipulator_python/
+        DESTINATION ${CATKIN_PACKAGE_PYTHON_DESTINATION}/manipulator_python
+        FILES_MATCHING PATTERN "*.py"
+)
+
+install(DIRECTORY trajectory
         DESTINATION ${CATKIN_PACKAGE_PYTHON_DESTINATION}/manipulator_python
         FILES_MATCHING PATTERN "*.py"
 )
