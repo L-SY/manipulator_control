@@ -66,6 +66,7 @@ class TrajectoryRecorderCSV(TrajectoryRecorder):
 
     def record_state(self, timestamp, positions, velocities):
         self.joint_states.append((timestamp, positions, velocities))
+        rospy.loginfo(f"New data recorded: {timestamp}")
 
     def save_to_file(self):
         if self.new_data:
@@ -80,9 +81,9 @@ class TrajectoryRecorderCSV(TrajectoryRecorder):
                     header += ['joint{}_velocity'.format(i+1) for i in range(len(self.joint_states[0][2]))]
                 csvwriter.writerow(header)
                 for state in self.joint_states:
-                    row = [state[0]] + list(state[1])
+                    row = [f"{state[0]:.4f}"] + [f"{pos:.4f}" for pos in state[1]]
                     if self.record_velocity:
-                        row += list(state[2])
+                        row += [f"{vel:.4f}" for vel in state[2]]
                     csvwriter.writerow(row)
             rospy.loginfo("Trajectory saved to {}".format(self.filename))
             self.new_data = False  # Reset the flag after saving
@@ -92,11 +93,11 @@ class TrajectoryRecorderYAML(TrajectoryRecorder):
         super().__init__(filename, interval, threshold, record_velocity)
 
     def record_state(self, timestamp, positions, velocities):
-        data = {'time': timestamp, 'positions': positions}
+        data = {'time': round(timestamp, 4), 'positions': [round(pos, 4) for pos in positions]}
         if self.record_velocity:
-            data['velocities'] = velocities
+            data['velocities'] = [round(vel, 4) for vel in velocities]
         self.joint_states.append(data)
-        rospy.loginfo(f"New data recorded: {timestamp}, {positions}, {velocities}")
+        rospy.loginfo(f"New data recorded: {timestamp}")
 
     def save_to_file(self):
         if self.new_data:
@@ -104,8 +105,25 @@ class TrajectoryRecorderYAML(TrajectoryRecorder):
             directory = os.path.dirname(self.filename)
             if directory and not os.path.exists(directory):
                 os.makedirs(directory)
+
+            formatted_data = {'file_path': [self.filename]}
+            for state in self.joint_states:
+                formatted_entry = {
+                    'time_from_start': state['time'],
+                    'positions': state['positions']
+                }
+                if self.record_velocity and 'velocities' in state:
+                    formatted_entry['velocities'] = state['velocities']
+                formatted_data['file_path'].append(formatted_entry)
+
+            def represent_list_as_yaml_sequence(dumper, data):
+                return dumper.represent_sequence('tag:yaml.org,2002:seq', data)
+
+            yaml.add_representer(list, represent_list_as_yaml_sequence)
+
             with open(self.filename, 'w') as yamlfile:
-                yaml.dump(self.joint_states, yamlfile)
+                yaml.dump(formatted_data, yamlfile, default_flow_style=False, sort_keys=False)
+
             rospy.loginfo("Trajectory saved to {}".format(self.filename))
             self.new_data = False  # Reset the flag after saving
 
