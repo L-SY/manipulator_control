@@ -75,9 +75,9 @@ class TrajectoryRecorderCSV(TrajectoryRecorder):
                 os.makedirs(directory)
             with open(self.filename, 'w', newline='') as csvfile:
                 csvwriter = csv.writer(csvfile)
-                header = ['time'] + ['joint_{}_position'.format(i+1) for i in range(len(self.joint_states[0][1]))]
+                header = ['time'] + ['joint{}_position'.format(i+1) for i in range(len(self.joint_states[0][1]))]
                 if self.record_velocity:
-                    header += ['joint_{}_velocity'.format(i+1) for i in range(len(self.joint_states[0][2]))]
+                    header += ['joint{}_velocity'.format(i+1) for i in range(len(self.joint_states[0][2]))]
                 csvwriter.writerow(header)
                 for state in self.joint_states:
                     row = [state[0]] + list(state[1])

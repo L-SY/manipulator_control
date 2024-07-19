@@ -12,7 +12,7 @@ def main():
     threshold = rospy.get_param('~threshold', 0.01)
 
     if recorder_type == 'csv':
-        recorder = TrajectoryRecorderCSV(output_file, interval, threshold,False)
+        recorder = TrajectoryRecorderCSV(output_file, interval, threshold,True)
     elif recorder_type == 'yaml':
         recorder = TrajectoryRecorderYAML(output_file, interval, threshold,False)
     else:
