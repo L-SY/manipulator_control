@@ -1,8 +1,7 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://ros.org/wiki/xacro">
-    <xacro:property name="scale_factor" value="1e-9"/>
     <!-- Macro for creating links -->
-    <xacro:macro name="create_link" params="name mass ixx ixy ixz iyy iyz izz mesh_file material_name inertial_xyz='0 0 0'">
+    <xacro:macro name="create_link" params="name mass ixx ixy ixz iyy iyz izz mesh_file material_name collision_file:=none scale_factor:=1e-9 collision_scale_x:=1 collision_scale_y:=1 collision_scale_z:=1 inertial_xyz:='0 0 0'">
         <link name="${name}">
             <inertial>
                 <origin xyz="${inertial_xyz}" rpy="0 0 0"/>
@@ -20,11 +19,19 @@
             <collision>
                 <origin xyz="0 0 0" rpy="0 0 0"/>
                 <geometry>
-                    <mesh filename="${mesh_file}"/>
+                    <xacro:if value="${collision_file == 'none'}">
+                        <mesh filename="${mesh_file}" scale="${collision_scale_x} ${collision_scale_y} ${collision_scale_z}"/>
+                    </xacro:if>
+                    <xacro:unless value="${collision_file == 'none'}">
+                        <mesh filename="${collision_file}" scale="${collision_scale_x} ${collision_scale_y} ${collision_scale_z}"/>
+                    </xacro:unless>
                 </geometry>
             </collision>
         </link>
     </xacro:macro>
+
+
+
 
 
     <!-- Macro for creating joints with optional limits -->

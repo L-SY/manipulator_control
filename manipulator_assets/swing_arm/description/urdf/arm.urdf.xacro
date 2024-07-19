@@ -26,17 +26,18 @@
                        ixx="322900" ixy="8650.968" ixz="-231700"
                        iyy="2226000" iyz="1036.356" izz="2291000"
                        mesh_file="package://swing_arm/description/meshes/link3.stl" material_name="silver"
-                       inertial_xyz="0.191296 -0.001405 0.053882"/>
+                       inertial_xyz="0.191296 -0.001405 0.053882"
+                       collision_scale_y="0.8"/>
 
-    <xacro:create_link name="link4" mass="0.056678"
+    <xacro:create_link name="link4" mass="0.1"
                        ixx="1262.246" ixy="32.61" ixz="-553.334"
-                       iyy="1346.829" iyz="41.18" izz="975.984"
+                       iyy="100000" iyz="41.18" izz="975.984"
                        mesh_file="package://swing_arm/description/meshes/link4.stl" material_name="silver"
                        inertial_xyz="0.02969 0.00192 0.03765"/>
 
     <xacro:create_link name="link5" mass="0.598593"
                        ixx="735400" ixy="-449.048" ixz="37386.443"
-                       iyy="732800" iyz="-210.043" izz="238600"
+                       iyy="732800" iyz="-210.043" izz="500000"
                        mesh_file="package://swing_arm/description/meshes/link5.stl" material_name="silver"
                        inertial_xyz="0.001992 -0.000088 -0.053421"/>
 
