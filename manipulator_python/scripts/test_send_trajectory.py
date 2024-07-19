@@ -2,7 +2,7 @@
 
 import rospy
 from manipulator_python.trajectory_client import TrajectoryClient,create_goal
-from manipulator_python.trajectory_reader import read_trajectory_from_csv
+from manipulator_python.trajectory_reader import read_trajectory_from_csv,read_trajectory_from_yaml
 
 def main():
     rospy.init_node('send_trajectory')
@@ -16,9 +16,11 @@ def main():
     #     {'positions': [0., 0., 0., 0., 0., 0.], 'velocities': [0., 0., 0., 0., 0., 0.], 'time_from_start': 8.0}
     # ]
 
-    file_path = '/home/lsy/manipulator_control/src/manipulator_python/trajectory/recorded_trajectory.csv'
-    joint_names, trajectory_points = read_trajectory_from_csv(file_path)
+    # file_path = '/home/lsy/manipulator_control/src/manipulator_python/trajectory/recorded_trajectory.csv'
+    # joint_names, trajectory_points = read_trajectory_from_csv(file_path)
 
+    file_path = '/home/lsy/manipulator_control/src/manipulator_python/trajectory/recorded_trajectory.yaml'
+    joint_names, trajectory_points = read_trajectory_from_yaml(file_path)
     goal = create_goal(joint_names,trajectory_points)
     result = client.send_goal(goal)
     rospy.loginfo(result)
