@@ -1,9 +1,13 @@
+//
+// Created by lsy on 24-5-21.
+//
+
 #include "robot_hw/control_loop.h"
 #include "robot_hw/hardware_interface.h"
 
 namespace control_loop {
 
-HWControlLoop::HWControlLoop(ros::NodeHandle &nh, std::shared_ptr<Hardware> hardware_interface)
+HWControlLoop::HWControlLoop(ros::NodeHandle &nh, std::shared_ptr<robot_hw::RobotHW> hardware_interface)
     : nh_(nh), hardwareInterface_(std::move(hardware_interface)), loopRunning_(true) {
   controllerManager_ = std::make_shared<controller_manager::ControllerManager>(hardwareInterface_.get(), nh_);
 
@@ -36,8 +40,7 @@ HWControlLoop::HWControlLoop(ros::NodeHandle &nh, std::shared_ptr<Hardware> hard
   }
 }
 
-template <class Hardware>
-void HWControlLoop<Hardware>::update() {
+void HWControlLoop::update() {
   const auto currentTime = Clock::now();
   const Duration desiredDuration(1.0 / loopHz_);
   Duration time_span = std::chrono::duration_cast<Duration>(currentTime - lastTime_);

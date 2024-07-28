@@ -1,7 +1,7 @@
 //
 // Created by lsy on 24-5-21.
 //
-#include "robot_control/robot_hw/include/robot_hw/"
+
 #include "robot_hw/hardware_interface.h"
 #include "robot_hw/control_loop.h"
 
@@ -21,9 +21,9 @@ int main(int argc, char** argv)
   try
   {
     // Create the hardware interface specific to your robot
-    std::shared_ptr<can_hw::CanHW> robot_hw_interface = std::make_shared<robot_hw::RobotHW>();
+    std::shared_ptr<robot_hw::RobotHW> robot_hw_interface = std::make_shared<robot_hw::RobotHW>();
     // Start the control loop
-    control_loop::HWControlLoop<can_hw::CanHW> control_loop(nh, robot_hw_interface);
+    control_loop::HWControlLoop control_loop(nh, robot_hw_interface);
 
     // Wait until shutdown signal received
     ros::waitForShutdown();

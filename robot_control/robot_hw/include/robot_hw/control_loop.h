@@ -8,11 +8,11 @@
 #include <thread>
 
 #include <controller_manager/controller_manager.h>
+#include "hardware_interface.h"
 #include <ros/ros.h>
 
 namespace control_loop {
 
-template <class Hardware>
 class HWControlLoop {  // NOLINT(cppcoreguidelines-special-member-functions)
   using Clock = std::chrono::high_resolution_clock;
   using Duration = std::chrono::duration<double>;
@@ -24,7 +24,7 @@ public:
          * @param nh Node-handle of a ROS node.
          * @param hardware_interface A pointer which point to hardware_interface.
    */
-  HWControlLoop(ros::NodeHandle& nh, std::shared_ptr<Hardware> hardware_interface);
+  HWControlLoop(ros::NodeHandle& nh, std::shared_ptr<robot_hw::RobotHW> hardware_interface);
 
   ~HWControlLoop();
 
@@ -57,7 +57,7 @@ private:
   std::shared_ptr<controller_manager::ControllerManager> controllerManager_;
 
   // Abstract Hardware Interface for your robot
-  std::shared_ptr<Hardware> hardwareInterface_;
+  std::shared_ptr<robot_hw::RobotHW> hardwareInterface_;
 };
 
 }  // namespace control_loop
