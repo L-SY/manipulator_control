@@ -32,40 +32,69 @@
  *******************************************************************************/
 
 //
-// Created by qiayuan on 5/16/21.
+// Created by qiayuan on 1/20/21.
 //
+
 #pragma once
 
-#include "ros_param.h"
-#include "manipulator_common/interface/can_interface/can_bus.h"
+#include <ros/ros.h>
+#include <string>
+#include <unordered_map>
+#include <robot_common/utilities/lp_filter.h>
 
 namespace can_interface
 {
-class CanMotor
+struct ActCoeff
 {
-public:
-  CanMotor()
-  {
-  }
-
-  bool init(XmlRpc::XmlRpcValue& act_coeffs, XmlRpc::XmlRpcValue& act_datas, ros::NodeHandle& robot_hw_nh);
-
-  bool parseActCoeffs(XmlRpc::XmlRpcValue& act_coeffs);
-
-  bool parseActData(XmlRpc::XmlRpcValue& act_datas, ros::NodeHandle& robot_hw_nh);
-
-  bool initCanBus(ros::NodeHandle& robot_hw_nh);
-
-  void startMotor();
-  void closeMotor();
-  void testMotor();
-
-public:
-  // can interface
-  std::vector<CanBus*> can_buses_{};
-  // motor param
-  std::unordered_map<std::string, ActCoeff> type2act_coeffs_{};
-  std::unordered_map<std::string, std::unordered_map<int, ActData>> bus_id2act_data_{};
+  double act2pos, act2vel, act2effort, pos2act, vel2act, effort2act, pos_offset, vel_offset, effort_offset, kp2act,
+      kd2act, max_out;
 };
 
+typedef enum
+{
+  NONE = 0x07,
+  OVER_VOLTAGE,
+  UNDER_VOLTAGE,
+  OVER_CURRENT,
+  MOS_OVER_TEMP,
+  MOTOR_COIL_OVER_TEMP,
+  COM_LOST,
+  OVER_LOAD,
+} DmError;
+
+typedef enum
+{
+  MIT,
+  POS,
+  VEL,
+  EFFORT,
+} ControlMode;
+
+struct ActData
+{
+  std::string name;
+  std::string type;
+  ros::Time stamp;
+  uint64_t seq;
+  DmError error;
+  ControlMode mode;
+  bool halted = false, need_calibration = false, calibrated = false, calibration_reading = false, is_start = false;
+  uint16_t q_raw;
+  int16_t qd_raw;
+  uint8_t temp;
+  int64_t q_circle;
+  uint16_t q_last;
+  double frequency;
+  double pos, vel, effort;
+  double cmd_pos, cmd_vel, cmd_effort, cmd_kp, cmd_kd, exe_effort;
+  double act_offset;
+  LowPassFilter* lp_filter;
+};
+
+struct CanDataPtr
+{
+  std::unordered_map<std::string, ActCoeff>* type2act_coeffs_;
+  //  int is for id
+  std::unordered_map<int, ActData>* id2act_data_;
+};
 }  // namespace can_interface

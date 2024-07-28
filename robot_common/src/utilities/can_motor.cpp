@@ -1,4 +1,4 @@
-#include "manipulator_common/utilities/can_motor.h"
+#include "robot_common/utilities/can_motor.h"
 
 namespace can_interface
 {

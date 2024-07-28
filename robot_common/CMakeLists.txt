@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
-project(manipulator_common)
+project(robot_common)
 
 ## Use C++14
 set(CMAKE_CXX_STANDARD 14)
@@ -33,4 +33,4 @@ target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES})
 #add_executable(test_can
 #        test/test_can.cpp)
 #
-#target_link_libraries(test_can manipulator_common ${catkin_LIBRARIES})
+#target_link_libraries(test_can robot_common ${catkin_LIBRARIES})
