@@ -1,0 +1,31 @@
+actuator_coefficient:
+  dm4310: # DM4310 with reducer
+    act2pos: 0.00038147 # 25/2^16 65536
+    act2vel: 0.00510742   # 10.46 * 2 /2^12 4096
+    act2effort: 0.0034188  # 14/2^12
+    kp2act: 8.19            # 4095/500
+    kd2act: 819.0             # 4095/5
+    pos2act: 2621.43812         # 1/act2pos
+    vel2act: 195.793571    # 1/act2vel
+    effort2act: 292.500293   # 1/act2effort
+    pos_offset: -12.5
+    vel_offset: -10.46
+    effort_offset: -7.0
+  dm4340: # DM4310 with reducer
+    act2pos: 0.00038147 # 25/2^16 65536
+    act2vel: 0.00265625   # 5.44* 2/2^12
+    act2effort: 0.01318359  # 54/2^12
+    kp2act: 8.19            # 4095/500
+    kd2act: 819.0             # 4095/5
+    pos2act: 2621.43812       # 1/act2pos
+    vel2act: 376.470588    # 1/act2vel
+    effort2act: 75.8518734   # 1/act2effort
+    pos_offset: -12.5
+    vel_offset: -5.44
+    effort_offset: -27.0
+  rm_2006: # RoboMaster 2006 motor
+    act2pos: 2.13078897e-5  # 2PI/8192*(1/36)
+    act2vel: 0.0029088820   # 2PI/60*(1/36)
+    act2effort: 0.00018  #10/10000*0.18
+    effort2act: 5555.5555555   # 1/act2effort
+    max_out: 10000

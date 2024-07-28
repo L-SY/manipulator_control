@@ -1,0 +1,20 @@
+arm_hw:
+  bus:
+    - can0
+
+  loop_frequency: 1000
+  cycle_time_error_threshold: 0.001
+  thread_priority: 95
+  actuators:
+    test1:
+      bus: can0
+      id: 0x001
+      type: dm4310
+    test2:
+      bus: can0
+      id: 0x002
+      type: dm4310
+    test3:
+      bus: can0
+      id: 0x003
+      type: dm4310
