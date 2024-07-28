@@ -1,0 +1,12 @@
+gripper_hw:
+  bus:
+    - can0
+  loop_frequency: 500
+  cycle_time_error_threshold: 0.001
+  thread_priority: 95
+  actuators:
+    joint1_motor:
+      bus: can0
+      id: 0x001
+      type: dm4340
+      lp_cutoff_frequency: 20

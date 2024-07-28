@@ -1,17 +1,17 @@
 <?xml version="1.0"?>
 <package format="2">
   <name>robot_control</name>
-  <version>0.1.11</version>
-  <description>Meta package that contains package for robot basic control.</description>
+  <version>0.1.20</version>
+  <description>Meta package that contains package of robot_control.</description>
   <maintainer email="liusiyang.cn@gmail.com">4yang</maintainer>
 
   <license>BSD</license>
   <author email="liusiyang.cn@gmail.com">4yang</author>
 
   <buildtool_depend>catkin</buildtool_depend>
+  <exec_depend>robot_msgs</exec_depend>
   <exec_depend>robot_common</exec_depend>
   <exec_depend>robot_hw</exec_depend>
-  <exec_depend>robot_msgs</exec_depend>
 
   <export>
     <metapackage/>

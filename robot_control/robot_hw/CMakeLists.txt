@@ -29,7 +29,6 @@ catkin_package(
         CATKIN_DEPENDS
         ${CATKIN_PACKAGE_DEPENDENCIES}
         LIBRARIES
-        ${PROJECT_NAME}
         DEPENDS
 )
 
@@ -43,10 +42,23 @@ include_directories(
 )
 
 # main library
-file(GLOB_RECURSE MAIN_LIBRARY_CPP
-        "src/*.cpp")
-add_library(${PROJECT_NAME} SHARED ${MAIN_LIBRARY_CPP})
+add_library(hw_library SHARED
+            src/control_loop.cpp
+            src/hardware_interface.cpp)
 
+add_dependencies(hw_library
+        ${catkin_EXPORTED_TARGETS}
+)
+target_link_libraries(hw_library
+        ${catkin_LIBRARIES}
+)
+
+# main library
+add_executable(${PROJECT_NAME}
+        src/control_loop.cpp
+        src/hardware_interface.cpp
+        src/robot_hw.cpp
+)
 add_dependencies(${PROJECT_NAME}
         ${catkin_EXPORTED_TARGETS}
 )
