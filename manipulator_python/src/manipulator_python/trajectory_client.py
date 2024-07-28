@@ -6,7 +6,9 @@ from trajectory_msgs.msg import JointTrajectoryPoint
 class TrajectoryClient:
     def __init__(self, print_feedback=False):
         self.client = actionlib.SimpleActionClient('/controllers/arm_trajectory_controller/follow_joint_trajectory', FollowJointTrajectoryAction)
+        rospy.loginfo("wait for connect")
         self.client.wait_for_server()
+        rospy.loginfo("connect right")
         self.client_feedback = None
         self.print_feedback = print_feedback
 

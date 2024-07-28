@@ -27,8 +27,15 @@ class TrajectoryRecorder:
         if self.start_time is None:
             self.start_time = current_time
         relative_time = (current_time - self.start_time).to_sec()
-        positions = msg.position
-        velocities = msg.velocity if self.record_velocity else None
+
+        # 定义需要的关节名称
+        required_joints = ['joint1', 'joint2', 'joint3', 'joint4', 'joint5', 'joint6']
+        # 找到需要的关节的索引
+        indices = [msg.name.index(joint) for joint in required_joints if joint in msg.name]
+
+        # 过滤位置和速度
+        positions = [msg.position[i] for i in indices]
+        velocities = [msg.velocity[i] for i in indices] if self.record_velocity else None
 
         if self.last_positions is None:
             rospy.loginfo("Initial record")

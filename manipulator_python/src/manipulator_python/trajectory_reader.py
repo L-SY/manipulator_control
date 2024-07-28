@@ -38,7 +38,7 @@ def read_trajectory_from_yaml(file_path):
         trajectory_entries = data['file_path'][1:]
         for entry in trajectory_entries:
             if isinstance(entry, dict):
-                # print(f"Processing entry: {entry}")  # Debugging line
+                print(f"Processing entry: {entry}")  # Debugging line
 
                 time_from_start = entry.get('time_from_start')
                 positions = entry.get('positions', [])
