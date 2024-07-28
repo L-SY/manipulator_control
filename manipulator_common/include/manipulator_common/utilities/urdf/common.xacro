@@ -46,6 +46,10 @@
                 <axis xyz="${axis_xyz}"/>
                 <limit lower="${lower}" upper="${upper}" effort="${effort}" velocity="${velocity}"/>
             </xacro:if>
+            <xacro:if value="${type == 'prismatic'}">
+                <axis xyz="${axis_xyz}"/>
+                <limit lower="${lower}" upper="${upper}" effort="${effort}" velocity="${velocity}"/>
+            </xacro:if>
         </joint>
     </xacro:macro>
 
