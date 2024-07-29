@@ -21,20 +21,33 @@ class gripperController : public controller_interface::MultiInterfaceController<
     NORMAL
   };
 public:
-  gripperController() = default;
+  gripperController();
   bool init(hardware_interface::RobotHW* robot_hw, ros::NodeHandle& root_nh, ros::NodeHandle& controller_nh) override;
   void starting(const ros::Time& time) override;
   void update(const ros::Time& time, const ros::Duration& period) override;
 
+  void getGains(double &p, double &i, double &d, double &i_max, double &i_min);
+
+  void getGains(double &p, double &i, double &d, double &i_max, double &i_min, bool &antiwindup);
+
+  void setGains(const double &p, const double &i, const double &d, const double &i_max, const double &i_min, const bool &antiwindup = false);
+
 private:
   void normal(const ros::Time& time, const ros::Duration& period);
   void commandCB(const std_msgs::Float64 & msg);
+  void enforceJointLimits(double &command);
+
+  int loopCount_;
+  control_toolbox::Pid pidController_;
+  std::unique_ptr<
+      realtime_tools::RealtimePublisher<std_msgs::Float64> > statePub_ ;
 
   int controllerState_ = NORMAL;
   ros::Time startTime_;
   bool stateChanged_ = false;
   ros::Subscriber cmdSub_;
   hardware_interface::JointHandle jointHandle_;
+  urdf::JointConstSharedPtr jointUrdf_;
   realtime_tools::RealtimeBuffer<std_msgs::Float64> cmdRtBuffer_{};
 };
 
