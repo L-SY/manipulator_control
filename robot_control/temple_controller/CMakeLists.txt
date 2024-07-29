@@ -9,7 +9,6 @@ add_definitions(-Wall -Werror)
 set(CATKIN_PACKAGE_DEPENDENCIES
         roscpp
 
-        arm_common
         effort_controllers
         pluginlib
         controller_interface
