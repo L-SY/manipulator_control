@@ -1,0 +1,10 @@
+<library path="lib/libtemple_controller">
+    <!-- controller_interface types -->
+    <class name="temple_controller/TempleController"
+           type="temple_controller::TempleController"
+           base_class_type="controller_interface::ControllerBase">
+        <description>
+            This temple controller to show a basic content.
+        </description>
+    </class>
+</library>
