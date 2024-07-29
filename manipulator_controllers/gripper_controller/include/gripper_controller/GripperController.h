@@ -1,8 +1,41 @@
 //
-// Created by lsy on 24-7-29.
+// Created by lsy on 24-5-23.
 //
 
-#ifndef SRC_GRIPPERCONTROLLER_H
-#define SRC_GRIPPERCONTROLLER_H
+#pragma once
 
-#endif // SRC_GRIPPERCONTROLLER_H
+#include <effort_controllers/joint_effort_controller.h>
+#include <effort_controllers/joint_position_controller.h>
+#include <effort_controllers/joint_velocity_controller.h>
+#include <controller_interface/multi_interface_controller.h>
+#include <hardware_interface/joint_command_interface.h>
+#include <realtime_tools/realtime_publisher.h>
+
+#include "std_msgs/Float64.h"
+
+namespace gripper_controller
+{
+class gripperController : public controller_interface::MultiInterfaceController<hardware_interface::EffortJointInterface>
+{
+  enum ControllerState {
+    NORMAL
+  };
+public:
+  gripperController() = default;
+  bool init(hardware_interface::RobotHW* robot_hw, ros::NodeHandle& root_nh, ros::NodeHandle& controller_nh) override;
+  void starting(const ros::Time& time) override;
+  void update(const ros::Time& time, const ros::Duration& period) override;
+
+private:
+  void normal(const ros::Time& time, const ros::Duration& period);
+  void commandCB(const std_msgs::Float64 & msg);
+
+  int controllerState_ = NORMAL;
+  ros::Time startTime_;
+  bool stateChanged_ = false;
+  ros::Subscriber cmdSub_;
+  hardware_interface::JointHandle jointHandle_;
+  realtime_tools::RealtimeBuffer<std_msgs::Float64> cmdRtBuffer_{};
+};
+
+}  // namespace gripper_controller
