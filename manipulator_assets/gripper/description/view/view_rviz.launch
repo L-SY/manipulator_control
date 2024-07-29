@@ -3,9 +3,9 @@
            command="$(find xacro)/xacro $(find gripper)/description/urdf/gripper.xacro"/>
 
     <!-- send fake joint values -->
-    <node pkg="joint_state_publisher_gui" type="joint_state_publisher_gui" name="joint_state_publisher_gui">
-        <param name="use_gui" value="TRUE"/>
-    </node>
+<!--    <node pkg="joint_state_publisher_gui" type="joint_state_publisher_gui" name="joint_state_publisher_gui">-->
+<!--        <param name="use_gui" value="TRUE"/>-->
+<!--    </node>-->
 
     <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher">
         <param name="publish_frequency" type="double" value="50.0"/>
