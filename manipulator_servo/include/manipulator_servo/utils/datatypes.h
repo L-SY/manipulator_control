@@ -134,9 +134,6 @@ struct KinematicState
   = default;
 };
 
-// Mapping joint names and their position in the move group vector
-typedef std::unordered_map<std::string, std::size_t> JointNameToMoveGroupIndexMap;
-
 // TODO: should add IK instance
 class ManipulatorInstance
 {

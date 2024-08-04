@@ -19,8 +19,7 @@ namespace manipulator_servo
  * @param joint_name_group_index_map Mapping between joint subgroup name and move group joint vector position.
  * @return The status and joint position change required (delta).
  */
-JointDeltaResult jointDeltaFromJointJog(const JointJogCommand& command, const ManipulatorInstance& manipulatorInstance,
-                                        const JointNameToMoveGroupIndexMap& joint_name_group_index_map);
+JointDeltaResult jointDeltaFromJointJog(const JointJogCommand& command, const ManipulatorInstance& manipulatorInstance);
 
 /**
  * \brief Compute the change in joint position for the given twist command.
@@ -31,8 +30,7 @@ JointDeltaResult jointDeltaFromJointJog(const JointJogCommand& command, const Ma
  * @param joint_name_group_index_map Mapping between joint subgroup name and move group joint vector position.
  * @return The status and joint position change required (delta).
  */
-JointDeltaResult jointDeltaFromTwist(const TwistCommand& command, const ManipulatorInstance& manipulatorInstance, const std::string& planning_frame,
-                                     const JointNameToMoveGroupIndexMap& joint_name_group_index_map);
+JointDeltaResult jointDeltaFromTwist(const TwistCommand& command, const ManipulatorInstance& manipulatorInstance, const std::string& planning_frame);
 
 /**
  * \brief Compute the change in joint position for the given pose command.
@@ -45,8 +43,7 @@ JointDeltaResult jointDeltaFromTwist(const TwistCommand& command, const Manipula
  * @return The status and joint position change required (delta).
  */
 JointDeltaResult jointDeltaFromPose(const PoseCommand& command, const ManipulatorInstance& manipulatorInstance, const std::string& planning_frame,
-                                    const std::string& ee_frame,
-                                    const JointNameToMoveGroupIndexMap& joint_name_group_index_map);
+                                    const std::string& ee_frame);
 
 /**
  * \brief Computes the required change in joint angles for given Cartesian change, using the robot's IK solver.
@@ -57,7 +54,6 @@ JointDeltaResult jointDeltaFromPose(const PoseCommand& command, const Manipulato
  * @return The status and joint position change required (delta).
  */
 JointDeltaResult jointDeltaFromIK(const Eigen::VectorXd& cartesian_position_delta,
-                                  const ManipulatorInstance& manipulatorInstance,
-                                  const JointNameToMoveGroupIndexMap& joint_name_group_index_map);
+                                  const ManipulatorInstance& manipulatorInstance);
 
 }  // namespace manipulator_servo
