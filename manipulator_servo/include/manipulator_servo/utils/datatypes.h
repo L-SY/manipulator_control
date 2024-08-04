@@ -2,7 +2,9 @@
 // Created by lsy on 24-8-4.
 //
 
-// // ref: https://github.com/moveit/moveit2/tree/main/moveit_ros/moveit_servo
+// ref: https://github.com/moveit/moveit2/tree/main/moveit_ros/moveit_servo
+
+#pragma once
 
 #include "ros/ros.h"
 #include <string>
@@ -12,6 +14,43 @@
 
 namespace manipulator_servo
 {
+
+struct ServoParameters
+{
+  std::string joint_topic;
+  std::string cartesian_command_in_topic;
+  std::string robot_link_command_frame;
+  std::string command_out_topic;
+  std::string planning_frame;
+  std::string ee_frame_name;
+  std::string status_topic;
+  std::string joint_command_in_topic;
+  std::string command_in_type;
+  std::string command_out_type;
+  double linear_scale;
+  double rotational_scale;
+  double joint_scale;
+  double lower_singularity_threshold;
+  double hard_stop_singularity_threshold;
+  double low_pass_filter_coeff;
+  double publish_period;
+  double incoming_command_timeout;
+  double joint_limit_margin;
+  int num_outgoing_halt_msgs_to_publish;
+  bool use_gazebo;
+  bool publish_joint_positions;
+  bool publish_joint_velocities;
+  bool publish_joint_accelerations;
+  bool low_latency_mode;
+  // Collision checking
+  bool check_collisions;
+  std::string collision_check_type;
+  double collision_check_rate;
+  double scene_collision_proximity_threshold;
+  double self_collision_proximity_threshold;
+  double collision_distance_safety_factor;
+  double min_allowable_collision_distance;
+};
 
 enum class StatusCode : int8_t
 {

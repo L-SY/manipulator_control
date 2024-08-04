@@ -9,6 +9,12 @@ add_definitions(-Wall -Werror)
 set(CATKIN_PACKAGE_DEPENDENCIES
         roscpp
 
+        control_msgs
+        control_toolbox
+        geometry_msgs
+        sensor_msgs
+        std_msgs
+        std_srvs
         tf2_eigen
 )
 

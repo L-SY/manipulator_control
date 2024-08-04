@@ -12,6 +12,11 @@
   <depend>roscpp</depend>
 
   <depend>tf2_eigen</depend>
-
+  <depend>control_msgs</depend>
+  <depend>control_toolbox</depend>
+  <depend>geometry_msgs</depend>
+  <depend>sensor_msgs</depend>
+  <depend>std_msgs</depend>
+  <depend>std_srvs</depend>
 
 </package>
