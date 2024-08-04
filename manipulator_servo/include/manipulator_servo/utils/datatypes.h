@@ -137,4 +137,11 @@ struct KinematicState
 // Mapping joint names and their position in the move group vector
 typedef std::unordered_map<std::string, std::size_t> JointNameToMoveGroupIndexMap;
 
+// TODO: should add IK instance
+class ManipulatorInstance
+{
+  ServoParameters servoParameters;
+  KinematicState kinematicState;
+  std::string IK_Plugins;
+};
 }  // namespace manipulator_servo
