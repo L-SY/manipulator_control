@@ -9,10 +9,7 @@ add_definitions(-Wall -Werror)
 set(CATKIN_PACKAGE_DEPENDENCIES
         roscpp
 
-        effort_controllers
-        pluginlib
-        controller_interface
-        realtime_tools
+        tf2_eigen
 )
 
 ## Find catkin macros and libraries
