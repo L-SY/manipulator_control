@@ -13,6 +13,7 @@ set(CATKIN_PACKAGE_DEPENDENCIES
         pluginlib
         controller_interface
         realtime_tools
+        manipulator_msgs
 )
 
 ## Find catkin macros and libraries
