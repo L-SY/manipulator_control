@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>robot_msgs</name>
+  <name>manipulator_msgs</name>
   <version>0.0.0</version>
   <description>The msgs package provides all the messages for all controllers</description>
   <maintainer email="liusiyang.cn@gmail.com">Siyang Liu</maintainer>

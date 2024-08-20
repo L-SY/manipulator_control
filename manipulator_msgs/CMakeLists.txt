@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
-project(robot_msgs)
+project(manipulator_msgs)
 
 find_package(catkin REQUIRED COMPONENTS
         message_generation
@@ -7,18 +7,17 @@ find_package(catkin REQUIRED COMPONENTS
         geometry_msgs
         actionlib
         actionlib_msgs
-        )
+)
 
 add_service_files(
         FILES
-        ChangeHybridMode.srv
 
 )
 
 add_message_files(
         FILES
-        ActuatorState.msg
-
+        GripperState.msg
+        GripperCmd.msg
 )
 #
 #add_action_files(
