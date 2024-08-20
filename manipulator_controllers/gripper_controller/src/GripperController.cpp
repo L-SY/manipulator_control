@@ -34,7 +34,9 @@ bool gripperController::init(hardware_interface::RobotHW *robot_hw,
 
   // Get URDF info about joint
   urdf::Model urdf;
-  if (!urdf.initParamWithNodeHandle("robot_description", root_nh)) {
+  std::string urdfParam;
+  root_nh.getParam("/robot_description", urdfParam);
+  if (!urdf.initString(urdfParam)) {
     ROS_ERROR("Failed to parse urdf file");
     return false;
   }
