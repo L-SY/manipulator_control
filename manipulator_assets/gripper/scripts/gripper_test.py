@@ -1,47 +1,51 @@
 #!/usr/bin/env python
 
+import sys
+import os
+workspace_path = "/home/lsy/manipulator_control"
+sys.path.insert(0, os.path.join(workspace_path, "devel/lib/python3/dist-packages"))
+
 import rospy
-from std_msgs.msg import Float64
+from manipulator_msgs.msg import GripperState, GripperCmd
 
 class GripperCommandPublisher:
     def __init__(self):
-        # 初始化节点
         rospy.init_node('gripper_command_publisher', anonymous=True)
 
-        # 创建发布者，发布到 /controllers/gripper_controller/command 话题
-        self.pub = rospy.Publisher('/controllers/gripper_controller/command', Float64, queue_size=10)
+        self.pub = rospy.Publisher('/controllers/gripper_controller/command', GripperCmd, queue_size=10)
 
-        # 订阅 /controllers/gripper_controller/state 话题
-        rospy.Subscriber('/controllers/gripper_controller/state', Float64, self.state_callback)
+        rospy.Subscriber('/controllers/gripper_controller/state', GripperState, self.state_callback)
 
-        # 设置发布频率为 10Hz
-        self.rate = rospy.Rate(100)
+        self.rate = rospy.Rate(10)
 
-        # 初始化命令消息
-        self.gripper_open = Float64()
-        self.gripper_close = Float64()
-        self.gripper_open.data = 0.033
-        self.gripper_close.data = 0.002
+        self.gripper_cmd = GripperCmd()
+        self.gripper_cmd.mode = 0
+        self.gripper_cmd.des_pos = 0.033
+        self.gripper_cmd.des_vel = 0.0
+        self.gripper_cmd.des_eff = 0.0
+        self.gripper_cmd.des_kd = 0.0
+        self.gripper_cmd.des_kp = 0.0
 
-        # 夹爪当前宽度
-        self.current_width = (self.gripper_open.data+self.gripper_close.data)/2
+        self.current_width = (self.gripper_cmd.des_pos + 0.002) / 2
 
-        # 切换标志
         self.init_open = False
 
     def state_callback(self, data):
-        self.current_width = data.data
+        self.current_width = data.gripper_pos
 
     def run(self):
         while not rospy.is_shutdown():
             if not self.init_open:
-                self.pub.publish(self.gripper_close)
+                self.gripper_cmd.des_pos = 0.002
+                self.pub.publish(self.gripper_cmd)
                 if self.current_width < 0.005:
                     self.init_open = True
-            if self.current_width > 0.031:
-                self.pub.publish(self.gripper_close)
-            if self.current_width < 0.005:
-                self.pub.publish(self.gripper_open)
+            elif self.current_width > 0.031:
+                self.gripper_cmd.des_pos = 0.002
+                self.pub.publish(self.gripper_cmd)
+            elif self.current_width < 0.005:
+                self.gripper_cmd.des_pos = 0.033
+                self.pub.publish(self.gripper_cmd)
 
             self.rate.sleep()
 

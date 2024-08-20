@@ -6,4 +6,5 @@ controllers:
   gripper_controller:
     type: gripper_controller/gripperController
     joint: left_gripper_joint
-    pid: { p: 7000.0, i: 100., d: 1000.0, i_max: 300.0, i_min: -300.0, antiwindup: false, publish_state: false }
+    pid: { p: 1000.0, i: 0., d: 100.0, i_max: 300.0, i_min: -300.0, antiwindup: false, publish_state: false }
+#    pid: { p: 7000.0, i: 100., d: 1000.0, i_max: 300.0, i_min: -300.0, antiwindup: false, publish_state: false }
