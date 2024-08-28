@@ -17,6 +17,7 @@
   <depend>pluginlib</depend>
   <depend>control_toolbox</depend>
   <depend>manipulator_msgs</depend>
+  <depend>urdf</depend>
 
   <export>
     <controller_interface plugin="${prefix}/gripper_controller_plugins.xml"/>

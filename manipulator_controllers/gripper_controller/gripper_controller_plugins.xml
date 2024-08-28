@@ -1,7 +1,7 @@
 <library path="lib/libgripper_controller">
     <!-- controller_interface types -->
-    <class name="gripper_controller/gripperController"
-           type="gripper_controller::gripperController"
+    <class name="effort_controllers/gripperController"
+           type="effort_controllers::gripperController"
            base_class_type="controller_interface::ControllerBase">
         <description>
             This gripper controller to show a basic content.

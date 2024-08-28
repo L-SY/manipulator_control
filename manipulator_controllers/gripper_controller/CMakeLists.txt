@@ -14,6 +14,7 @@ set(CATKIN_PACKAGE_DEPENDENCIES
         controller_interface
         realtime_tools
         manipulator_msgs
+        urdf
 )
 
 ## Find catkin macros and libraries
