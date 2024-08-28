@@ -21,10 +21,10 @@ class GripperCommandPublisher:
         self.gripper_cmd = GripperCmd()
         self.gripper_cmd.mode = 0
         self.gripper_cmd.des_pos = 0.033
-        self.gripper_cmd.des_vel = 0.0
+        self.gripper_cmd.des_vel = 1
         self.gripper_cmd.des_eff = 0.0
-        self.gripper_cmd.des_kd = 0.0
-        self.gripper_cmd.des_kp = 0.0
+        self.gripper_cmd.des_kd = 2
+        self.gripper_cmd.des_kp = 0.02
 
         self.current_width = (self.gripper_cmd.des_pos + 0.002) / 2
 
@@ -37,16 +37,22 @@ class GripperCommandPublisher:
         while not rospy.is_shutdown():
             if not self.init_open:
                 self.gripper_cmd.des_pos = 0.002
-                self.pub.publish(self.gripper_cmd)
+                self.gripper_cmd.des_vel = 0.1
                 if self.current_width < 0.005:
                     self.init_open = True
+                    print("init finish")
+                print("init")
             elif self.current_width > 0.031:
                 self.gripper_cmd.des_pos = 0.002
-                self.pub.publish(self.gripper_cmd)
+                self.gripper_cmd.des_vel = -0.1
+                print("big")
             elif self.current_width < 0.005:
                 self.gripper_cmd.des_pos = 0.033
-                self.pub.publish(self.gripper_cmd)
+                self.gripper_cmd.des_vel = 0.1
+                print("small")
 
+            self.pub.publish(self.gripper_cmd)
+            print(self.current_width)
             self.rate.sleep()
 
 if __name__ == '__main__':
