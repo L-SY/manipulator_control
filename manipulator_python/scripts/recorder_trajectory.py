@@ -8,7 +8,7 @@ def main():
 
     recorder_type = rospy.get_param('~recorder_type', 'yaml')
     output_file = rospy.get_param('~output_file', '../trajectory/recorded_trajectory.yaml')
-    interval = rospy.get_param('~interval', 0.5)
+    interval = rospy.get_param('~interval', 0.3)
     threshold = rospy.get_param('~threshold', 0.01)
 
     if recorder_type == 'csv':

@@ -46,7 +46,11 @@ private:
   ros::Time startTime_;
   bool stateChanged_ = false;
   ros::Subscriber cmdSub_;
-  hardware_interface::JointHandle jointHandle_;
+
+//   Use HardwareInterface::ResourceHandleType replace JointHandle
+  typedef typename HardwareInterface::ResourceHandleType JointHandle;
+  JointHandle jointHandle_;
+
   urdf::JointConstSharedPtr jointUrdf_;
   std::shared_ptr<CmdBuff>  cmdRtBuffer_{};
 };

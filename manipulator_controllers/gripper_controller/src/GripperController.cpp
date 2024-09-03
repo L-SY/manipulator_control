@@ -15,4 +15,14 @@ namespace effort_controllers {
       gripperController;
 } // namespace effort_controllers
 
+namespace hybrid_controllers {
+/**
+   * \brief Gripper action controller that sends
+   * commands to a \b effort interface.
+ */
+  typedef gripper_controller::gripperController<hardware_interface::HybridJointInterface>
+      gripperController;
+} // namespace hybrid_controllers
+
 PLUGINLIB_EXPORT_CLASS(effort_controllers::gripperController,controller_interface::ControllerBase)
+PLUGINLIB_EXPORT_CLASS(hybrid_controllers::gripperController,controller_interface::ControllerBase)

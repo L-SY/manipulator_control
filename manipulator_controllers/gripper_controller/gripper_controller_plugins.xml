@@ -7,4 +7,11 @@
             This gripper controller to show a basic content.
         </description>
     </class>
+    <class name="hybrid_controllers/gripperController"
+           type="hybrid_controllers::gripperController"
+           base_class_type="controller_interface::ControllerBase">
+        <description>
+            This gripper controller to show a basic content.
+        </description>
+    </class>
 </library>

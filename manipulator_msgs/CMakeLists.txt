@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.10)
 project(manipulator_msgs)
 
 find_package(catkin REQUIRED COMPONENTS
+        rospy
         message_generation
         std_msgs
         geometry_msgs

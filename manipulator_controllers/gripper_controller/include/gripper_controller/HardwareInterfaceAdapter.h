@@ -9,6 +9,7 @@
 #include <cassert>
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include <ros/node_handle.h>
@@ -16,6 +17,7 @@
 
 #include <control_toolbox/pid.h>
 #include <hardware_interface/joint_command_interface.h>
+#include <robot_common/interface/hardware_interface/HybridJointInterface.h>
 #include <manipulator_msgs/GripperCmd.h>
 
 namespace gripper_controller {
@@ -41,7 +43,7 @@ public:
 
   bool init(hardware_interface::JointHandle &joint_handle,
             ros::NodeHandle &controller_nh, std::shared_ptr<CmdBuff> cmdRtBuffer) {
-    CmdBuff_ = cmdRtBuffer;
+    CmdBuff_ = std::move(cmdRtBuffer);
     // Store pointer to joint handles
     joint_handle_ptr_ = &joint_handle;
 
@@ -68,7 +70,7 @@ public:
     (*joint_handle_ptr_).setCommand(0.0);
   }
 
-  void stopping(const ros::Time &time) { ROS_INFO_STREAM(time);}
+  void stopping(const ros::Time &time) {}
 
   void updateCommand(const ros::Time &time, const ros::Duration &period) {
     // Update PIDs
@@ -91,6 +93,47 @@ private:
   typedef std::shared_ptr<control_toolbox::Pid> PidPtr;
   PidPtr pid_;
   hardware_interface::JointHandle *joint_handle_ptr_;
+  std::shared_ptr<CmdBuff> CmdBuff_;
+};
+
+template <>
+class HardwareInterfaceAdapter<hardware_interface::HybridJointInterface> {
+public:
+  HardwareInterfaceAdapter() : joint_handle_ptr_(nullptr) {}
+
+  bool init(hardware_interface::HybridJointHandle &joint_handle,
+            ros::NodeHandle &controller_nh, std::shared_ptr<CmdBuff> cmdRtBuffer) {
+    CmdBuff_ = std::move(cmdRtBuffer);
+    joint_handle_ptr_ = &joint_handle;
+
+    return true;
+  }
+
+  void starting(const ros::Time &time) {
+    if (!joint_handle_ptr_) {
+      return;
+    }
+
+    double current_pos = joint_handle_ptr_->getPosition();
+    double current_vel = joint_handle_ptr_->getVelocity();
+    (*joint_handle_ptr_).setCommand(current_pos,current_vel,10,2,0.);
+  }
+
+  void stopping(const ros::Time &time) {}
+
+  void updateCommand(const ros::Time &time, const ros::Duration &period) {
+    // Update PIDs
+    double des_position = (CmdBuff_->readFromRT())->des_pos;
+    double des_velocity = (CmdBuff_->readFromRT())->des_vel;
+    double des_kp = (CmdBuff_->readFromRT())->des_kp;
+    double des_kd = (CmdBuff_->readFromRT())->des_kd;
+    double des_eff = (CmdBuff_->readFromRT())->des_eff;
+
+    (*joint_handle_ptr_).setCommand(des_position,des_velocity,des_kp,des_kd,des_eff);
+  }
+
+private:
+  hardware_interface::HybridJointHandle *joint_handle_ptr_;
   std::shared_ptr<CmdBuff> CmdBuff_;
 };
 
