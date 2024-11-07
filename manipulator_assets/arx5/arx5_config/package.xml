@@ -1,5 +1,5 @@
 <package>
-  <name>arx5</name>
+  <name>arx5_config</name>
   <version>0.3.0</version>
   <description>
      An automatically generated package with all the configuration and launch files for using the arx5 with the MoveIt Motion Planning Framework
