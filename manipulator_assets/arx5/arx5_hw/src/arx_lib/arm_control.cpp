@@ -250,7 +250,6 @@ void arx_arm::motor_control()
                     ROS_WARN("safe mode!!!!!!!!!");
 
     }
- 
 }
 
 void arx_arm::joint_control()

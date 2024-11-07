@@ -19,7 +19,6 @@ bool ARX5HW::init(ros::NodeHandle& root_nh, ros::NodeHandle& robot_hw_nh) {
 //  registerInterface(&robotStateInterface_);
 
   setupJoints();
-
   return true;
 }
 
@@ -34,20 +33,26 @@ bool ARX5HW::loadUrdf(ros::NodeHandle& rootNh) {
 }
 
 void ARX5HW::read(const ros::Time& time, const ros::Duration& period) {
-  CAN_Handlej.arx_1();
   ARX5->get_joint();
   for (int i = 0; i < static_cast<int>(jointName.size()); ++i)
   {
-    jointData_[i].pos_ = rv_motor_msg[i].angle_actual_rad;
-    jointData_[i].vel_ = rv_motor_msg[i].speed_actual_rad;
-    jointData_[i].tau_ = rv_motor_msg[i].current_actual_float;
+    jointData_[i].pos_ = rv_motor_msg[jointID[i]].angle_actual_rad;
+    jointData_[i].vel_ = rv_motor_msg[jointID[i]].speed_actual_rad;
+    jointData_[i].tau_ = rv_motor_msg[jointID[i]].current_actual_float;
   }
+  CAN_Handlej.arx_1();
 }
 
 void ARX5HW::write(const ros::Time& /*time*/, const ros::Duration& /*period*/) {
+  command cmd;
+  if(!ARX5->is_starting){
+    cmd = ARX5->get_cmd();
+  }
+  ARX5->update_real(cmd);
   for (int i = 0; i < static_cast<int>(jointName.size()); ++i)
   {
-//    send_motor_dm_cmd()
+
+//    send_motor_dm_cmd(i, jointData_[i].cmdKp_, jointData_[i].cmdKd_, jointData_[i].cmdPos_, jointData_[i].cmdVel_, jointData_[i].cmdTau_,0);
   }
 }
 

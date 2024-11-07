@@ -22,6 +22,7 @@
 //#include "App/arm_control.h"
 //#include "arm_control/include/App/arm_control.h"
 #include "arx5_hw/arx_lib/App/arm_control.h"
+#include "arx5_hw/arx_lib/App/keyboard.h"
 
 namespace arx5 {
 
@@ -64,7 +65,6 @@ public:
    */
   void write(const ros::Time& time, const ros::Duration& period) override;
 
-  void updatePos(float new_position, int seq);
 private:
   /** \brief Load urdf of robot from param server.
    *
@@ -88,7 +88,7 @@ private:
   bool init_ = false;
   ARXMotorData jointData_[7]{};
   std::vector<std::string> jointName = {"joint1", "joint2", "joint3", "joint4", "joint5", "joint6", "gripper"};
-
+  std::vector<int> jointID = {0, 1, 3, 4, 5, 6, 7};
   //0 1 keyboard  2 joint_control   4 pose_control
   int CONTROL_MODE=2;
   std::unique_ptr<arx_arm> ARX5;
