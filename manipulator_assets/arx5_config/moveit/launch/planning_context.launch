@@ -6,20 +6,20 @@
   <arg name="robot_description" default="robot_description"/>
 
   <!-- Load universal robot description format (URDF) -->
-  <param if="$(arg load_robot_description)" name="$(arg robot_description)" textfile="$(find arx5)/description/urdf/arx5_gazebo.urdf"/>
+  <param if="$(arg load_robot_description)" name="$(arg robot_description)" textfile="$(find arx5_config)/description/urdf/arx5_gazebo.urdf"/>
 
   <!-- The semantic description that corresponds to the URDF -->
-  <param name="$(arg robot_description)_semantic" textfile="$(find arx5)/moveit/config/arx5.srdf" />
+  <param name="$(arg robot_description)_semantic" textfile="$(find arx5_config)/moveit/config/arx5.srdf" />
 
   <!-- Load updated joint limits (override information from URDF) -->
   <group ns="$(arg robot_description)_planning">
-    <rosparam command="load" file="$(find arx5)/moveit/config/joint_limits.yaml"/>
-    <rosparam command="load" file="$(find arx5)/moveit/config/cartesian_limits.yaml"/>
+    <rosparam command="load" file="$(find arx5_config)/moveit/config/joint_limits.yaml"/>
+    <rosparam command="load" file="$(find arx5_config)/moveit/config/cartesian_limits.yaml"/>
   </group>
 
   <!-- Load default settings for kinematics; these settings are overridden by settings in a node's namespace -->
   <group ns="$(arg robot_description)_kinematics">
-    <rosparam command="load" file="$(find arx5)/moveit/config/kinematics.yaml"/>
+    <rosparam command="load" file="$(find arx5_config)/moveit/config/kinematics.yaml"/>
 
   </group>
 

@@ -10,7 +10,7 @@
     name="spawn_model"
     pkg="gazebo_ros"
     type="spawn_model"
-    args="-file $(find arx5)/description/urdf/arx5.urdf -urdf -model arx5"
+    args="-file $(find arx5_config)/description/urdf/arx5.urdf -urdf -model arx5"
     output="screen" />
   <node
     name="fake_joint_calibration"
