@@ -18,11 +18,16 @@
 //#include <robot_common/interface/hardware_interface/robot_state_interface.h>
 #include <hardware_interface/robot_hw.h>
 
+//ARX5 SDK
+//#include "App/arm_control.h"
+//#include "arm_control/include/App/arm_control.h"
+#include "arx5_hw/arx_lib/App/arm_control.h"
+
 namespace arx5 {
 
 struct ARXMotorData {
   double pos_, vel_, tau_;                 // state
-  double cmdTau_, cmdPos_, cmdVel_;  // command
+  double cmdTau_, cmdPos_, cmdVel_, cmdKp_, cmdKd_;  // command
 };
 
 class ARX5HW : public hardware_interface::RobotHW {
@@ -81,7 +86,13 @@ private:
   std::shared_ptr<urdf::Model> urdfModel_;  // NOLINT(misc-non-private-member-variables-in-classes)
 
   bool init_ = false;
-  ARXMotorData jointData_[8]{};
+  ARXMotorData jointData_[7]{};
+  std::vector<std::string> jointName = {"joint1", "joint2", "joint3", "joint4", "joint5", "joint6", "gripper"};
+
+  //0 1 keyboard  2 joint_control   4 pose_control
+  int CONTROL_MODE=2;
+  std::unique_ptr<arx_arm> ARX5;
+  can CAN_Handlej;
 };
 
 }// namespace arx5

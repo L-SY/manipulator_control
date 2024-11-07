@@ -6,6 +6,9 @@
 
 namespace arx5 {
 bool ARX5HW::init(ros::NodeHandle& root_nh, ros::NodeHandle& robot_hw_nh) {
+//  Init ARX5
+  ARX5 = std::make_unique<arx_arm>(CONTROL_MODE);
+
   if (!loadUrdf(root_nh)) {
     ROS_ERROR("Error occurred while setting up urdf");
     return false;
@@ -31,21 +34,31 @@ bool ARX5HW::loadUrdf(ros::NodeHandle& rootNh) {
 }
 
 void ARX5HW::read(const ros::Time& time, const ros::Duration& period) {
-
+  CAN_Handlej.arx_1();
+  ARX5->get_joint();
+  for (int i = 0; i < static_cast<int>(jointName.size()); ++i)
+  {
+    jointData_[i].pos_ = rv_motor_msg[i].angle_actual_rad;
+    jointData_[i].vel_ = rv_motor_msg[i].speed_actual_rad;
+    jointData_[i].tau_ = rv_motor_msg[i].current_actual_float;
+  }
 }
 
 void ARX5HW::write(const ros::Time& /*time*/, const ros::Duration& /*period*/) {
-
+  for (int i = 0; i < static_cast<int>(jointName.size()); ++i)
+  {
+//    send_motor_dm_cmd()
+  }
 }
 
 bool ARX5HW::setupJoints() {
-//  for (int i = 0; i < static_cast<int>(jointName.size()); ++i)
-//  {
-//    hardware_interface::JointStateHandle state_handle(jointName[i], &jointData_[i].pos_, &jointData_[i].vel_,
-//                                                      &jointData_[i].tau_);
-//    jointStateInterface_.registerHandle(state_handle);
-//    effortJointInterface_.registerHandle(hardware_interface::JointHandle(state_handle, &jointData_[i].cmdTau_));
-//  }
+  for (int i = 0; i < static_cast<int>(jointName.size()); ++i)
+  {
+    hardware_interface::JointStateHandle state_handle(jointName[i], &jointData_[i].pos_, &jointData_[i].vel_,
+                                                      &jointData_[i].tau_);
+    jointStateInterface_.registerHandle(state_handle);
+    effortJointInterface_.registerHandle(hardware_interface::JointHandle(state_handle, &jointData_[i].cmdTau_));
+  }
   return true;
 }
 

@@ -10,6 +10,8 @@ find_package(catkin REQUIRED
         urdf
 )
 
+find_package(kdl_parser REQUIRED)
+
 catkin_package(
         INCLUDE_DIRS
         include
@@ -31,12 +33,15 @@ include_directories(
 )
 
 add_library(${PROJECT_NAME}
+        src/arx_lib/arm_control.cpp
         src/ARX5HW.cpp
         src/ARX5HWLoop.cpp
 )
 
 target_link_libraries(${PROJECT_NAME}
         ${catkin_LIBRARIES}
+        ${kdl_parser_LIBRARIES}
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/arx_lib/libarxx86.so
 )
 
 
@@ -49,6 +54,8 @@ add_executable(arx5_hw_run
 target_link_libraries(arx5_hw_run
         ${catkin_LIBRARIES}
         ${PROJECT_NAME}
+        ${kdl_parser_LIBRARIES}
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/arx_lib/libarxx86.so
 )
 
 #########################
