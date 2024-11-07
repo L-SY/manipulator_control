@@ -1,16 +1,16 @@
 //
-// Created by lsy on 24-5-21.
+// Created by lsy on 24-9-23.
 //
 
-#include "robot_hw/control_loop.h"
-#include "robot_hw/hardware_interface.h"
+#include "arx5_hw/ARX5HWLoop.h"
 
-namespace control_loop {
-
-HWControlLoop::HWControlLoop(ros::NodeHandle &nh, std::shared_ptr<robot_hw::RobotHW> hardware_interface)
+namespace arx5 {
+ARX5HWLoop::ARX5HWLoop(ros::NodeHandle& nh, std::shared_ptr<ARX5HW> hardware_interface)
     : nh_(nh), hardwareInterface_(std::move(hardware_interface)), loopRunning_(true) {
-  controllerManager_ = std::make_shared<controller_manager::ControllerManager>(hardwareInterface_.get(), nh_);
+  // Create the controller manager
+  controllerManager_.reset(new controller_manager::ControllerManager(hardwareInterface_.get(), nh_));
 
+  // Load ros params
   int error = 0;
   int threadPriority = 0;
   ros::NodeHandle nhP("~");
@@ -24,11 +24,10 @@ HWControlLoop::HWControlLoop(ros::NodeHandle &nh, std::shared_ptr<robot_hw::Robo
     throw std::runtime_error(error_message);
   }
 
-  hardwareInterface_->setCanBusThreadPriority(threadPriority);
-  hardwareInterface_->init(nh, nhP);
-
+  // Get current time for use with first update
   lastTime_ = Clock::now();
 
+  // Setup loop thread
   loopThread_ = std::thread([&]() {
     while (loopRunning_) {
       update();
@@ -36,17 +35,23 @@ HWControlLoop::HWControlLoop(ros::NodeHandle &nh, std::shared_ptr<robot_hw::Robo
   });
   sched_param sched{.sched_priority = threadPriority};
   if (pthread_setschedparam(loopThread_.native_handle(), SCHED_FIFO, &sched) != 0) {
-    ROS_WARN("Failed to set thread's priority (one possible reason could be that the user and the group permissions are not set properly.).");
+    ROS_WARN(
+        "Failed to set threads priority (one possible reason could be that the user and the group permissions "
+        "are not set properly.).\n");
   }
 }
 
-void HWControlLoop::update() {
+void ARX5HWLoop::update() {
   const auto currentTime = Clock::now();
+  // Compute desired duration rounded to clock decimation
   const Duration desiredDuration(1.0 / loopHz_);
+
+  // Get change in time
   Duration time_span = std::chrono::duration_cast<Duration>(currentTime - lastTime_);
   elapsedTime_ = ros::Duration(time_span.count());
   lastTime_ = currentTime;
 
+  // Check cycle time for excess delay
   const double cycle_time_error = (elapsedTime_ - ros::Duration(desiredDuration.count())).toSec();
   if (cycle_time_error > cycleTimeErrorThreshold_) {
     ROS_WARN_STREAM("Cycle time exceeded error threshold by: " << cycle_time_error - cycleTimeErrorThreshold_ << "s, "
@@ -54,20 +59,28 @@ void HWControlLoop::update() {
                                                                << "threshold: " << cycleTimeErrorThreshold_ << "s");
   }
 
+  // Input
+  // get the hardware's state
   hardwareInterface_->read(ros::Time::now(), elapsedTime_);
+
+  // Control
+  // let the controller compute the new command (via the controller manager)
   controllerManager_->update(ros::Time::now(), elapsedTime_);
+
+  // Output
+  // send the new command to hardware
   hardwareInterface_->write(ros::Time::now(), elapsedTime_);
 
+  // Sleep
   const auto sleepTill = currentTime + std::chrono::duration_cast<Clock::duration>(desiredDuration);
   std::this_thread::sleep_until(sleepTill);
 }
 
-HWControlLoop::~HWControlLoop() {
+ARX5HWLoop::~ARX5HWLoop() {
   loopRunning_ = false;
-  hardwareInterface_->close();
   if (loopThread_.joinable()) {
     loopThread_.join();
   }
 }
 
-}  // namespace control_loop
+}  // namespace arx5

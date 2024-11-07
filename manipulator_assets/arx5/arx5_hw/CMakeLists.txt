@@ -1,29 +1,24 @@
 cmake_minimum_required(VERSION 3.10)
-project(robot_gazebo)
+project(arx5_hw)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-## Find catkin macros and libraries
 find_package(catkin REQUIRED
         COMPONENTS
         roscpp
-
-        robot_common
-        gazebo_dev
-        gazebo_ros
-        gazebo_ros_control
+        controller_manager
+        urdf
 )
 
 catkin_package(
         INCLUDE_DIRS
         include
         LIBRARIES
-        robot_hw_sim
+        ${PROJECT_NAME}
         CATKIN_DEPENDS
         roscpp
-        robot_common
-        gazebo_ros_control
-        DEPENDS
+        controller_manager
+        urdf
 )
 
 ###########
@@ -33,21 +28,27 @@ catkin_package(
 include_directories(
         include
         ${catkin_INCLUDE_DIRS}
-        ${GAZEBO_INCLUDE_DIRS}
 )
 
-## Declare a cpp library
-add_library(robot_hw_sim
-        src/RobotHWSim.cpp
+add_library(${PROJECT_NAME}
+        src/ARX5HW.cpp
+        src/ARX5HWLoop.cpp
 )
 
-add_dependencies(robot_hw_sim
-        ${catkin_EXPORTED_TARGETS}
-)
-
-target_link_libraries(robot_hw_sim
+target_link_libraries(${PROJECT_NAME}
         ${catkin_LIBRARIES}
-        ${GAZEBO_LIBRARIES}
+)
+
+
+add_executable(arx5_hw_run
+        src/arx5_hw.cpp
+        src/ARX5HW.cpp
+        src/ARX5HWLoop.cpp
+)
+
+target_link_libraries(arx5_hw_run
+        ${catkin_LIBRARIES}
+        ${PROJECT_NAME}
 )
 
 #########################
@@ -55,9 +56,9 @@ target_link_libraries(robot_hw_sim
 #########################
 find_package(cmake_clang_tools QUIET)
 if (cmake_clang_tools_FOUND)
-    message(STATUS "Run clang tooling for target robot_hw_sim")
+    message(STATUS "Run clang tooling for target " ${PROJECT_NAME})
     add_clang_tooling(
-            TARGETS robot_hw_sim
+            TARGETS ${PROJECT_NAME}
             SOURCE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_CURRENT_SOURCE_DIR}/include
             CT_HEADER_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/include
             CF_WERROR
@@ -68,21 +69,15 @@ endif (cmake_clang_tools_FOUND)
 ## Install ##
 #############
 
-install(TARGETS robot_hw_sim
+# Mark executables and/or libraries for installation
+install(TARGETS ${PROJECT_NAME}
         ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
         LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
         RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
+# Mark cpp header files for installation
 install(DIRECTORY include/${PROJECT_NAME}/
         DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
         FILES_MATCHING PATTERN "*.h"
-)
-
-install(FILES robot_hw_sim_plugins.xml
-        DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
-)
-
-install(DIRECTORY config
-        DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
 )

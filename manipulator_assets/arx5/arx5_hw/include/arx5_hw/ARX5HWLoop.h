@@ -1,39 +1,40 @@
 //
-// Created by lsy on 24-5-21.
+// Created by lsy on 24-9-23.
 //
 
 #pragma once
+
+#include "arx5_hw/ARX5HW.h"
 
 #include <chrono>
 #include <thread>
 
 #include <controller_manager/controller_manager.h>
-#include "hardware_interface.h"
 #include <ros/ros.h>
 
-namespace control_loop {
+namespace arx5 {
 
-class HWControlLoop {  // NOLINT(cppcoreguidelines-special-member-functions)
+class ARX5HWLoop {  // NOLINT(cppcoreguidelines-special-member-functions)
   using Clock = std::chrono::high_resolution_clock;
   using Duration = std::chrono::duration<double>;
 
 public:
   /** \brief Create controller manager. Load loop frequency. Start control loop which call @ref
-         * legged::RmRobotHWLoop::update() in a frequency.
-         *
-         * @param nh Node-handle of a ROS node.
-         * @param hardware_interface A pointer which point to hardware_interface.
+   * arx5::RmRobotHWLoop::update() in a frequency.
+   *
+   * @param nh Node-handle of a ROS node.
+   * @param hardware_interface A pointer which point to hardware_interface.
    */
-  HWControlLoop(ros::NodeHandle& nh, std::shared_ptr<robot_hw::RobotHW> hardware_interface);
+  ARX5HWLoop(ros::NodeHandle& nh, std::shared_ptr<ARX5HW> hardware_interface);
 
-  ~HWControlLoop();
+  ~ARX5HWLoop();
 
   /** \brief Timed method that reads current hardware's state, runs the controller code once and sends the new commands
-         * to the hardware.
-         *
-         * Timed method that reads current hardware's state, runs the controller code once and sends the new commands to the
-         * hardware.
-         *
+   * to the hardware.
+   *
+   * Timed method that reads current hardware's state, runs the controller code once and sends the new commands to the
+   * hardware.
+   *
    */
   void update();
 
@@ -57,7 +58,9 @@ private:
   std::shared_ptr<controller_manager::ControllerManager> controllerManager_;
 
   // Abstract Hardware Interface for your robot
-  std::shared_ptr<robot_hw::RobotHW> hardwareInterface_;
+  std::shared_ptr<ARX5HW> hardwareInterface_;
 };
 
-}  // namespace control_loop
+}  // namespace arx5
+
+
