@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>arx5_hw</name>
+  <version>0.0.0</version>
+  <description>ROS control warped interface for ARX arx5</description>
+  <maintainer email="liaoqiayuan@gmail.com">4yang</maintainer>
+
+  <license>BSD</license>
+  <author email="liusiyang.cn@gmail.com">4yang</author>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <build_depend>cmake_clang_tools</build_depend>
+  <depend>roscpp</depend>
+<!--  <depend>robot_common</depend>-->
+  <depend>controller_manager</depend>
+  <depend>urdf</depend>
+<!--  <depend>arm_control</depend>-->
+</package>

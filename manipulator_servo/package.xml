@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>manipulator_servo</name>
+  <version>0.0.0</version>
+  <description>The manipulator_servo package</description>
+
+  <maintainer email="liusiyang.cn@gmail.com">Siyang Liu</maintainer>
+  <license>BSD</license>
+  <author email="liusiyang.cn@gmail.com">Siyang Liu</author>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <depend>roscpp</depend>
+
+  <depend>tf2_eigen</depend>
+  <depend>control_msgs</depend>
+  <depend>control_toolbox</depend>
+  <depend>geometry_msgs</depend>
+  <depend>sensor_msgs</depend>
+  <depend>std_msgs</depend>
+  <depend>std_srvs</depend>
+
+</package>

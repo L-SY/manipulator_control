@@ -1,0 +1,37 @@
+controllers:
+  joint_state_controller:
+    type: joint_state_controller/JointStateController
+    publish_rate: 100
+
+  arm_trajectory_controller:
+    type: effort_controllers/JointTrajectoryController
+    joints:
+      - joint1
+      - joint2
+      - joint3
+      - joint4
+      - joint5
+      - joint6
+    gains:
+      joint1: { p: 10, i: 0., d: 3, i_clamp_max: 1., i_clamp_min: -1., antiwindup: true, publish_state: true }
+      joint2: { p: 40, i: 0., d: 6, i_clamp_max: 1., i_clamp_min: -1., antiwindup: true, publish_state: true }
+      joint3: { p: 60, i: 0., d: 6, i_clamp_max: 2.5, i_clamp_min: -2.5, antiwindup: true, publish_state: true }
+      joint4: { p: 5, i: 0., d: 0.1, i_clamp_max: 1, i_clamp_min: -1, antiwindup: true, publish_state: true }
+      joint5: { p: 2, i: 0., d: 0.03, i_clamp_max: 1, i_clamp_min: -1, antiwindup: true, publish_state: true }
+      joint6: { p: 2, i: 0, d: 0.03, i_clamp_max: 0.5, i_clamp_min: -0.5, antiwindup: true, publish_state: true }
+
+#    for gazebo
+#    gains:
+#      joint1: { p: 30, i: 0., d: 3, i_clamp_max: 1., i_clamp_min: -1., antiwindup: true, publish_state: true }
+#      joint2: { p: 30, i: 0., d: 5, i_clamp_max: 1., i_clamp_min: -1., antiwindup: true, publish_state: true }
+#      joint3: { p: 60, i: 0., d: 5, i_clamp_max: 2.5, i_clamp_min: -2.5, antiwindup: true, publish_state: true }
+#      joint4: { p: 15, i: 0., d: 0.15, i_clamp_max: 1, i_clamp_min: -1, antiwindup: true, publish_state: true }
+#      joint5: { p: 2, i: 0., d: 0.03, i_clamp_max: 1, i_clamp_min: -1, antiwindup: true, publish_state: true }
+#      joint6: { p: 5, i: 0, d: 0.05, i_clamp_max: 0.5, i_clamp_min: -0.5, antiwindup: true, publish_state: true }
+#    gains:
+#      joint1: { p: 0, i: 0, d: 0, i_clamp_max: 1., i_clamp_min: -1., antiwindup: true, publish_state: true }
+#      joint2: { p: 0, i: 0, d: 0, i_clamp_max: 1., i_clamp_min: -1., antiwindup: true, publish_state: true }
+#      joint3: { p: 0, i: 0, d: 0, i_clamp_max: 2.5, i_clamp_min: -2.5, antiwindup: true, publish_state: true }
+#      joint4: { p: 5, i: 0, d: 0.1, i_clamp_max: 1, i_clamp_min: -1, antiwindup: true, publish_state: true }
+#      joint5: { p: 5, i: 0, d: 0.1, i_clamp_max: 1, i_clamp_min: -1, antiwindup: true, publish_state: true }
+#      joint6: { p: 0, i: 0, d: 0, i_clamp_max: 0.5, i_clamp_min: -0.5, antiwindup: true, publish_state: true }

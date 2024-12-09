@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<launch>
+    <arg name="timeout" default="0.005" />
+    <arg name="chain_start" default="base_link" />
+    <arg name="chain_end" default="link6" />
+<!--    <arg name="chain_end" default="Link6" />-->
+
+
+<!--    <param name="robot_description" command="$(find xacro)/xacro &#45;&#45;inorder '$(find trac_ik_solver)/urdf/rm_65.urdf'" />-->
+    <param name="robot_description" command="$(find xacro)/xacro &#45;&#45;inorder '$(find trac_ik_solver)/test/qz_arm.urdf'" />
+
+    <node name="trac_ik_solver" pkg="trac_ik_solver" type="tests_trac_solver" output="screen">
+        <param name="chain_start" value="$(arg chain_start)"/>
+        <param name="chain_end" value="$(arg chain_end)"/>
+        <param name="timeout" value="$(arg timeout)"/>
+        <param name="urdf_param" value="/robot_description"/>
+    </node>
+
+
+</launch>

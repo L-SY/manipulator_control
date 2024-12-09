@@ -1,0 +1,4 @@
+arx5_hw_run:
+  loop_frequency: 200
+  cycle_time_error_threshold: 0.002
+  thread_priority: 95

@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro" name="gazebo">
+    <xacro:include filename="$(find robot_common)/include/robot_common/utilities/urdf/common.xacro"/>
+
+    <!-- Transmission definitions -->
+    <xacro:create_transmission joint_name="joint1"/>
+    <xacro:create_transmission joint_name="joint2" mechanical_reduction="-1"/>
+    <xacro:create_transmission joint_name="joint3"/>
+    <xacro:create_transmission joint_name="joint4" mechanical_reduction="-1"/>
+    <xacro:create_transmission joint_name="joint5" mechanical_reduction="-1"/>
+    <xacro:create_transmission joint_name="joint6"/>
+
+    <gazebo>
+        <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
+            <robotNamespace>/</robotNamespace>
+        </plugin>
+    </gazebo>
+</robot>

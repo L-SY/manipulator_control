@@ -1,0 +1,6 @@
+<launch>
+    <param name="robot_description" textfile="$(find arx5_config)/description/urdf/arx5_gazebo.urdf" />
+    <rosparam file="$(find arx5_config)/config/hw.yaml" command="load"/>
+
+    <node name="arx5_hw_run" pkg="arx5_hw" type="arx5_hw_run" respawn="false"/>
+</launch>
