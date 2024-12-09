@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
-<robot xmlns:xacro="http://ros.org/wiki/xacro" name="swing_arm">
+<robot xmlns:xacro="http://ros.org/wiki/xacro" name="swingarm_v1_config">
 
-    <xacro:include filename="$(find swing_arm)/description/urdf/arm.urdf.xacro"/>
-    <xacro:include filename="$(find swing_arm)/description/urdf/gazebo.xacro"/>
+    <xacro:include filename="$(find swingarm_v1_config)/description/urdf/arm.urdf.xacro"/>
+    <xacro:include filename="$(find swingarm_v1_config)/description/urdf/gazebo.xacro"/>
 
 </robot>

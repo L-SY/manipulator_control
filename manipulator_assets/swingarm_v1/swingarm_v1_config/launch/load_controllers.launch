@@ -1,5 +1,5 @@
 <launch>
-    <rosparam file="$(find swing_arm)/config/controllers.yaml" command="load"/>
+    <rosparam file="$(find swingarm_v1_config)/config/controllers.yaml" command="load"/>
 
     <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false"
           output="screen" ns="/" args="

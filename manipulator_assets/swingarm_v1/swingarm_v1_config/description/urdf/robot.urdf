@@ -41,14 +41,14 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://swing_arm/description/meshes/base_link.stl"/>
+        <mesh filename="package://swingarm_v1_config/description/meshes/base_link.stl"/>
       </geometry>
       <material name="silver"/>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://swing_arm/description/meshes/base_link.stl"/>
+        <mesh filename="package://swingarm_v1_config/description/meshes/base_link.stl"/>
       </geometry>
     </collision>
   </link>
@@ -61,14 +61,14 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://swing_arm/description/meshes/link1.stl"/>
+        <mesh filename="package://swingarm_v1_config/description/meshes/link1.stl"/>
       </geometry>
       <material name="silver"/>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://swing_arm/description/meshes/link1.stl"/>
+        <mesh filename="package://swingarm_v1_config/description/meshes/link1.stl"/>
       </geometry>
     </collision>
   </link>
@@ -81,14 +81,14 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://swing_arm/description/meshes/link2.stl"/>
+        <mesh filename="package://swingarm_v1_config/description/meshes/link2.stl"/>
       </geometry>
       <material name="silver"/>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://swing_arm/description/meshes/link2.stl"/>
+        <mesh filename="package://swingarm_v1_config/description/meshes/link2.stl"/>
       </geometry>
     </collision>
   </link>
@@ -101,14 +101,14 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://swing_arm/description/meshes/link3.stl"/>
+        <mesh filename="package://swingarm_v1_config/description/meshes/link3.stl"/>
       </geometry>
       <material name="silver"/>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://swing_arm/description/meshes/link3.stl"/>
+        <mesh filename="package://swingarm_v1_config/description/meshes/link3.stl"/>
       </geometry>
     </collision>
   </link>
@@ -121,14 +121,14 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://swing_arm/description/meshes/link4.stl"/>
+        <mesh filename="package://swingarm_v1_config/description/meshes/link4.stl"/>
       </geometry>
       <material name="silver"/>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://swing_arm/description/meshes/link4.stl"/>
+        <mesh filename="package://swingarm_v1_config/description/meshes/link4.stl"/>
       </geometry>
     </collision>
   </link>
@@ -141,14 +141,14 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://swing_arm/description/meshes/link5.stl"/>
+        <mesh filename="package://swingarm_v1_config/description/meshes/link5.stl"/>
       </geometry>
       <material name="silver"/>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://swing_arm/description/meshes/link5.stl"/>
+        <mesh filename="package://swingarm_v1_config/description/meshes/link5.stl"/>
       </geometry>
     </collision>
   </link>
@@ -161,14 +161,14 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://swing_arm/description/meshes/link6.stl"/>
+        <mesh filename="package://swingarm_v1_config/description/meshes/link6.stl"/>
       </geometry>
       <material name="silver"/>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://swing_arm/description/meshes/link6.stl"/>
+        <mesh filename="package://swingarm_v1_config/description/meshes/link6.stl"/>
       </geometry>
     </collision>
   </link>

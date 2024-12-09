@@ -1,18 +1,18 @@
 <launch>
     <param name="robot_description"
-           command="$(find xacro)/xacro $(find swing_arm)/description/urdf/robot.xacro"/>
+           command="$(find xacro)/xacro $(find swingarm_v1_config)/description/urdf/robot.xacro"/>
 
     <param name="swingarm_description"
-           command="$(find xacro)/xacro $(find swing_arm)/description/urdf/robot.xacro"/>
+           command="$(find xacro)/xacro $(find swingarm_v1_config)/description/urdf/robot.xacro"/>
 
     <include file="$(find gazebo_ros)/launch/empty_world.launch">
-        <arg name="world_name" value="$(find robot_gazebo)/worlds/empty_world.world"/>
+        <arg name="world_name" value="$(find manipulator_gazebo)/worlds/empty_world.world"/>
         <arg name="paused" value="false"/>
     </include>
     <!-- push robot_description to factory and spawn robot in gazebo -->
     <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" clear_params="true"
           output="screen"
-          args="-param swingarm_description -urdf -model ddt_diablo
+          args="-param swingarm_description -urdf -model swingarm
         -z 0.
         "
     />
