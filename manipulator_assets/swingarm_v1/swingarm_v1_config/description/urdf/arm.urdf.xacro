@@ -1,47 +1,46 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://ros.org/wiki/xacro" name="arm">
     <xacro:include filename="$(find manipulator_common)/include/manipulator_common/utilities/urdf/common.xacro"/>
-    <xacro:include filename="$(find manipulator_common)/include/manipulator_common/utilities/urdf/materials.xacro"/>
 
     <link name="world"></link>
     <xacro:create_link name="base_link" mass="6.722526"
                        ixx="49640000" ixy="-6571.312" ixz="-906.394"
                        iyy="38820000" iyz="211.811" izz="83030000"
-                       mesh_file="package://swingarm_v1_config/description/meshes/base_link.stl" material_name="silver"
+                       mesh_file="package://swingarm_v1_config/description/meshes/base_link.stl"
                        inertial_xyz="0.00006 -0.000046 0.0129"/>
 
     <xacro:create_link name="link1" mass="1.103721"
                        ixx="572600" ixy="-54.105" ixz="-3.821"
                        iyy="495300" iyz="12915.759" izz="538300"
-                       mesh_file="package://swingarm_v1_config/description/meshes/link1.stl" material_name="silver"
+                       mesh_file="package://swingarm_v1_config/description/meshes/link1.stl"
                        inertial_xyz="0.000002 -0.00531 0.034685"/>
 
     <xacro:create_link name="link2" mass="0.534276"
                        ixx="383700" ixy="-26179.433" ixz="693.218"
                        iyy="1888000" iyz="-585.018" izz="2050000"
-                       mesh_file="package://swingarm_v1_config/description/meshes/link2.stl" material_name="silver"
+                       mesh_file="package://swingarm_v1_config/description/meshes/link2.stl"
                        inertial_xyz="-0.197351 -0.002165 0.000057"/>
 
     <xacro:create_link name="link3" mass="0.474451"
                        ixx="322900" ixy="8650.968" ixz="-231700"
                        iyy="2226000" iyz="1036.356" izz="2291000"
-                       mesh_file="package://swingarm_v1_config/description/meshes/link3.stl" material_name="silver"
+                       mesh_file="package://swingarm_v1_config/description/meshes/link3.stl"
                        inertial_xyz="0.191296 -0.001405 0.053882"
                        collision_scale_y="0.8"/>
 
     <xacro:create_link name="link4" mass="0.1"
                        ixx="1262.246" ixy="32.61" ixz="-553.334"
                        iyy="100000" iyz="41.18" izz="975.984"
-                       mesh_file="package://swingarm_v1_config/description/meshes/link4.stl" material_name="silver"
+                       mesh_file="package://swingarm_v1_config/description/meshes/link4.stl"
                        inertial_xyz="0.02969 0.00192 0.03765"/>
 
     <xacro:create_link name="link5" mass="0.598593"
                        ixx="735400" ixy="-449.048" ixz="37386.443"
                        iyy="732800" iyz="-210.043" izz="500000"
-                       mesh_file="package://swingarm_v1_config/description/meshes/link5.stl" material_name="silver"
+                       mesh_file="package://swingarm_v1_config/description/meshes/link5.stl"
                        inertial_xyz="0.001992 -0.000088 -0.053421"/>
 
-    <xacro:create_link name="link6" mass="0.5" ixx="50000" ixy="-1.068E-10" ixz="83.57" iyy="8414.108" iyz="0.00" izz="6931.832" mesh_file="package://swingarm_v1_config/description/meshes/link6.stl" material_name="silver"/>
+    <xacro:create_link name="link6" mass="0.5" ixx="50000" ixy="-1.068E-10" ixz="83.57" iyy="8414.108" iyz="0.00" izz="6931.832" mesh_file="package://swingarm_v1_config/description/meshes/link6.stl"/>
 
     <!-- Joint definitions -->
     <xacro:create_joint name="fixed_world" type="fixed" parent="world" child="base_link" origin_xyz="0 0 0" origin_rpy="0 0 0" />
