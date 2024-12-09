@@ -34,11 +34,11 @@
 //
 // Created by qiayuan on 12/28/20.
 //
-#include "robot_common/interface/can_interface/can_bus.h"
+#include "manipulator_common/interface/can_interface/can_bus.h"
 
 #include <string>
 #include <ros/ros.h>
-#include <robot_common/utilities/math_utilities.h>
+#include <manipulator_common/utilities/math_utilities.h>
 
 namespace can_interface
 {

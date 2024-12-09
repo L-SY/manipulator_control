@@ -1,4 +1,4 @@
-#include "robot_common/utilities/can_devices.h"
+#include "manipulator_common/utilities/can_devices.h"
 
 namespace can_interface
 {
@@ -253,9 +253,9 @@ bool CanDevices::parseImuData(XmlRpc::XmlRpcValue& imu_datas, ros::NodeHandle& r
         ROS_ASSERT(linear_cov[i].getType() == XmlRpc::XmlRpcValue::TypeDouble);
       std::string filter_type = imu_datas[name]["filter"];
       // TODO(Zhenyu Ye): Add more types of filter.
-      robot_common::ImuFilterBase* imu_filter;
+      manipulator_common::ImuFilterBase* imu_filter;
       if (filter_type.find("complementary") != std::string::npos)
-        imu_filter = new robot_common::ImuComplementaryFilter;
+        imu_filter = new manipulator_common::ImuComplementaryFilter;
       else
       {
         ROS_ERROR_STREAM("Imu " << name << " doesn't has filter type " << filter_type);

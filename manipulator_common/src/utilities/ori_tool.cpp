@@ -35,12 +35,12 @@
 // Created by qiayuan on 8/13/20.
 //
 
-#include "robot_common/interface/hardware_interface/robot_state_interface.h"
-#include "robot_common/utilities/ori_tool.h"
-#include "robot_common/utilities/math_utilities.h"
+#include "manipulator_common/interface/hardware_interface/robot_state_interface.h"
+#include "manipulator_common/utilities/ori_tool.h"
+#include "manipulator_common/utilities/math_utilities.h"
 #include <eigen3/Eigen/Eigenvalues>
 
-namespace robot_common
+namespace manipulator_common
 {
 void quatToRPY(const geometry_msgs::Quaternion& q, double& roll, double& pitch, double& yaw)
 {
@@ -120,4 +120,4 @@ tf2::Quaternion rotationMatrixToQuaternion(const Eigen::Map<Eigen::Matrix3d>& ro
  }
  return quat;
 }
-}  // namespace robot_common
+}  // namespace manipulator_common

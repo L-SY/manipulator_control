@@ -2,7 +2,7 @@
 // Created by lsy on 24-9-26.
 //
 
-#include "robot_common/utilities/MeanFilter.h"
+#include "manipulator_common/utilities/MeanFilter.h"
 #include <stdexcept>
 
 MeanFilter::MeanFilter(int window_size) : window_size_(window_size), sum_(0) {

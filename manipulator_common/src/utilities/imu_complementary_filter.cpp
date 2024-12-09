@@ -2,9 +2,9 @@
 // Created by yezi on 2022/3/26.
 //
 
-#include "robot_common/utilities/imu_complementary_filter.h"
+#include "manipulator_common/utilities/imu_complementary_filter.h"
 
-namespace robot_common
+namespace manipulator_common
 {
 void ImuComplementaryFilter::filterUpdate(double ax, double ay, double az, double wx, double wy, double wz, double dt)
 {
@@ -44,4 +44,4 @@ void ImuComplementaryFilter::resetFilter()
   }
   return;
 }
-}  // namespace robot_common
+}  // namespace manipulator_common

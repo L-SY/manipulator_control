@@ -40,7 +40,7 @@
 #include <geometry_msgs/Quaternion.h>
 #include <tf2/LinearMath/Quaternion.h>
 #include <eigen3/Eigen/Core>
-namespace robot_common
+namespace manipulator_common
 {
   /*!
 * Convert a quaternion to RPY.  Uses ZYX order (yaw-pitch-roll), but returns
@@ -54,4 +54,4 @@ namespace robot_common
                                        const std::vector<double>& weights);
 
   tf2::Quaternion rotationMatrixToQuaternion(const Eigen::Map<Eigen::Matrix3d>& rot);
-} // namespace robot_common
+} // namespace manipulator_common

@@ -4,10 +4,10 @@
 
 #pragma once
 
-#include "robot_common/utilities/imu_filter_base.h"
+#include "imu_filter_base.h"
 #include <imu_complementary_filter/complementary_filter.h>
 
-namespace robot_common
+namespace manipulator_common
 {
 class ImuComplementaryFilter : public ImuFilterBase
 {
@@ -28,4 +28,4 @@ private:
   bool use_mag_;
   std::shared_ptr<imu_tools::ComplementaryFilter> filter_;
 };
-}  // namespace robot_common
+}  // namespace manipulator_common

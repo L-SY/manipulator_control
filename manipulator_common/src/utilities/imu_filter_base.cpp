@@ -2,9 +2,9 @@
 // Created by yezi on 2022/3/26.
 //
 
-#include "robot_common/utilities/imu_filter_base.h"
+#include "manipulator_common/utilities/imu_filter_base.h"
 
-namespace robot_common
+namespace manipulator_common
 {
 bool ImuFilterBase::init(XmlRpc::XmlRpcValue& imu_data, const std::string& name)
 {
@@ -65,4 +65,4 @@ void ImuFilterBase::update(ros::Time time, double* accel, double* omega, double*
   }
 }
 
-}  // namespace robot_common
+}  // namespace manipulator_common

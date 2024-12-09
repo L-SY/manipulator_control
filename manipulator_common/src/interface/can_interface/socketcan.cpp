@@ -34,7 +34,7 @@
 //
 // Created by qiayuan on 3/3/21.
 //
-#include "robot_common/interface/can_interface/socketcan.h"
+#include "manipulator_common/interface/can_interface/socketcan.h"
 #include <sys/socket.h>
 #include <sys/ioctl.h>
 #include <utility>

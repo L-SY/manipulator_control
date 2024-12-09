@@ -2,7 +2,7 @@
 // Created by lsy on 24-9-26.
 //
 
-#include "robot_common/utilities/InertialFilter.h"
+#include "manipulator_common/utilities/InertialFilter.h"
 
 InertiaFilter::InertiaFilter(double alpha) : alpha_(alpha), last_in_(0), output_(0) {}
 

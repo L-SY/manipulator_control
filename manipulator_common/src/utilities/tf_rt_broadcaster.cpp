@@ -32,80 +32,75 @@
  *******************************************************************************/
 
 //
-// Created by qiayuan on 1/5/21.
+// Created by qiayuan on 1/3/21.
 //
-#include "robot_common/utilities/lp_filter.h"
-#include "robot_common/utilities/ros_param.h"
-LowPassFilter::LowPassFilter(ros::NodeHandle& nh)
+#include "manipulator_common/utilities/tf_rt_broadcaster.h"
+
+#include <vector>
+#include <tf2_msgs/TFMessage.h>
+
+namespace tf
 {
-  nh.param("lp_cutoff_frequency", cutoff_frequency_, -1.);
+void TfRtBroadcaster::init(ros::NodeHandle& root_nh)
+{
+  realtime_pub_.reset(new realtime_tools::RealtimePublisher<tf2_msgs::TFMessage>(root_nh, "/tf", 100));
 }
 
-LowPassFilter::LowPassFilter(double cutoff_freq)
+void TfRtBroadcaster::sendTransform(const geometry_msgs::TransformStamped& transform)
 {
-  cutoff_frequency_ = cutoff_freq;
+  std::vector<geometry_msgs::TransformStamped> v1;
+  v1.push_back(transform);
+  sendTransform(v1);
 }
 
-void LowPassFilter::input(double in, ros::Time time)
+void TfRtBroadcaster::sendTransform(const std::vector<geometry_msgs::TransformStamped>& transforms)
 {
-  // My filter reference was Julius O. Smith III, Intro. to Digital Filters
-  // With Audio Applications.
-  // See https://ccrma.stanford.edu/~jos/filters/Example_Second_Order_Butterworth_Lowpass.html
-  in_[2] = in_[1];
-  in_[1] = in_[0];
-  in_[0] = in;
-
-  if (!prev_time_.isZero())  // Not first time through the program
+  tf2_msgs::TFMessage message;
+  for (const auto& transform : transforms)
   {
-    delta_t_ = time - prev_time_;
-    prev_time_ = time;
-    if (0 == delta_t_.toSec())
+    message.transforms.push_back(transform);
+  }
+  if (realtime_pub_->trylock())
+  {
+    realtime_pub_->msg_ = message;
+    realtime_pub_->unlockAndPublish();
+  }
+}
+
+void StaticTfRtBroadcaster::init(ros::NodeHandle& root_nh)
+{
+  realtime_pub_.reset(new realtime_tools::RealtimePublisher<tf2_msgs::TFMessage>(root_nh, "/tf_static", 100, true));
+}
+
+void StaticTfRtBroadcaster::sendTransform(const geometry_msgs::TransformStamped& transform)
+{
+  std::vector<geometry_msgs::TransformStamped> v1;
+  v1.push_back(transform);
+  sendTransform(v1);
+}
+
+void StaticTfRtBroadcaster::sendTransform(const std::vector<geometry_msgs::TransformStamped>& transforms)
+{
+  for (const auto& transform : transforms)
+  {
+    bool match_found = false;
+    for (auto& it_msg : net_message_.transforms)
     {
-      ROS_ERROR("delta_t is 0, skipping this loop. Possible overloaded cpu "
-                "at time: %f",
-                time.toSec());
-      return;
+      if (transform.child_frame_id == it_msg.child_frame_id)
+      {
+        it_msg = transform;
+        match_found = true;
+        break;
+      }
     }
+    if (!match_found)
+      net_message_.transforms.push_back(transform);
   }
-  else
+  if (realtime_pub_->trylock())
   {
-    prev_time_ = time;
-    return;
-  }
-
-  if (cutoff_frequency_ != -1 && cutoff_frequency_ > 0)
-  {
-    // Check if tan(_) is really small, could cause c = NaN
-    tan_filt_ = tan((cutoff_frequency_ * 6.2832) * delta_t_.toSec() / 2.);
-    // Avoid tan(0) ==> NaN
-    if ((tan_filt_ <= 0.) && (tan_filt_ > -0.01))
-      tan_filt_ = -0.01;
-    if ((tan_filt_ >= 0.) && (tan_filt_ < 0.01))
-      tan_filt_ = 0.01;
-    c_ = 1 / tan_filt_;
-  }
-
-  out_[2] = out_[1];
-  out_[1] = out_[0];
-  out_[0] = (1 / (1 + c_ * c_ + M_SQRT2 * c_)) *
-            (in_[2] + 2 * in_[1] + in_[0] - (c_ * c_ - M_SQRT2 * c_ + 1) * out_[2] - (-2 * c_ * c_ + 2) * out_[1]);
-}
-
-void LowPassFilter::input(double in)
-{
-  input(in, ros::Time::now());
-}
-
-double LowPassFilter::output()
-{
-  return out_[0];
-}
-
-void LowPassFilter::reset()
-{
-  for (int i = 0; i < 3; ++i)
-  {
-    in_[i] = 0;
-    out_[i] = 0;
+    realtime_pub_->msg_ = net_message_;
+    realtime_pub_->unlockAndPublish();
   }
 }
+
+}  // namespace tf

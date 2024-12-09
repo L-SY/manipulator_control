@@ -10,7 +10,7 @@
 #include <sensor_msgs/TimeReference.h>
 #include <realtime_tools/realtime_publisher.h>
 
-namespace robot_common
+namespace manipulator_common
 {
 class ImuFilterBase
 {
@@ -34,4 +34,4 @@ protected:
   sensor_msgs::Temperature temp_pub_data_;
   sensor_msgs::TimeReference trigger_time_pub_data_;
 };
-}  // namespace robot_common
+}  // namespace manipulator_common
