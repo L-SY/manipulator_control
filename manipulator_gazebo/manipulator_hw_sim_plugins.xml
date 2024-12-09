@@ -1,0 +1,9 @@
+<library path="lib/libmanipulator_hw_sim">
+    <class
+            name="manipulator_gazebo/ManipulatorHWSim" type="Manipulator::ManipulatorHWSim"
+            base_class_type="gazebo_ros_control::ManipulatorHWSim">
+        <description>
+            The mobile manipulator simulation interface which constructs joint handles from an SDF/URDF.
+        </description>
+    </class>
+</library>
