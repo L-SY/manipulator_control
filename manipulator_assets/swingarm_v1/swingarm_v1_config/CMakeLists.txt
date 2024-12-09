@@ -100,7 +100,7 @@ find_package(catkin REQUIRED)
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
 #  INCLUDE_DIRS include
-#  LIBRARIES swing_arm
+#  LIBRARIES swingarm_v1_config
 #  CATKIN_DEPENDS other_catkin_pkg
 #  DEPENDS system_lib
 )
@@ -118,7 +118,7 @@ include_directories(
 
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}
-#   src/${PROJECT_NAME}/swing_arm.cpp
+#   src/${PROJECT_NAME}/swingarm_v1_config.cpp
 # )
 
 ## Add cmake target dependencies of the library
