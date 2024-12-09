@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://ros.org/wiki/xacro" name="arm">
-    <xacro:include filename="$(find robot_common)/include/robot_common/utilities/urdf/common.xacro"/>
-    <xacro:include filename="$(find robot_common)/include/robot_common/utilities/urdf/materials.xacro"/>
+    <xacro:include filename="$(find manipulator_common)/include/manipulator_common/utilities/urdf/common.xacro"/>
+    <xacro:include filename="$(find manipulator_common)/include/manipulator_common/utilities/urdf/materials.xacro"/>
 
     <link name="world"></link>
     <xacro:create_link name="base_link" mass="6.722526"

@@ -18,7 +18,7 @@
   <depend>control_toolbox</depend>
   <depend>manipulator_msgs</depend>
   <depend>urdf</depend>
-  <depend>robot_common</depend>
+  <depend>manipulator_common</depend>
 
   <export>
     <controller_interface plugin="${prefix}/gripper_controller_plugins.xml"/>

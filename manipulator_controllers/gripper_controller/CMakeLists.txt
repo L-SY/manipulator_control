@@ -15,7 +15,7 @@ set(CATKIN_PACKAGE_DEPENDENCIES
         realtime_tools
         manipulator_msgs
         urdf
-        robot_common
+        manipulator_common
 )
 
 ## Find catkin macros and libraries

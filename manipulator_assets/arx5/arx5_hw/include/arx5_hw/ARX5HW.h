@@ -15,7 +15,7 @@
 // ROS control
 #include <hardware_interface/joint_command_interface.h>
 #include <hardware_interface/joint_state_interface.h>
-//#include <robot_common/interface/hardware_interface/robot_state_interface.h>
+//#include <manipulator_common/interface/hardware_interface/robot_state_interface.h>
 #include <hardware_interface/robot_hw.h>
 
 //ARX5 SDK

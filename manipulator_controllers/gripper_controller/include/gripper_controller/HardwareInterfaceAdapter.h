@@ -17,7 +17,7 @@
 
 #include <control_toolbox/pid.h>
 #include <hardware_interface/joint_command_interface.h>
-#include <robot_common/interface/hardware_interface/HybridJointInterface.h>
+#include <manipulator_common/interface/hardware_interface/HybridJointInterface.h>
 #include <manipulator_msgs/GripperCmd.h>
 
 namespace gripper_controller {
