@@ -5,6 +5,10 @@
     <param name="swingarm_description"
            command="$(find xacro)/xacro $(find swingarm_v1_config)/description/urdf/robot.xacro"/>
 
+    <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher">
+        <param name="publish_frequency" type="double" value="50.0"/>
+    </node>
+
     <include file="$(find gazebo_ros)/launch/empty_world.launch">
         <arg name="world_name" value="$(find manipulator_gazebo)/worlds/empty_world.world"/>
         <arg name="paused" value="false"/>

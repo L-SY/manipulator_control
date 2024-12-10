@@ -16,9 +16,9 @@ controllers:
       joint1: { p: 10, i: 0., d: 3, i_clamp_max: 1., i_clamp_min: -1., antiwindup: true, publish_state: true }
       joint2: { p: 40, i: 0., d: 6, i_clamp_max: 1., i_clamp_min: -1., antiwindup: true, publish_state: true }
       joint3: { p: 60, i: 0., d: 6, i_clamp_max: 2.5, i_clamp_min: -2.5, antiwindup: true, publish_state: true }
-      joint4: { p: 5, i: 0., d: 0.1, i_clamp_max: 1, i_clamp_min: -1, antiwindup: true, publish_state: true }
-      joint5: { p: 2, i: 0., d: 0.03, i_clamp_max: 1, i_clamp_min: -1, antiwindup: true, publish_state: true }
-      joint6: { p: 2, i: 0, d: 0.03, i_clamp_max: 0.5, i_clamp_min: -0.5, antiwindup: true, publish_state: true }
+      joint4: { p: 2, i: 0.5, d: 0.1, i_clamp_max: 1, i_clamp_min: -1, antiwindup: true, publish_state: true }
+      joint5: { p: 2, i: 0.1, d: 0.1, i_clamp_max: 1, i_clamp_min: -1, antiwindup: true, publish_state: true }
+      joint6: { p: 0.5, i: 0。1, d: 0.01, i_clamp_max: 0.5, i_clamp_min: -0.5, antiwindup: true, publish_state: true }
 
 #    for gazebo
 #    gains:
