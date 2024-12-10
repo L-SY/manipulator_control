@@ -28,20 +28,22 @@
                        inertial_xyz="0.191296 -0.001405 0.053882"
                        collision_scale_y="0.8"/>
 
-    <xacro:create_link name="link4" mass="0.1"
-                       ixx="1262.246" ixy="32.61" ixz="-553.334"
-                       iyy="100000" iyz="41.18" izz="975.984"
+    <xacro:create_link name="link4" mass="0.8"
+                       ixx="50000" ixy="5000" ixz="-8000"
+                       iyy="50000" iyz="4000" izz="50000"
                        mesh_file="package://swingarm_v1_config/description/meshes/link4.stl"
                        inertial_xyz="0.02969 0.00192 0.03765"/>
 
-    <xacro:create_link name="link5" mass="0.598593"
-                       ixx="735400" ixy="-449.048" ixz="37386.443"
-                       iyy="732800" iyz="-210.043" izz="500000"
+    <xacro:create_link name="link5" mass="0.8"
+                       ixx="60000" ixy="-4500" ixz="8000"
+                       iyy="60000" iyz="-3000" izz="60000"
                        mesh_file="package://swingarm_v1_config/description/meshes/link5.stl"
                        inertial_xyz="0.001992 -0.000088 -0.053421"/>
 
-    <xacro:create_link name="link6" mass="0.5" ixx="50000" ixy="-1.068E-10" ixz="83.57" iyy="8414.108" iyz="0.00" izz="6931.832" mesh_file="package://swingarm_v1_config/description/meshes/link6.stl"/>
-
+    <xacro:create_link name="link6" mass="0.5"
+                       ixx="40000" ixy="-2000" ixz="4000"
+                       iyy="40000" iyz="-1000" izz="40000"
+                       mesh_file="package://swingarm_v1_config/description/meshes/link6.stl"/>
     <!-- Joint definitions -->
     <xacro:create_joint name="fixed_world" type="fixed" parent="world" child="base_link" origin_xyz="0 0 0" origin_rpy="0 0 0" />
     <xacro:create_joint name="joint1" type="revolute" parent="base_link" child="link1" origin_xyz="0 0 0.07925" origin_rpy="0 0 0" axis_xyz="0 0 1" lower="-1.57" upper="1.57" effort="30" velocity="1.5"/>
