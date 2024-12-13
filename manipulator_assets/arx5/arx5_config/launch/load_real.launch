@@ -1,0 +1,5 @@
+<launch>
+    <include file="$(find arx5_config)/launch/load_hw.launch"/>
+    <include file="$(find arx5_config)/launch/load_controllers.launch"/>
+    <include file="$(find arx5_config)/launch/load_move_group.launch"/>
+</launch>

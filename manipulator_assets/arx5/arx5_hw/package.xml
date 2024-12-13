@@ -15,5 +15,5 @@
 <!--  <depend>manipulator_common</depend>-->
   <depend>controller_manager</depend>
   <depend>urdf</depend>
-<!--  <depend>arm_control</depend>-->
+  <depend>arm_control</depend>
 </package>

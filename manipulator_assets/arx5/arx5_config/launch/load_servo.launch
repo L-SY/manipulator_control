@@ -1,6 +1,5 @@
 <launch>
     <node name="servo_server" pkg="moveit_servo" type="servo_server" output="screen">
-        <param name="parameter_ns" type="string" value="engineer_middleware"/>
         <rosparam command="load" file="$(find arx5_config)/config/servo.yaml"/>
     </node>
 </launch>

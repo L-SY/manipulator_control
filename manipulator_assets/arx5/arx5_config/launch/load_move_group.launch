@@ -7,7 +7,7 @@
 
     <include file="$(find arx5_config)/moveit/launch/move_group.launch">
         <arg name="allow_trajectory_execution" value="true"/>
-        <arg name="fake_execution" value="false"/>
+<!--        <arg name="fake_execution" value="false"/>-->
         <arg name="info" value="true"/>
         <arg name="debug" value="false"/>
         <arg name="pipeline" value="ompl"/>
