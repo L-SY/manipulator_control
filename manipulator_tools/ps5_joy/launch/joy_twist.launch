@@ -3,9 +3,16 @@
         <param name="dev" value="/dev/input/js0" />
     </node>
 
-    <param name="twist_topic" value="/controllers/wheeled_bipedal_rl_controller/command" />
-    <param name="rate" value="1000"/>
+    <param name="add_stamp" value="true"/>
+    <param name="twist_topic" value="/servo_server/delta_twist_cmds" />
+    <param name="rate" value="50"/>
 
+    <param name="linear_x_limit" value="0.2"/>
+    <param name="angular_z_limit" value="0.2"/>
+    <param name="linear_z_limit" value="0.2"/>
+    <param name="linear_y_limit" value="0.2"/>
+    <param name="angular_x_limit" value="0.2"/>
+    <param name="angular_y_limit" value="0.2"/>
     <node name="joy_twist" pkg="ps5_joy" type="joy_twist" output="screen">
     </node>
 </launch>
