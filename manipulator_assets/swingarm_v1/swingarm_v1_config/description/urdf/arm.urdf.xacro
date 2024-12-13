@@ -15,7 +15,7 @@
                        mesh_file="package://swingarm_v1_config/description/meshes/link1.stl"
                        inertial_xyz="0.000002 -0.00531 0.034685"/>
 
-    <xacro:create_link name="link2" mass="0.534276"
+    <xacro:create_link name="link2" mass="0.834276"
                        ixx="383700" ixy="-26179.433" ixz="693.218"
                        iyy="1888000" iyz="-585.018" izz="2050000"
                        mesh_file="package://swingarm_v1_config/description/meshes/link2.stl"
@@ -26,7 +26,7 @@
                        iyy="2226000" iyz="1036.356" izz="2291000"
                        mesh_file="package://swingarm_v1_config/description/meshes/link3.stl"
                        inertial_xyz="0.191296 -0.001405 0.053882"
-                       collision_scale_y="0.8"/>
+                       collision_scale_y="1.0"/>
 
     <xacro:create_link name="link4" mass="0.8"
                        ixx="50000" ixy="5000" ixz="-8000"
@@ -48,7 +48,7 @@
     <xacro:create_joint name="fixed_world" type="fixed" parent="world" child="base_link" origin_xyz="0 0 0" origin_rpy="0 0 0" />
     <xacro:create_joint name="joint1" type="revolute" parent="base_link" child="link1" origin_xyz="0 0 0.07925" origin_rpy="0 0 0" axis_xyz="0 0 1" lower="-1.57" upper="1.57" effort="30" velocity="1.5"/>
     <xacro:create_joint name="joint2" type="revolute" parent="link1" child="link2" origin_xyz="0 0 0.0365" origin_rpy="0 0 0" axis_xyz="0 1 0" lower="0" upper="3.14" effort="30" velocity="1.5"/>
-    <xacro:create_joint name="joint3" type="revolute" parent="link2" child="link3" origin_xyz="-0.220 0 0" origin_rpy="0 0 0" axis_xyz="0 1 0" lower="-3.14" upper="0.05" effort="30" velocity="1.5"/>
+    <xacro:create_joint name="joint3" type="revolute" parent="link2" child="link3" origin_xyz="-0.220 0 0" origin_rpy="0 0 0" axis_xyz="0 1 0" lower="-3.14" upper="0.0" effort="30" velocity="1.5"/>
     <xacro:create_joint name="joint4" type="revolute" parent="link3" child="link4" origin_xyz="0.220 0 0.057" origin_rpy="0 0 0" axis_xyz="0 1 0" lower="-1.1" upper="0.3" effort="10" velocity="1.5"/>
     <xacro:create_joint name="joint5" type="revolute" parent="link4" child="link5" origin_xyz="0.0615 0 0.0825" origin_rpy="0 0 0" axis_xyz="0 0 1" lower="-0.785" upper="0.785" effort="10" velocity="1.5"/>
     <xacro:create_joint name="joint6" type="revolute" parent="link5" child="link6" origin_xyz="0.0285 0 -0.0825" origin_rpy="0 0 0" axis_xyz="1 0 0" lower="-1.57" upper="1.57" effort="10" velocity="1.5"/>
