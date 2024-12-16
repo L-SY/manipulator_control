@@ -26,6 +26,12 @@ public:
   double vel_offset;
   double effort_offset;
 
+  ActuatorCoefficients()
+      : act2pos(0.), act2vel(0.), act2effort(0.),
+        kp2act(0.), kd2act(0.), pos2act(0.),
+        vel2act(0.), effort2act(0.),
+        pos_offset(0.), vel_offset(0.), effort_offset(0.) {}
+
   ActuatorCoefficients(
       double act2pos, double act2vel, double act2effort,
       double kp2act, double kd2act, double pos2act,
@@ -85,7 +91,7 @@ enum class ControlMode {
 
 class CanDmActuator : public CanDevice {
 public:
-  CanDmActuator(const std::string& name, int bus, int id, const std::string& motor_type);
+  CanDmActuator(const std::string& name, const std::string&, int id, const std::string& motor_type);
   ~CanDmActuator() override = default;
 
   void read(const can_frame& frame) override;

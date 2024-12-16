@@ -75,8 +75,9 @@ public:
 
   void write(can_frame* frame);
 
-  const std::string bus_name_;
+  std::string getName(){return bus_name_;}
 
+  std::vector<CanFrameStamp> getReadBuffer(){return read_buffer_;}
 private:
   /** \brief This function will be called when CAN bus receive message. It push frame which received into a vector: read_buffer_.
    *
@@ -85,6 +86,7 @@ private:
   void frameCallback(const can_frame& frame);
 
   SocketCAN socket_can_;
+  const std::string bus_name_;
   std::vector<CanFrameStamp> read_buffer_;
 
   mutable std::mutex mutex_;

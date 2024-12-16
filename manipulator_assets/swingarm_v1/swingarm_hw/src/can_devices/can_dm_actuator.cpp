@@ -3,11 +3,11 @@
 //
 
 // can_dm_actuator.cpp
-#include "swingarm_hw/devices/can_dm_actuator.h"
+#include "swingarm_hw/can_devices/can_dm_actuator.h"
 
 namespace device {
 
-CanDmActuator::CanDmActuator(const std::string& name, int bus, int id, const std::string& motor_type)
+CanDmActuator::CanDmActuator(const std::string& name, const std::string& bus, int id, const std::string& motor_type)
     : CanDevice(name, bus, id, motor_type), coeff_(ActuatorConfig().getActuatorCoefficients(motor_type))
 {
 }

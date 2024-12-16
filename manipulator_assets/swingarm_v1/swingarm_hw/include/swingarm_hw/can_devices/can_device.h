@@ -2,12 +2,14 @@
 // Created by lsy on 24-12-16.
 //
 
+#pragma once
+
 #include "swingarm_hw/can_interface/socketcan.h"
 
 namespace device {
 class CanDevice {
 public:
-  CanDevice(const std::string& name, int bus, int id, const std::string& type)
+  CanDevice(const std::string& name, const std::string& bus, int id, const std::string& type)
       : name_(name)
         , bus_(bus)
         , id_(id)
@@ -23,7 +25,7 @@ public:
   virtual can_frame write() = 0;
 
   std::string getName() const { return name_; }
-  int getBus() const { return bus_; }
+  std::string getBus() const { return bus_; }
   int getId() const { return id_; }
   std::string getType() const { return type_; }
 
@@ -32,7 +34,7 @@ public:
 
 protected:
   std::string name_;
-  int bus_;
+  std::string bus_;
   int id_;
   std::string type_;
   bool is_halted_;
