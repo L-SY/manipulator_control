@@ -38,8 +38,7 @@
 #pragma once
 
 #include "socketcan.h"
-#include "types.h"
-
+#include <ros/time.h>
 #include <chrono>
 #include <mutex>
 #include <thread>
@@ -61,29 +60,20 @@ public:
    * \param bus_name Bus's name(example: can0).
    * \param data_ptr Pointer which point to CAN data.
    */
-  CanBus(const std::string& bus_name, CanDataPtr data_ptr, int thread_priority);
+  CanBus(const std::string& bus_name, int thread_priority);
   /** \brief Read active data from read_buffer_ to data_ptr_, such as position, velocity, torque and so on. Clear
    * read_buffer_ after reading.
    *
    * \param time ROS time, but it doesn't be used.
    */
   void read(ros::Time time);
-  /** \brief Init for some motor.
-   *
-   */
-  void start();
-  /** \brief Close for some motor.
-   *
-   */
-  void close();
+
   /** \brief Write commands to can bus.
    *
    */
   void write();
 
   void write(can_frame* frame);
-
-  void test();
 
   const std::string bus_name_;
 
@@ -95,7 +85,6 @@ private:
   void frameCallback(const can_frame& frame);
 
   SocketCAN socket_can_;
-  CanDataPtr data_ptr_;
   std::vector<CanFrameStamp> read_buffer_;
 
   mutable std::mutex mutex_;
