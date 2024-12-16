@@ -1,0 +1,73 @@
+//
+// Created by lsy on 24-12-16.
+//
+
+// can_dm_actuator.cpp
+#include "swingarm_hw/devices/can_dm_actuator.h"
+
+namespace device {
+
+CanDmActuator::CanDmActuator(const std::string& name, int bus, int id, const std::string& motor_type)
+    : CanDevice(name, bus, id, motor_type), coeff_(ActuatorConfig().getActuatorCoefficients(motor_type))
+{
+}
+
+void CanDmActuator::read(const can_frame& frame)
+{
+  uint16_t q_raw = (frame.data[1] << 8) | frame.data[2];
+  uint16_t qd = (frame.data[3] << 4) | (frame.data[4] >> 4);
+  uint16_t cur = ((frame.data[4] & 0xF) << 8) | frame.data[5];
+
+  position_ = coeff_.act2pos * static_cast<double>(q_raw) + coeff_.pos_offset;
+  velocity_ = coeff_.act2vel * static_cast<double>(qd) + coeff_.vel_offset;
+  effort_ = coeff_.act2effort * static_cast<double>(cur) + coeff_.effort_offset;
+
+  ros::Time current_time = ros::Time::now();
+  updateFrequency(current_time);
+  last_timestamp_ = current_time;
+  seq_++;
+}
+
+can_frame CanDmActuator::write()
+{
+  can_frame frame{};
+  frame.can_id = id_;
+  frame.can_dlc = 8;
+
+  uint16_t q_des = static_cast<int>(coeff_.pos2act * (cmd_position_ - coeff_.pos_offset));
+  uint16_t qd_des = static_cast<int>(coeff_.vel2act * (cmd_velocity_ - coeff_.vel_offset));
+  uint16_t kp = static_cast<int>(coeff_.kp2act * cmd_kp_);
+  uint16_t kd = static_cast<int>(coeff_.kd2act * cmd_kd_);
+  uint16_t tau = static_cast<int>(coeff_.effort2act * (cmd_effort_ - coeff_.effort_offset));
+
+  frame.data[0] = q_des >> 8;
+  frame.data[1] = q_des & 0xFF;
+  frame.data[2] = qd_des >> 4;
+  frame.data[3] = ((qd_des & 0xF) << 4) | (kp >> 8);
+  frame.data[4] = kp & 0xFF;
+  frame.data[5] = kd >> 4;
+  frame.data[6] = ((kd & 0xF) << 4) | (tau >> 8);
+  frame.data[7] = tau & 0xFF;
+
+  return frame;
+}
+
+void CanDmActuator::setCommand(double pos, double vel, double kp, double kd, double effort)
+{
+  cmd_position_ = pos;
+  cmd_velocity_ = vel;
+  cmd_kp_ = kp;
+  cmd_kd_ = kd;
+  cmd_effort_ = effort;
+}
+
+void CanDmActuator::updateFrequency(const ros::Time& stamp)
+{
+  try {
+    frequency_ = 1.0 / (stamp - last_timestamp_).toSec();
+  } catch (const std::runtime_error& ex) {
+    frequency_ = 0.0;
+  }
+}
+
+} // namespace device
