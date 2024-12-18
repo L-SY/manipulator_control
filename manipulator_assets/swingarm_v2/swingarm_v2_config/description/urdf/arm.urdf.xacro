@@ -1,0 +1,64 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro" name="arm">
+    <xacro:include filename="$(find manipulator_common)/include/manipulator_common/utilities/urdf/common.xacro"/>
+
+    <link name="world"></link>
+    <xacro:create_link name="base_link" mass="0.498"
+                       ixx="0.00" ixy="4.484E-08" ixz="-8.322E-07"
+                       iyy="0.00" iyz="1.422E-10" izz="0.00"
+                       mesh_file="package://swingarm_v2_config/description/meshes/base_link.stl"
+                       inertial_xyz="0.0 0.0 0.028"
+                       scale_factor="1"/>
+
+    <xacro:create_link name="link1" mass="0.432"
+                       ixx="0.00" ixy="7.814E-07" ixz="-7.290E-09"
+                       iyy="0.00" iyz="-6.728E-07" izz="0.00"
+                       mesh_file="package://swingarm_v2_config/description/meshes/link1.stl"
+                       inertial_xyz="0.0 -0.002 0.031" scale_factor="1"/>
+
+    <xacro:create_link name="link2" mass="0.553"
+                       ixx="0.00" ixy="0.00" ixz="0.00"
+                       iyy="0.00" iyz="-3.207E-08" izz="0.00"
+                       mesh_file="package://swingarm_v2_config/description/meshes/link2.stl"
+                       inertial_xyz="-0.055 -0.005 0.0" scale_factor="1"/>
+
+    <xacro:create_link name="link3" mass="0.952"
+                       ixx="0.001" ixy="4.317E-05" ixz="0.00"
+                       iyy="0.003" iyz="-2.507E-05" izz="0.003"
+                       mesh_file="package://swingarm_v2_config/description/meshes/link3.stl"
+                       inertial_xyz="-0.112 0.001 -0.015" scale_factor="1"/>
+
+    <xacro:create_link name="link4" mass="0.48"
+                       ixx="0.00" ixy="-8.407E-05" ixz="-3.672E-05"
+                       iyy="0.00" iyz="-2.468E-05" izz="0.00"
+                       mesh_file="package://swingarm_v2_config/description/meshes/link4.stl"
+                       inertial_xyz="0.048 -0.004 0.014" scale_factor="1" rpy="0 0.286 0"/>
+
+    <xacro:create_link name="link5" mass="0.612"
+                       ixx="0.00" ixy="-3.674E-06" ixz="0.00"
+                       iyy="0.001" iyz="1.449E-07" izz="0.001"
+                       mesh_file="package://swingarm_v2_config/description/meshes/link5.stl"
+                       inertial_xyz="0.089 0.0 0.004" scale_factor="1"/>
+
+    <xacro:create_link name="link6" mass="0.484"
+                       ixx="0.00" ixy="-6.597E-05" ixz="-2.378E-08"
+                       iyy="0.00" iyz="1.028E-07" izz="0.00"
+                       mesh_file="package://swingarm_v2_config/description/meshes/link6.stl"
+                       inertial_xyz="0.05 0.02 0.0" scale_factor="1" xyz="0 -0.023 0"/>
+
+    <xacro:create_link name="link7" mass="0.105"
+                       ixx="2.296E-05" ixy="0.00" ixz="-5.572E-09"
+                       iyy="1.383E-05" iyz="0.00" izz="1.089E-05"
+                       mesh_file="package://swingarm_v2_config/description/meshes/link7.stl"
+                       inertial_xyz="0.005 0.0 0.001"  scale_factor="1"/>
+
+    <!-- Joint definitions -->
+    <xacro:create_joint name="fixed_world" type="fixed" parent="world" child="base_link" origin_xyz="0 0 0" origin_rpy="0 0 0" />
+    <xacro:create_joint name="joint1" type="revolute" parent="base_link" child="link1" origin_xyz="0 0 0.0565" origin_rpy="0 0 0" axis_xyz="0 0 1" lower="-1.57" upper="1.57" effort="30" velocity="1.5"/>
+    <xacro:create_joint name="joint2" type="revolute" parent="link1" child="link2" origin_xyz="0 0 0.0335" origin_rpy="0 0 0" axis_xyz="0 1 0" lower="0" upper="3.14" effort="30" velocity="1.5"/>
+    <xacro:create_joint name="joint3" type="revolute" parent="link2" child="link3" origin_xyz="-0.095 0 0" origin_rpy="0 0 0" axis_xyz="1 0 0" lower="-3.14" upper="0.0" effort="30" velocity="1.5"/>
+    <xacro:create_joint name="joint4" type="revolute" parent="link3" child="link4" origin_xyz="-0.155 0 0" origin_rpy="0 -0.286 0" axis_xyz="0 1 0" lower="-1.1" upper="0.3" effort="10" velocity="1.5"/>
+    <xacro:create_joint name="joint5" type="revolute" parent="link4" child="link5" origin_xyz="0.0845 0 0" origin_rpy="0  0  0" axis_xyz="1 0 0" lower="-0.785" upper="0.785" effort="10" velocity="1.5"/>
+    <xacro:create_joint name="joint6" type="revolute" parent="link5" child="link6" origin_xyz="0.1177 0 0" origin_rpy="0 0.286 0" axis_xyz="0 1 0" lower="-1.57" upper="1.57" effort="10" velocity="1.5"/>
+    <xacro:create_joint name="joint7" type="revolute" parent="link6" child="link7" origin_xyz="0.0845 0 0" origin_rpy="0 0 0" axis_xyz="1 0 0" lower="-1.57" upper="1.57" effort="10" velocity="1.5"/>
+</robot>
