@@ -52,6 +52,7 @@ void SwingArmHW::write(const ros::Time& /*time*/, const ros::Duration& /*period*
     canManager_->getActuatorDevices()[joint.first]->setCommand(jointData_[joint_index].cmdPos_,jointData_[joint_index].cmdVel_, jointData_[joint_index].cmdKp_, jointData_[joint_index].cmdKd_, jointData_[joint_index].cmdTau_);
     joint_index ++;
   }
+  canManager_->write();
 }
 
 bool SwingArmHW::setupJoints() {
