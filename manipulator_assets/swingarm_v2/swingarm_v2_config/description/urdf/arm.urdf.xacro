@@ -4,47 +4,47 @@
 
     <link name="world"></link>
     <xacro:create_link name="base_link" mass="0.498"
-                       ixx="0.00" ixy="4.484E-08" ixz="-8.322E-07"
-                       iyy="0.00" iyz="1.422E-10" izz="0.00"
+                       ixx="2.760E+05" ixy="44.84" ixz="-832.181"
+                       iyy="2.769E+05" iyz="0.142" izz="2.930E+05"
                        mesh_file="package://swingarm_v2_config/description/meshes/base_link.stl"
                        inertial_xyz="0.0 0.0 0.028"
-                       scale_factor="1"/>
+                       scale_factor="1E-9"/>
 
     <xacro:create_link name="link1" mass="0.432"
-                       ixx="0.00" ixy="7.814E-07" ixz="-7.290E-09"
-                       iyy="0.00" iyz="-6.728E-07" izz="0.00"
+                       ixx="2.215E+05" ixy="781.398" ixz="-7.29"
+                       iyy="1.987E+05" iyz="-672.801" izz="2.012E+05"
                        mesh_file="package://swingarm_v2_config/description/meshes/link1.stl"
-                       inertial_xyz="0.0 -0.002 0.031" scale_factor="1"/>
+                       inertial_xyz="0.0 -0.002 0.031" scale_factor="1E-9"/>
 
     <xacro:create_link name="link2" mass="0.553"
-                       ixx="0.00" ixy="0.00" ixz="0.00"
-                       iyy="0.00" iyz="-3.207E-08" izz="0.00"
+                       ixx="2.747E+05" ixy="1.009E+05" ixz="-0.075"
+                       iyy="4.359E+05" iyz="-32.072" izz="4.935E+05"
                        mesh_file="package://swingarm_v2_config/description/meshes/link2.stl"
-                       inertial_xyz="-0.055 -0.005 0.0" scale_factor="1"/>
+                       inertial_xyz="-0.055 -0.005 0.0" scale_factor="1E-9"/>
 
     <xacro:create_link name="link3" mass="0.952"
-                       ixx="0.001" ixy="4.317E-05" ixz="0.00"
-                       iyy="0.003" iyz="-2.507E-05" izz="0.003"
+                       ixx="7.244E+05" ixy="43165.882" ixz="4.520E+05"
+                       iyy="3.268E+06" iyz="-25065.069" izz="3.336E+06"
                        mesh_file="package://swingarm_v2_config/description/meshes/link3.stl"
-                       inertial_xyz="-0.112 0.001 -0.015" scale_factor="1"/>
+                       inertial_xyz="-0.112 0.001 -0.015" scale_factor="1E-9"/>
 
     <xacro:create_link name="link4" mass="0.48"
-                       ixx="0.00" ixy="-8.407E-05" ixz="-3.672E-05"
-                       iyy="0.00" iyz="-2.468E-05" izz="0.00"
+                       ixx="2.576E+05" ixy="-83908.054" ixz="-36204.464"
+                       iyy="3.252E+05" iyz="-24580.606" izz="3.699E+05"
                        mesh_file="package://swingarm_v2_config/description/meshes/link4.stl"
-                       inertial_xyz="0.048 -0.004 0.014" scale_factor="1" rpy="0 0.286 0"/>
+                       inertial_xyz="0.048 -0.004 0.014" scale_factor="1E-9" rpy="0 0.286 0"/>
 
     <xacro:create_link name="link5" mass="0.612"
-                       ixx="0.00" ixy="-3.674E-06" ixz="0.00"
-                       iyy="0.001" iyz="1.449E-07" izz="0.001"
+                       ixx="2.364E+05" ixy="-8627.075" ixz="1.176E+05"
+                       iyy="1.082E+06" iyz="982.53" izz="1.077E+06"
                        mesh_file="package://swingarm_v2_config/description/meshes/link5.stl"
-                       inertial_xyz="0.089 0.0 0.004" scale_factor="1"/>
+                       inertial_xyz="0.089 0.0 0.004" scale_factor="1E-9"/>
 
     <xacro:create_link name="link6" mass="0.484"
-                       ixx="0.00" ixy="-6.597E-05" ixz="-2.378E-08"
-                       iyy="0.00" iyz="1.028E-07" izz="0.00"
+                       ixx="2.204E+05" ixy="-65970.771" ixz="-23.777"
+                       iyy="3.249E+05" iyz="102.795" izz="3.573E+05"
                        mesh_file="package://swingarm_v2_config/description/meshes/link6.stl"
-                       inertial_xyz="0.05 0.02 0.0" scale_factor="1" xyz="0 -0.023 0"/>
+                       inertial_xyz="0.05 0.0 0.0" scale_factor="1E-9" xyz="0 -0.023 0"/>
 
     <xacro:create_link name="link7" mass="0.105"
                        ixx="2.296E-05" ixy="0.00" ixz="-5.572E-09"
