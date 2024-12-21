@@ -9,6 +9,7 @@
     <xacro:create_transmission joint_name="joint4" mechanical_reduction="-1"/>
     <xacro:create_transmission joint_name="joint5" mechanical_reduction="-1"/>
     <xacro:create_transmission joint_name="joint6"/>
+    <xacro:create_transmission joint_name="joint7"/>
 
     <gazebo>
         <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
