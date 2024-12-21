@@ -1,0 +1,5 @@
+<launch>
+    <include file="$(find swingarm_v2_config)/launch/load_gazebo.launch"/>
+    <include file="$(find swingarm_v2_config)/launch/load_controllers.launch"/>
+    <include file="$(find swingarm_v2_config)/launch/load_move_group.launch"/>
+</launch>

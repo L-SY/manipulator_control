@@ -1,0 +1,10 @@
+<launch>
+    <rosparam file="$(find robot_hw)/config/actuator_coefficient.yaml" command="load" ns = "robot_hw"/>
+    <rosparam file="$(find swingarm_v2_config)/config/hw.yaml" command="load" />
+
+    <param name="robot_description"
+           command="$(find xacro)/xacro $(find swingarm_v2_config)/description/urdf/robot.xacro"/>
+
+    <node name="robot_hw" pkg="robot_hw" type="robot_hw" respawn="false"
+          clear_params="true" />
+</launch>
