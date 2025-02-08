@@ -16,6 +16,11 @@ bool CanManager::init() {
     return false;
   }
 
+  if (!loadDeviceConfig()) {
+    ROS_ERROR("Failed to load CAN device configuration");
+    return false;
+  }
+
   start();
   return true;
 }
@@ -40,6 +45,47 @@ bool CanManager::loadBusConfig() {
         return false;
       }
       ROS_INFO_STREAM("Added CAN bus: " << bus_name);
+    }
+  }
+
+  return true;
+}
+
+bool CanManager::loadDeviceConfig() {
+  XmlRpc::XmlRpcValue devices_param;
+  if (!nh_.getParam("devices", devices_param)) {
+    ROS_ERROR("No device configuration found");
+    return false;
+  }
+
+  if (devices_param.getType() != XmlRpc::XmlRpcValue::TypeArray) {
+    ROS_ERROR("Device parameter should be an array");
+    return false;
+  }
+
+  for (int i = 0; i < devices_param.size(); ++i) {
+    if (devices_param[i].getType() != XmlRpc::XmlRpcValue::TypeStruct) {
+      ROS_WARN_STREAM("Device configuration at index " << i << " is not a struct");
+      continue;
+    }
+
+    if (!devices_param[i].hasMember("name") ||
+        !devices_param[i].hasMember("bus") ||
+        !devices_param[i].hasMember("id") ||
+        !devices_param[i].hasMember("model")) {
+      ROS_ERROR_STREAM("Device configuration at index " << i << " is missing required fields");
+      return false;
+    }
+
+    std::string name  = static_cast<std::string>(devices_param[i]["name"]);
+    std::string bus   = static_cast<std::string>(devices_param[i]["bus"]);
+    int id            = static_cast<int>(devices_param[i]["id"]);
+    std::string model = static_cast<std::string>(devices_param[i]["model"]);
+
+    // 调用修改后的 addDevice 函数创建设备实例
+    if (!addDevice(name, bus, id, model)) {
+      ROS_ERROR_STREAM("Failed to add device: " << name);
+      return false;
     }
   }
 
@@ -77,35 +123,29 @@ bool CanManager::addCanBus(const std::string& bus_name, int thread_priority) {
   return true;
 }
 
-bool CanManager::addDevice(std::shared_ptr<CanDevice> device) {
-  std::lock_guard<std::mutex> lock(devices_mutex_);
-
-  if (!device) return false;
-
-  const std::string& name = device->getName();
-  const std::string& bus_name = device->getBus();
-  int device_id = device->getId();
-
-  bool bus_found = false;
-  for (const auto& bus : can_buses_) {
-    if (bus && bus->getName() == bus_name) {
-      bus_found = true;
-      break;
-    }
+bool CanManager::addDevice(const std::string& name,
+                           const std::string& bus,
+                           int id,
+                           const std::string& model) {
+  std::shared_ptr<CanDevice> device;
+  if (model.find("dm") != std::string::npos) {
+    device = std::make_shared<CanDmActuator>(name, bus, id, model);
   }
+  else
+    ROS_ERROR_STREAM("Unknown device model: " << model);
 
-  if (!bus_found) {
-    ROS_ERROR_STREAM("Bus " << bus_name << " not found");
+  if (!device) {
+    ROS_ERROR_STREAM("Failed to create device: " << name);
     return false;
   }
 
   devices_[name] = device;
 
-  bus_devices_[bus_name][device_id] = device;
+  bus_devices_[bus][id] = device;
 
+  ROS_INFO_STREAM("Added device: " << name << " on bus: " << bus);
   return true;
 }
-
 
 std::shared_ptr<CanDevice> CanManager::getDevice(const std::string& device_name) {
   std::lock_guard<std::mutex> lock(devices_mutex_);

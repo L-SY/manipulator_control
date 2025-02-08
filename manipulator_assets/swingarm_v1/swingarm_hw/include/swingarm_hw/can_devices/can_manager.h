@@ -25,7 +25,7 @@ public:
 
   bool addCanBus(const std::string& bus_name, int thread_priority);
 
-  bool addDevice(std::shared_ptr<CanDevice> device);
+  bool addDevice(const std::string& name, const std::string& bus, int id, const std::string& model);
 
   std::shared_ptr<CanDevice> getDevice(const std::string& device_name);
 
@@ -56,8 +56,7 @@ private:
   ros::NodeHandle nh_;
 
   bool loadBusConfig();
-  bool loadActuatorConfig();
-  bool parseActuators(XmlRpc::XmlRpcValue& actuators_config);
+  bool loadDeviceConfig();
 };
 
 } // namespace device
