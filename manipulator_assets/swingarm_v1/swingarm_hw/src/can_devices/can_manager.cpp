@@ -167,15 +167,13 @@ void CanManager::read() {
     const auto& read_buffer = can_bus->getReadBuffer();
     const std::string& bus_name = can_bus->getName();
 
-    for (const auto& frame_stamp : read_buffer) {
-      auto bus_it = bus_devices_.find(bus_name);
-      if (bus_it != bus_devices_.end()) {
-        auto device_it = bus_it->second.find(frame_stamp.frame.can_id);
-        if (device_it != bus_it->second.end()) {
-          if (device_it->second->getType() != DeviceType::only_write) {
-            device_it->second->read(frame_stamp.frame);
-          }
-        }
+    auto bus_it = bus_devices_.find(bus_name);
+    if (bus_it == bus_devices_.end())
+      continue;
+
+    for (auto& device_pair : bus_it->second) {
+      if (device_pair.second->getType() != DeviceType::only_write) {
+        device_pair.second->readBuffer(read_buffer);
       }
     }
   }

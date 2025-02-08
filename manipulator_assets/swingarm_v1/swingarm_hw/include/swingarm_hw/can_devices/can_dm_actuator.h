@@ -97,6 +97,7 @@ public:
   can_frame start() override;
   can_frame close() override;
   void read(const can_frame& frame) override;
+  void readBuffer(const std::vector<can_interface::CanFrameStamp> &buffer) override;
   can_frame write() override;
 
   // Setters for commands

@@ -56,6 +56,16 @@ void CanDmActuator::read(const can_frame& frame)
   seq_++;
 }
 
+void CanDmActuator::readBuffer(const std::vector<can_interface::CanFrameStamp>& frames)
+{
+  for (const auto& frameStamp : frames) {
+    if (frameStamp.frame.can_id == id_) {
+      read(frameStamp.frame);
+      break;
+    }
+  }
+}
+
 can_frame CanDmActuator::write()
 {
   can_frame frame{};

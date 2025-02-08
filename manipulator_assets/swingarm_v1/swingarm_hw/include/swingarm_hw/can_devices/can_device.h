@@ -4,7 +4,8 @@
 
 #pragma once
 
-#include "swingarm_hw/can_interface/socketcan.h"
+#include "vector"
+#include "swingarm_hw/can_interface/can_bus.h"
 
 namespace device {
 
@@ -33,6 +34,8 @@ public:
   virtual can_frame close() = 0;
 
   virtual void read(const can_frame &frame) = 0;
+
+  virtual void readBuffer(const std::vector<can_interface::CanFrameStamp> &buffer) = 0;
 
   virtual can_frame write() = 0;
 
