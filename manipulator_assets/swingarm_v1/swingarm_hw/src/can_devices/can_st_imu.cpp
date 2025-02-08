@@ -7,12 +7,13 @@
 
 namespace device {
 
-CanSTImu::CanSTImu(const std::string& name, const std::string& bus, int id)
+CanSTImu::CanSTImu(const std::string& name, const std::string& bus,const int id,const std::string frame_id)
     : CanDevice(name, bus, id, "st_imu", DeviceType::only_read),
       orientation_({0.0, 0.0, 0.0}),
       angular_velocity_({0.0, 0.0, 0.0}),
       linear_acceleration_({0.0, 0.0, 0.0}),
-      temperature_(0.0)
+      temperature_(0.0),
+      frame_id_(frame_id)
 {
   last_timestamp_ = ros::Time::now();
 }

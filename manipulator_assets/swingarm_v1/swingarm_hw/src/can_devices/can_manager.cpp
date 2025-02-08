@@ -82,7 +82,6 @@ bool CanManager::loadDeviceConfig() {
     int id            = static_cast<int>(devices_param[i]["id"]);
     std::string model = static_cast<std::string>(devices_param[i]["model"]);
 
-    // 调用修改后的 addDevice 函数创建设备实例
     if (!addDevice(name, bus, id, model)) {
       ROS_ERROR_STREAM("Failed to add device: " << name);
       return false;
@@ -132,6 +131,11 @@ bool CanManager::addDevice(const std::string& name,
     device = std::make_shared<CanDmActuator>(name, bus, id, model);
     actuator_devices_[name] = std::dynamic_pointer_cast<CanDmActuator>(device);
     actuator_names_.push_back(name);
+  }
+  else if (model.find("st") != std::string::npos) {
+    device = std::make_shared<CanSTImu>(name, bus, id, name.substr(0, name.size()-4));
+    st_imu_devices_[name] = std::dynamic_pointer_cast<CanSTImu>(device);
+    imu_names_.push_back(name);
   }
   else
     ROS_ERROR_STREAM("Unknown device model: " << model);

@@ -15,6 +15,7 @@
 // ROS control
 #include <hardware_interface/joint_command_interface.h>
 #include <hardware_interface/joint_state_interface.h>
+#include <hardware_interface/imu_sensor_interface.h>
 #include <hardware_interface/robot_hw.h>
 
 #include "swingarm_hw/can_devices/can_manager.h"
@@ -25,6 +26,15 @@ namespace SwingArm {
 struct SwingArmJointData {
   double pos_, vel_, tau_;                 // state
   double cmdTau_, cmdPos_, cmdVel_, cmdKp_, cmdKd_;  // command
+};
+
+struct SwingArmImuData {
+  double ori_[4];            // NOLINT(modernize-avoid-c-arrays)
+  double oriCov_[9];         // NOLINT(modernize-avoid-c-arrays)
+  double angularVel_[3];     // NOLINT(modernize-avoid-c-arrays)
+  double angularVelCov_[9];  // NOLINT(modernize-avoid-c-arrays)
+  double linearAcc_[3];      // NOLINT(modernize-avoid-c-arrays)
+  double linearAccCov_[9];   // NOLINT(modernize-avoid-c-arrays)
 };
 
 class SwingArmHW : public hardware_interface::RobotHW {
@@ -73,11 +83,14 @@ private:
 
   bool setupJoints();
 
+  bool setupImus();
+
   // Interface
   hardware_interface::JointStateInterface jointStateInterface_;
   hardware_interface::EffortJointInterface effortJointInterface_;
   hardware_interface::PositionJointInterface positionJointInterface_;
   hardware_interface::RobotStateInterface robotStateInterface_;
+  hardware_interface::ImuSensorInterface imu_sensor_interface_;
 
   // URDF model of the robot
   std::shared_ptr<urdf::Model> urdfModel_;
@@ -85,7 +98,8 @@ private:
   std::shared_ptr<device::CanManager> canManager_;
   bool init_ = false;
   SwingArmJointData jointDatas_[8]{};
-  std::vector<std::string> jointNames_;
+  SwingArmImuData imuDates_[3]{};
+  std::vector<std::string> jointNames_, imuNames_;
 };
 
 }// namespace SwingArm

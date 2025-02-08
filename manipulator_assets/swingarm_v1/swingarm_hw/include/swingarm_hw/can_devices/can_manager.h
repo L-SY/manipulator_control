@@ -8,6 +8,7 @@
 #include "can_device.h"
 #include "swingarm_hw/can_interface/can_bus.h"
 #include "swingarm_hw/can_devices/can_dm_actuator.h"
+#include "swingarm_hw/can_devices/can_st_imu.h"
 #include <memory>
 #include <unordered_map>
 #include <vector>
@@ -41,16 +42,23 @@ public:
 
   std::unordered_map<std::string, std::shared_ptr<CanDmActuator>> getActuatorDevices(){return actuator_devices_;}
 
+  std::unordered_map<std::string, std::shared_ptr<CanSTImu>> getSTImuDevices(){return st_imu_devices_;}
+
   std::vector<std::string> getActuatorNames(){return actuator_names_;};
 
+  std::vector<std::string> getImuNames(){return imu_names_;};
 private:
   std::vector<can_interface::CanBus*>  can_buses_{};
 
   std::unordered_map<std::string, std::shared_ptr<CanDevice>> devices_;
 
+  std::unordered_map<std::string, std::shared_ptr<CanSTImu>> st_imu_devices_;
+
   std::unordered_map<std::string, std::shared_ptr<CanDmActuator>> actuator_devices_;
 
   std::vector<std::string> actuator_names_;
+
+  std::vector<std::string> imu_names_;
 
   std::unordered_map<std::string, std::unordered_map<int, std::shared_ptr<CanDevice>>> bus_devices_;
 
