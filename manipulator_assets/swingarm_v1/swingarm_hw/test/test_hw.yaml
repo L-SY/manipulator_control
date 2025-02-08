@@ -1,0 +1,19 @@
+swingarm_hw:
+  bus:
+    - can0
+
+  devices:
+    - name: "joint1"
+      bus: "can0"
+      id: 8
+      model: "dm_actuator"
+
+#    - name: "actuator2"
+#      bus: "can1"
+#      id: 2
+#      model: "dm_motor"
+#
+#    - name: "sensor1"
+#      bus: "can0"
+#      id: 3
+#      model: "generic_sensor"

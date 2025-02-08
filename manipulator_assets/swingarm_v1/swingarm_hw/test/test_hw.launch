@@ -1,0 +1,6 @@
+<launch>
+    <rosparam file="$(find swingarm_hw)/test/test_hw.yaml" command="load" />
+
+    <node name="swingarm_hw" pkg="swingarm_hw" type="swingarm_hw" respawn="false"
+          clear_params="true" />
+</launch>
