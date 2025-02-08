@@ -91,9 +91,11 @@ enum class ControlMode {
 
 class CanDmActuator : public CanDevice {
 public:
-  CanDmActuator(const std::string& name, const std::string&, int id, const std::string& motor_type);
+  CanDmActuator(const std::string& name, const std::string& bus, int id, const std::string& motor_type);
   ~CanDmActuator() override = default;
 
+  can_frame start() override;
+  can_frame close() override;
   void read(const can_frame& frame) override;
   can_frame write() override;
 

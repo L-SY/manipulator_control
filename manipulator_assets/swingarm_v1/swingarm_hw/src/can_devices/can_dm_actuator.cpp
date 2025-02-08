@@ -12,6 +12,34 @@ CanDmActuator::CanDmActuator(const std::string& name, const std::string& bus, in
 {
 }
 
+can_frame CanDmActuator::start()
+{
+  can_frame frame{};
+  frame.can_id = id_;
+  frame.can_dlc = 8;
+
+  for (int i = 0; i < 7; i++)
+  {
+    frame.data[i] = 0xFF;
+  }
+  frame.data[7] = 0xFC;
+  return frame;
+}
+
+can_frame CanDmActuator::close()
+{
+  can_frame frame{};
+  frame.can_id = id_;
+  frame.can_dlc = 8;
+
+  for (int i = 0; i < 7; i++)
+  {
+    frame.data[i] = 0xFF;
+  }
+  frame.data[7] = 0xFD;
+  return frame;
+}
+
 void CanDmActuator::read(const can_frame& frame)
 {
   uint16_t q_raw = (frame.data[1] << 8) | frame.data[2];

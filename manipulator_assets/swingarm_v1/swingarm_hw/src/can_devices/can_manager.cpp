@@ -21,6 +21,7 @@ bool CanManager::init() {
     return false;
   }
 
+//  start();
   return true;
 }
 

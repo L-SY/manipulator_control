@@ -31,7 +31,7 @@ public:
 
   bool start();
 
-  void stop();
+  void close();
 
   void read();
 

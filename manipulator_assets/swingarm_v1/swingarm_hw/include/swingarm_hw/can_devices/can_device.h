@@ -20,6 +20,10 @@ public:
 
   virtual ~CanDevice() = default;
 
+  virtual can_frame start() = 0;
+
+  virtual can_frame close() = 0;
+
   virtual void read(const can_frame &frame) = 0;
 
   virtual can_frame write() = 0;
