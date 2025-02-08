@@ -16,7 +16,7 @@ bool CanManager::init() {
     return false;
   }
 
-//  start();
+  start();
   return true;
 }
 
@@ -47,6 +47,29 @@ bool CanManager::loadBusConfig() {
 }
 
 CanManager::~CanManager() {}
+
+bool CanManager::start() {
+  std::lock_guard<std::mutex> lock(devices_mutex_);
+  bool all_success = true;
+
+  for (auto* can_bus : can_buses_) {
+    if (!can_bus)
+      continue;
+
+    const std::string& bus_name = can_bus->getName();
+    auto bus_it = bus_devices_.find(bus_name);
+
+    if (bus_it != bus_devices_.end()) {
+      for (const auto& device_pair : bus_it->second) {
+        can_frame frame = device_pair.second->start();
+
+        can_bus->write(&frame);
+      }
+    }
+  }
+  ROS_INFO_STREAM("All devices start right!");
+  return all_success;
+}
 
 bool CanManager::addCanBus(const std::string& bus_name, int thread_priority) {
   can_buses_.push_back(new can_interface::CanBus(bus_name, thread_priority));
