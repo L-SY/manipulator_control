@@ -130,6 +130,8 @@ bool CanManager::addDevice(const std::string& name,
   std::shared_ptr<CanDevice> device;
   if (model.find("dm") != std::string::npos) {
     device = std::make_shared<CanDmActuator>(name, bus, id, model);
+    actuator_devices_[name] = std::dynamic_pointer_cast<CanDmActuator>(device);
+    actuator_names_.push_back(name);
   }
   else
     ROS_ERROR_STREAM("Unknown device model: " << model);

@@ -84,7 +84,8 @@ private:
 
   std::shared_ptr<device::CanManager> canManager_;
   bool init_ = false;
-  SwingArmJointData jointData_[8]{};
+  SwingArmJointData jointDatas_[8]{};
+  std::vector<std::string> jointNames_;
 };
 
 }// namespace SwingArm

@@ -40,12 +40,17 @@ public:
   std::unordered_map<std::string, std::shared_ptr<CanDevice>> getDevices(){return devices_;}
 
   std::unordered_map<std::string, std::shared_ptr<CanDmActuator>> getActuatorDevices(){return actuator_devices_;}
+
+  std::vector<std::string> getActuatorNames(){return actuator_names_;};
+
 private:
   std::vector<can_interface::CanBus*>  can_buses_{};
 
   std::unordered_map<std::string, std::shared_ptr<CanDevice>> devices_;
 
   std::unordered_map<std::string, std::shared_ptr<CanDmActuator>> actuator_devices_;
+
+  std::vector<std::string> actuator_names_;
 
   std::unordered_map<std::string, std::unordered_map<int, std::shared_ptr<CanDevice>>> bus_devices_;
 
