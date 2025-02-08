@@ -16,11 +16,6 @@ bool CanManager::init() {
     return false;
   }
 
-  if (!loadActuatorConfig()) {
-    ROS_ERROR("Failed to load actuator configuration");
-    return false;
-  }
-
 //  start();
   return true;
 }
@@ -51,55 +46,6 @@ bool CanManager::loadBusConfig() {
   return true;
 }
 
-bool CanManager::loadActuatorConfig() {
-  XmlRpc::XmlRpcValue actuators_config;
-  if (!nh_.getParam("actuators", actuators_config)) {
-    ROS_ERROR("No actuator configuration found");
-    return false;
-  }
-
-  return parseActuators(actuators_config);
-}
-
-bool CanManager::parseActuators(XmlRpc::XmlRpcValue& actuators_config) {
-  if (actuators_config.getType() != XmlRpc::XmlRpcValue::TypeStruct) {
-    ROS_ERROR("Actuators configuration should be a struct");
-    return false;
-  }
-
-  for (auto it = actuators_config.begin(); it != actuators_config.end(); ++it) {
-    const std::string& name = it->first;
-    XmlRpc::XmlRpcValue& actuator = it->second;
-
-    if (!actuator.hasMember("bus") || !actuator.hasMember("id") || !actuator.hasMember("type")) {
-      ROS_ERROR_STREAM("Actuator " << name << " missing required parameters");
-      continue;
-    }
-
-    std::string bus_name = static_cast<std::string>(actuator["bus"]);
-    int id = static_cast<int>(actuator["id"]);
-    std::string type = static_cast<std::string>(actuator["type"]);
-
-    std::shared_ptr<CanDevice> device;
-    if (type.find("DM") != std::string::npos) {
-        device = std::make_shared<CanDmActuator>(name, bus_name, id, type);
-    } else {
-      ROS_ERROR_STREAM("Unknown device type: " << type);
-      continue;
-    }
-
-    if (device && addDevice(device)) {
-      ROS_INFO_STREAM("Added actuator: " << name << " (type: " << type << ", bus: " << bus_name << ", id: 0x" << std::hex << id << ")");
-      auto motor = std::dynamic_pointer_cast<CanDmActuator>(device);
-      actuator_devices_[name] = motor;
-    } else {
-      ROS_ERROR_STREAM("Failed to add actuator: " << name);
-      return false;
-    }
-  }
-
-  return true;
-}
 CanManager::~CanManager() {}
 
 bool CanManager::addCanBus(const std::string& bus_name, int thread_priority) {
@@ -161,7 +107,9 @@ void CanManager::read() {
       if (bus_it != bus_devices_.end()) {
         auto device_it = bus_it->second.find(frame_stamp.frame.can_id);
         if (device_it != bus_it->second.end()) {
-          device_it->second->read(frame_stamp.frame);
+          if (device_it->second->getType() != DeviceType::only_write) {
+            device_it->second->read(frame_stamp.frame);
+          }
         }
       }
     }
@@ -179,8 +127,10 @@ void CanManager::write() {
     auto bus_it = bus_devices_.find(bus_name);
     if (bus_it != bus_devices_.end()) {
       for (const auto& device_pair : bus_it->second) {
-        can_frame frame = device_pair.second->write();
-        can_bus->write(&frame);
+        if (device_pair.second->getType() != DeviceType::only_read) {
+          can_frame frame = device_pair.second->write();
+          can_bus->write(&frame);
+        }
       }
     }
   }

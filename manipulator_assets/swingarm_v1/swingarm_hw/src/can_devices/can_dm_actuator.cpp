@@ -8,7 +8,7 @@
 namespace device {
 
 CanDmActuator::CanDmActuator(const std::string& name, const std::string& bus, int id, const std::string& motor_type)
-    : CanDevice(name, bus, id, motor_type), coeff_(ActuatorConfig().getActuatorCoefficients(motor_type))
+    : CanDevice(name, bus, id, motor_type, DeviceType::read_write), coeff_(ActuatorConfig().getActuatorCoefficients(motor_type))
 {
 }
 
