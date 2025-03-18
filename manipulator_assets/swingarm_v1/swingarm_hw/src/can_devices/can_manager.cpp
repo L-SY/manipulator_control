@@ -166,8 +166,6 @@ void CanManager::read() {
   for (auto* can_bus : can_buses_) {
     if (!can_bus) continue;
 
-    can_bus->read(now);
-
     const auto& read_buffer = can_bus->getReadBuffer();
     const std::string& bus_name = can_bus->getName();
 
@@ -180,6 +178,8 @@ void CanManager::read() {
         device_pair.second->readBuffer(read_buffer);
       }
     }
+
+    can_bus->read(now);
   }
 }
 

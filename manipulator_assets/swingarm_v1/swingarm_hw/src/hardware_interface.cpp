@@ -7,7 +7,7 @@
 namespace SwingArm {
 bool SwingArmHW::init(ros::NodeHandle& root_nh, ros::NodeHandle& robot_hw_nh) {
   canManager_ = std::make_shared<device::CanManager>(robot_hw_nh);
-
+  canManager_->init();
 //  if (!loadUrdf(root_nh)) {
 //    ROS_ERROR("Error occurred while setting up urdf");
 //    return false;

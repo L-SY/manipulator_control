@@ -59,7 +59,7 @@ void CanDmActuator::read(const can_frame& frame)
 void CanDmActuator::readBuffer(const std::vector<can_interface::CanFrameStamp>& frames)
 {
   for (const auto& frameStamp : frames) {
-    if (frameStamp.frame.can_id == id_) {
+    if (frameStamp.frame.can_id == 0x000) {
       read(frameStamp.frame);
       break;
     }

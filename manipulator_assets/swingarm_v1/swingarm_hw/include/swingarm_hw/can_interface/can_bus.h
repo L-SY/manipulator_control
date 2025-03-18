@@ -77,7 +77,7 @@ public:
 
   std::string getName(){return bus_name_;}
 
-  std::vector<CanFrameStamp> getReadBuffer(){return read_buffer_;}
+  std::vector<CanFrameStamp> getReadBuffer(){std::lock_guard<std::mutex> guard(mutex_); return read_buffer_;}
 private:
   /** \brief This function will be called when CAN bus receive message. It push frame which received into a vector: read_buffer_.
    *

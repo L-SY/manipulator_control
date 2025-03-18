@@ -21,18 +21,30 @@ CanSTImu::CanSTImu(const std::string& name, const std::string& bus,const int id,
 can_frame CanSTImu::start() {
   ROS_INFO_STREAM("Starting IMU device: " << getName());
   can_frame frame;
+  for (int i = 0; i < 8; i++)
+  {
+    frame.data[i] = 0x00;
+  }
   return frame;
 }
 
 can_frame CanSTImu::close() {
   ROS_INFO_STREAM("Closing IMU device: " << getName());
   can_frame frame;
+  for (int i = 0; i < 8; i++)
+  {
+    frame.data[i] = 0x00;
+  }
   return frame;
 }
 
 can_frame CanSTImu::write() {
   ROS_DEBUG_STREAM("Writing command to IMU device: " << getName());
   can_frame frame;
+  for (int i = 0; i < 8; i++)
+  {
+    frame.data[i] = 0x00;
+  }
   return frame;
 }
 
@@ -75,10 +87,6 @@ void CanSTImu::read(const can_frame& frame) {
     last_timestamp_ = ros::Time::now();
     updateFrequency(last_timestamp_);
     ROS_DEBUG_STREAM("IMU Accel data updated for device: " << getName());
-  }
-  else {
-    ROS_WARN_STREAM("Received CAN frame with unexpected ID: " << frame.can_id
-                                                              << " for IMU device: " << getName());
   }
 }
 
