@@ -1,0 +1,21 @@
+<launch>
+    <arg name="load_robot_description" default="false"/>
+
+    <include file="$(find swingarm_v2_cnc_config)/moveit/launch/planning_context.launch">
+        <arg name="load_robot_description" value="$(arg load_robot_description)"/>
+    </include>
+
+    <include file="$(find swingarm_v2_cnc_config)/moveit/launch/move_group.launch">
+        <arg name="allow_trajectory_execution" value="true"/>
+<!--        <arg name="fake_execution" value="false"/>-->
+        <arg name="info" value="true"/>
+        <arg name="debug" value="false"/>
+        <arg name="pipeline" value="ompl"/>
+        <arg name="load_robot_description" value="$(arg load_robot_description)"/>
+    </include>
+
+    <node name="swingarm_v2_cnc_rviz" pkg="rviz" type="rviz" respawn="false"
+          args=" -d $(find swingarm_v2_cnc_config)/config/swingarm_v2_cnc.rviz" output="screen">
+    </node>
+
+</launch>

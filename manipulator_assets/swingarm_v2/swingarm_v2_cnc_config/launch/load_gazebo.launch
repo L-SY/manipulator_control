@@ -1,0 +1,31 @@
+<launch>
+    <param name="robot_description"
+           command="$(find xacro)/xacro $(find swingarm_v2_cnc_config)/description/urdf/robot.xacro"/>
+
+    <param name="swingarm_description"
+           command="$(find xacro)/xacro $(find swingarm_v2_cnc_config)/description/urdf/robot.xacro"/>
+
+    <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher">
+        <param name="publish_frequency" type="double" value="50.0"/>
+    </node>
+
+    <include file="$(find gazebo_ros)/launch/empty_world.launch">
+        <arg name="world_name" value="$(find manipulator_gazebo)/worlds/empty_world.world"/>
+        <arg name="paused" value="true"/>
+    </include>
+    <!-- push robot_description to factory and spawn robot in gazebo -->
+    <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" clear_params="true"
+          output="screen"
+          args="-param swingarm_description -urdf -model swingarm_v2
+        -z 0.
+        "
+    />
+
+    <!--for humanoid arm -->
+<!--    <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" clear_params="true"-->
+<!--          output="screen"-->
+<!--          args="-param swingarm_description -urdf -model swingarm_v2-->
+<!--        -z 0.6 -P 1.57-->
+<!--        "-->
+<!--    />-->
+</launch>

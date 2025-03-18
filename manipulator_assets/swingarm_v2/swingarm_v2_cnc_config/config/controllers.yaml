@@ -1,0 +1,23 @@
+controllers:
+  joint_state_controller:
+    type: joint_state_controller/JointStateController
+    publish_rate: 100
+
+  arm_trajectory_controller:
+    type: effort_controllers/JointTrajectoryController
+    joints:
+      - joint1
+      - joint2
+      - joint3
+      - joint4
+      - joint5
+      - joint6
+      - joint7
+    gains:
+      joint1: { p: 30, i: 1.0, d: 6, i_clamp_max: 1., i_clamp_min: -1., antiwindup: true, publish_state: true }
+      joint2: { p: 65, i: 2.0, d: 10, i_clamp_max: 3., i_clamp_min: -3., antiwindup: true, publish_state: true }
+      joint3: { p: 70, i: 1.0, d: 2.5, i_clamp_max: 2.5, i_clamp_min: -2.5, antiwindup: true, publish_state: true }
+      joint4: { p: 70, i: 2.0, d: 5.0, i_clamp_max: 3, i_clamp_min: -3, antiwindup: true, publish_state: true }
+      joint5: { p: 5, i: 0.1, d: 0.3, i_clamp_max: 1, i_clamp_min: -1, antiwindup: true, publish_state: true }
+      joint6: { p: 7, i: 0.3, d: 0.5, i_clamp_max: 0.5, i_clamp_min: -0.5, antiwindup: true, publish_state: true }
+      joint7: { p: 0.5, i: 0.1, d: 0.01, i_clamp_max: 0.5, i_clamp_min: -0.5, antiwindup: true, publish_state: true }

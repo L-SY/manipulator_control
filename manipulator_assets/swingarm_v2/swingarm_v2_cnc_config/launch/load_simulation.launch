@@ -1,0 +1,4 @@
+<launch>
+    <include file="$(find swingarm_v2_cnc_config)/launch/load_gazebo.launch"/>
+    <include file="$(find swingarm_v2_cnc_config)/launch/load_controllers.launch"/>
+</launch>
