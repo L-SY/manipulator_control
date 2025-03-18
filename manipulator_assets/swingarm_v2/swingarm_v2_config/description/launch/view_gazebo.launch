@@ -16,4 +16,11 @@
         -z 0.
         "
     />
+<!--for humanoid arm -->
+<!--    <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" clear_params="true"-->
+<!--          output="screen"-->
+<!--          args="-param swingarm_v2_description -urdf -model swingarm_v2-->
+<!--        -z 0.6 -P 1.57-->
+<!--        "-->
+<!--    />-->
 </launch>
