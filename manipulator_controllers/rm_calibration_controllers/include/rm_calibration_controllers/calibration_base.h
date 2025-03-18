@@ -6,8 +6,8 @@
 
 #include <ros/ros.h>
 #include <controller_interface/multi_interface_controller.h>
-#include <arm_common/interface/hardware_interface/actuator_extra_interface.h>
-#include <arm_common/interface/hardware_interface/robot_state_interface.h>
+#include <manipulator_common/interface/hardware_interface/actuator_extra_interface.h>
+#include <manipulator_common/interface/hardware_interface/robot_state_interface.h>
 #include <hardware_interface/joint_command_interface.h>
 #include <effort_controllers/joint_velocity_controller.h>
 #include <effort_controllers/joint_position_controller.h>

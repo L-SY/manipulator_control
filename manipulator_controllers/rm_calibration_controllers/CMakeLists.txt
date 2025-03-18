@@ -14,7 +14,7 @@ find_package(catkin REQUIRED
         COMPONENTS
         roscpp
 
-        arm_common
+        manipulator_common
         controller_interface
         effort_controllers
         )
@@ -35,7 +35,7 @@ catkin_package(
         CATKIN_DEPENDS
         roscpp
 
-        arm_common
+        manipulator_common
         effort_controllers
         LIBRARIES ${PROJECT_NAME}
 )
