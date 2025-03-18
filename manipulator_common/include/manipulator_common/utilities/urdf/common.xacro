@@ -4,23 +4,23 @@
     <xacro:macro name="create_link"
                  params="name mass ixx ixy ixz iyy iyz izz mesh_file collision_file:=none scale_factor:=1e-9
                         collision_scale_x:=1 collision_scale_y:=1 collision_scale_z:=1
-                        vision_scales:='1 1 1' inertial_xyz:='0 0 0'">
+                        vision_scales:='1 1 1' inertial_xyz:='0 0 0' xyz:='0 0 0' rpy:='0 0 0'">
         <link name="${name}">
             <inertial>
-                <origin xyz="${inertial_xyz}" rpy="0 0 0"/>
+                <origin xyz="${inertial_xyz}" rpy="${rpy}"/>
                 <mass value="${mass}"/>
                 <inertia ixx="${ixx * scale_factor}" ixy="${ixy * scale_factor}" ixz="${ixz * scale_factor}"
                          iyy="${iyy * scale_factor}" iyz="${iyz * scale_factor}" izz="${izz * scale_factor}"/>
             </inertial>
             <visual>
-                <origin xyz="0 0 0" rpy="0 0 0"/>
+                <origin xyz="${xyz}" rpy="${rpy}"/>
                 <geometry>
                     <mesh filename="${mesh_file}"
                           scale="${vision_scales}"/>
                 </geometry>
             </visual>
             <collision>
-                <origin xyz="0 0 0" rpy="0 0 0"/>
+                <origin xyz="${xyz}" rpy="${rpy}"/>
                 <geometry>
                     <xacro:if value="${collision_file == 'none'}">
                         <mesh filename="${mesh_file}"
