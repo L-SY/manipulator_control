@@ -1,0 +1,7 @@
+<launch>
+    <rosparam file="$(find arm_hybrid_controller)/test/test_controller.yaml" command="load"/>
+    <node name="controller_loader" pkg="controller_manager" type="controller_manager" output="screen"
+          args="load
+              controllers/arm_hybrid_controller
+        "/>
+</launch>

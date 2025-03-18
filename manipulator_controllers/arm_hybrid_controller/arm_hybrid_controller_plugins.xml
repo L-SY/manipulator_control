@@ -1,0 +1,11 @@
+<library path="lib/libarm_hybrid_controller">
+    <!-- controller_interface types -->
+    <class name="arm_hybrid_controller/ArmHybridController"
+           type="arm_hybrid_controller::ArmHybridController"
+           base_class_type="controller_interface::ControllerBase">
+        <description>
+            This controller realize the trajectory planning and track
+            and add zhe function to achieve zhe dynamics forward.
+        </description>
+    </class>
+</library>
