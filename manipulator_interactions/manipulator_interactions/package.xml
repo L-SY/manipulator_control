@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>manipulator_interactions</name>
+  <version>0.1.11</version>
+  <description>Meta package that contains package for manipulator interactions.</description>
+  <maintainer email="liusiyang.cn@gmail.com">4yang</maintainer>
+
+  <license>BSD</license>
+  <author email="liusiyang.cn@gmail.com">4yang</author>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <exec_depend>wit_ros_imu</exec_depend>
+
+
+  <export>
+    <metapackage/>
+  </export>
+</package>
