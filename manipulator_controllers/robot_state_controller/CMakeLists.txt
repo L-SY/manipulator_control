@@ -14,7 +14,7 @@ find_package(catkin REQUIRED
         COMPONENTS
         roscpp
 
-        arm_common
+        manipulator_common
         controller_interface
         tf2_kdl
         kdl_parser
@@ -38,7 +38,7 @@ catkin_package(
         CATKIN_DEPENDS
         roscpp
 
-        arm_common
+        manipulator_common
         controller_interface
         kdl_parser
         realtime_tools

@@ -10,6 +10,10 @@
 
   <buildtool_depend>catkin</buildtool_depend>
   <exec_depend>gripper_controller</exec_depend>
+  <exec_depend>joint_trajectory_controller</exec_depend>
+  <exec_depend>rm_calibration_controllers</exec_depend>
+  <exec_depend>robot_state_controller</exec_depend>
+  <!--  <exec_depend>arm_hybrid_controller</exec_depend>-->
 
   <export>
     <metapackage/>

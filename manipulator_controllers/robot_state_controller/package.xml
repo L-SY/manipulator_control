@@ -12,7 +12,7 @@
     <!-- depend: build, export, and execution dependency -->
     <depend>roscpp</depend>
 
-    <depend>arm_common</depend>
+    <depend>manipulator_common</depend>
     <depend>controller_interface</depend>
     <depend>kdl_parser</depend>
     <depend>tf2_kdl</depend>
