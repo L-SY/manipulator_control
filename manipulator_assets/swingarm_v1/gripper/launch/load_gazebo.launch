@@ -3,7 +3,7 @@
            command="$(find xacro)/xacro $(find gripper)/description/urdf/gripper.xacro"/>
 
     <include file="$(find gazebo_ros)/launch/empty_world.launch">
-        <arg name="world_name" value="$(find robot_gazebo)/worlds/empty_world.world"/>
+        <arg name="world_name" value="$(find manipulator_gazebo)/worlds/empty_world.world"/>
         <arg name="paused" value="false"/>
     </include>
     <!-- push robot_description to factory and spawn robot in gazebo -->

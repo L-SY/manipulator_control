@@ -1,0 +1,16 @@
+controllers:
+  joint_state_controller:
+    type: joint_state_controller/JointStateController
+    publish_rate: 100
+
+  gripper_controller:
+    type: effort_controllers/JointPositionController
+    joint: joint1
+    pid: { p: 0.5, i: 0., d: 0.1, i_max: 300.0, i_min: -300.0, antiwindup: false, publish_state: false }
+
+#  robot_state_controller:
+#    type: robot_state_controller/RobotStateController
+#    publish_rate: 100
+#
+#  imu_controller:
+#    type: imu_controller/IMUController

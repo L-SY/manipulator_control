@@ -5,10 +5,11 @@ robot_hw:
   cycle_time_error_threshold: 0.001
   thread_priority: 95
   actuators:
-    joint1_motor:
+    joint1:
       bus: can0
       id: 0x001
       type: dm4340
+      control_mode: MIT
       lp_cutoff_frequency: 10
     joint2_motor:
       bus: can0
