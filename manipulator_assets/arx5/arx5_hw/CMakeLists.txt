@@ -8,7 +8,6 @@ find_package(catkin REQUIRED
         roscpp
         controller_manager
         urdf
-        arm_control
 )
 
 find_package(kdl_parser REQUIRED)
@@ -22,7 +21,6 @@ catkin_package(
         roscpp
         controller_manager
         urdf
-        arm_control
 )
 
 ###########
