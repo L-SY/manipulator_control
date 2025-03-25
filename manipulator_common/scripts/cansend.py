@@ -28,6 +28,7 @@ def send_can_frame(interface, can_id, frame_type):
     print(f"message: {msg}")
 
 if __name__ == "__main__":
+    # 示例： python cansend.py can0 0x001 setZero
     # 解析命令行参数
     parser = argparse.ArgumentParser(description='Send a CAN frame via SocketCAN.')
     parser.add_argument('interface', type=str, help='CAN interface (e.g., can0)')
