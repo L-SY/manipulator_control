@@ -22,6 +22,8 @@
   <depend>urdf</depend>
   <depend>realtime_tools</depend>
 
+  <depend>hw_msgs</depend>
+
   <!--    <export>
           <transmission_interface plugin="${prefix}/rm_hw_loader_plugins.xml"/>
       </export> -->

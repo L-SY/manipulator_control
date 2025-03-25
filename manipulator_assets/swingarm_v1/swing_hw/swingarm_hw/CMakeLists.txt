@@ -10,6 +10,8 @@ set(CATKIN_PACKAGE_DEPENDENCIES
         transmission_interface
         joint_limits_interface
         controller_manager
+
+        hw_msgs
 )
 
 find_package(catkin REQUIRED COMPONENTS
