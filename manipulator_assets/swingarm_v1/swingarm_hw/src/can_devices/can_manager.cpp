@@ -8,6 +8,7 @@ namespace device {
 
 CanManager::CanManager(ros::NodeHandle& can_device_nh)
     : nh_(can_device_nh), running_(false) {
+  init();
 }
 
 bool CanManager::init() {
@@ -86,6 +87,8 @@ bool CanManager::loadDeviceConfig() {
       ROS_ERROR_STREAM("Failed to add device: " << name);
       return false;
     }
+    else
+      ROS_INFO_STREAM("Add device: " << name);
   }
 
   return true;

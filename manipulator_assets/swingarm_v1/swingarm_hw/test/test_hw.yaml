@@ -1,5 +1,5 @@
 swingarm_hw:
-  loop_frequency: 200
+  loop_frequency: 1000
   cycle_time_error_threshold: 0.002
   thread_priority: 95
 
