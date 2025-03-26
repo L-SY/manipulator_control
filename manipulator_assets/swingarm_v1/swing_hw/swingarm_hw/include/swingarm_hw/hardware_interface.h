@@ -35,6 +35,7 @@
 #include <swing_hw_msgs/ActuatorState.h>
 #include "swingarm_hw/can_devices/can_manager.h"
 #include "swingarm_hw/hardware_interface/robot_state_interface.h"
+#include "swingarm_hw/hardware_interface/button_panel_interface.h"
 
 namespace SwingArm {
 
@@ -68,6 +69,7 @@ private:
   bool loadUrdf(ros::NodeHandle& rootNh);
   bool setupJoints();
   bool setupImus();
+  bool setupButtonPanels();
 
   // ROS Interface
   hardware_interface::JointStateInterface jointStateInterface_;
@@ -75,6 +77,9 @@ private:
   hardware_interface::PositionJointInterface positionJointInterface_;
   hardware_interface::RobotStateInterface robotStateInterface_;
   hardware_interface::ImuSensorInterface imuSensorInterface_;
+
+  // Personal Interface
+  hardware_interface::ButtonPanelInterface buttonPanelInterface_;
 
   // For transmission
   hardware_interface::EffortActuatorInterface effortActuatorInterface_;
@@ -97,7 +102,7 @@ private:
   bool initFlag_{false}, isActuatorSpecified_{false};
   SwingArmJointData jointDatas_[8]{};
   SwingArmImuData imuDatas_[3]{};
-  std::vector<std::string> jointNames_, imuNames_;
+  std::vector<std::string> jointNames_, imuNames_, buttonPanelNames_;
 };
 
 } // namespace SwingArm

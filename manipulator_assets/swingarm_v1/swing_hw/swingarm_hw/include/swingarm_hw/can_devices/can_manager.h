@@ -42,25 +42,27 @@ public:
 
   std::unordered_map<std::string, std::shared_ptr<CanDevice>> getDevices(){return devices_;}
 
+  std::vector<std::string> getActuatorNames(){return actuator_names_;};
   std::unordered_map<std::string, std::shared_ptr<CanDmActuator>> getActuatorDevices(){return actuator_devices_;}
 
+  std::vector<std::string> getImuNames(){return imu_names_;};
   std::unordered_map<std::string, std::shared_ptr<CanSTImu>> getSTImuDevices(){return st_imu_devices_;}
 
-  std::vector<std::string> getActuatorNames(){return actuator_names_;};
-
-  std::vector<std::string> getImuNames(){return imu_names_;};
+  std::vector<std::string> getButtonPanelNames(){return button_panel_names_;};
+  std::unordered_map<std::string, std::shared_ptr<CanButtonPanel>> getButtonPanelDevices(){return button_panel_devices_;}
 private:
   std::vector<can_interface::CanBus*>  can_buses_{};
 
   std::unordered_map<std::string, std::shared_ptr<CanDevice>> devices_;
 
-  std::unordered_map<std::string, std::shared_ptr<CanSTImu>> st_imu_devices_;
-
+  std::vector<std::string> actuator_names_;
   std::unordered_map<std::string, std::shared_ptr<CanDmActuator>> actuator_devices_;
 
-  std::vector<std::string> actuator_names_;
-
   std::vector<std::string> imu_names_;
+  std::unordered_map<std::string, std::shared_ptr<CanSTImu>> st_imu_devices_;
+
+  std::vector<std::string> button_panel_names_;
+  std::unordered_map<std::string, std::shared_ptr<CanButtonPanel>> button_panel_devices_;
 
   std::unordered_map<std::string, std::unordered_map<int, std::shared_ptr<CanDevice>>> bus_devices_;
 

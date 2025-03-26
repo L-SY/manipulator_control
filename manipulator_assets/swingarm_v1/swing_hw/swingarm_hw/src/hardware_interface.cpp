@@ -9,18 +9,20 @@ namespace SwingArm {
 bool SwingArmHW::init(ros::NodeHandle &rootNh, ros::NodeHandle &robotHwNh) {
   canManager_ = std::make_shared<device::CanManager>(robotHwNh);
 
-//  registerInterface(&jointStateInterface_);
-//  registerInterface(&effortJointInterface_);
-//  registerInterface(&positionJointInterface_);
+  //  registerInterface(&jointStateInterface_);
+  //  registerInterface(&effortJointInterface_);
+  //  registerInterface(&positionJointInterface_);
   registerInterface(&robotStateInterface_);
   registerInterface(&imuSensorInterface_);
 
   registerInterface(&effortActuatorInterface_);
   registerInterface(&actuatorStateInterface_);
-  
+  registerInterface(&buttonPanelInterface_);
+
   setupJoints();
   setupUrdf(rootNh);
   setupImus();
+  setupButtonPanels();
   return true;
 }
 
@@ -139,6 +141,20 @@ bool SwingArmHW::setupImus() {
   return true;
 }
 
+bool SwingArmHW::setupButtonPanels() {
+  buttonPanelNames_ = canManager_->getButtonPanelNames();
+  for (const auto & buttonPanelName : buttonPanelNames_) {
+    hardware_interface::ButtonPanelHandle buttonPanelHandle(
+        buttonPanelName,
+        &(canManager_->getButtonPanelDevices()[buttonPanelName]
+            ->button1_pressed_),
+        &(canManager_->getButtonPanelDevices()[buttonPanelName]
+            ->button2_pressed_));
+    buttonPanelInterface_.registerHandle(buttonPanelHandle);
+  }
+  return true;
+}
+
 bool SwingArmHW::loadUrdf(ros::NodeHandle &rootNh) {
   if (urdfModel_ == nullptr) {
     urdfModel_ = std::make_shared<urdf::Model>();
@@ -170,9 +186,11 @@ bool SwingArmHW::setupTransmission(ros::NodeHandle &rootNh) {
     return false;
   }
   actuatorToJointState_ =
-      robotTransmissions_.get<transmission_interface::ActuatorToJointStateInterface>();
+      robotTransmissions_
+          .get<transmission_interface::ActuatorToJointStateInterface>();
   jointToActuatorEffort_ =
-      robotTransmissions_.get<transmission_interface::JointToActuatorEffortInterface>();
+      robotTransmissions_
+          .get<transmission_interface::JointToActuatorEffortInterface>();
   auto effortJointInterface =
       this->get<hardware_interface::EffortJointInterface>();
 

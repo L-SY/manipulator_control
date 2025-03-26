@@ -32,14 +32,14 @@ public:
   // 定时器回调函数，用于检测按钮释放
   void checkButtonsTimeout(const ros::TimerEvent& event);
 
+  bool button1_pressed_;
+  bool button2_pressed_;
 private:
   ros::NodeHandle nh_;
   ros::Publisher button1_pub_;
   ros::Publisher button2_pub_;
   ros::Timer timeout_timer_;
 
-  bool button1_pressed_;
-  bool button2_pressed_;
   double frequency_{0};
   ros::Time last_timestamp_;
   ros::Time button1_last_time_;
