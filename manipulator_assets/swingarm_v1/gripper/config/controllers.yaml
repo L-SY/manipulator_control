@@ -15,3 +15,13 @@ controllers:
     type: effort_controllers/JointPositionController
     joint: left_gripper_joint
     pid: { p: 3000.0, i: 500., d: 1000.0, i_clamp_max: 800.0, i_clamp_min: -800.0, antiwindup: false, publish_state: false }
+
+#  button_position_controller:
+#    type: button_position_controller/ButtonPositionController
+#    joint: left_gripper_joint
+#    button_panel: button_panel
+#    position_a: 0.5   # 目标位置A（弧度）
+#    position_b: 2.0   # 目标位置B（弧度）
+#    p_gain: 100.0     # 比例增益
+#    i_gain: 0.1       # 积分增益
+#    d_gain: 10.0      # 微分增益

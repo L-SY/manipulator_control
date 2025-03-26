@@ -1,0 +1,10 @@
+<library path="lib/libbutton_position_controller">
+    <class name="button_position_controller/ButtonPositionController"
+           type="button_position_controller::ButtonPositionController"
+           base_class_type="controller_interface::ControllerBase">
+        <description>
+            A position controller that uses a button panel to select target positions.
+            Button 1 moves the joint to position A, Button 2 moves the joint to position B.
+        </description>
+    </class>
+</library>

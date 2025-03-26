@@ -10,3 +10,7 @@ swingarm_hw:
       bus: "can0"
       id: 0x008
       model: "dm4310"
+    - name: "button_panel"
+      bus: "can0"
+      id: 0x200
+      model: "button_panel_50"
