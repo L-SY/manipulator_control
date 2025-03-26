@@ -48,7 +48,8 @@ add_library(swingarm_hw_library SHARED
             src/can_interface/socketcan.cpp
             src/can_devices/can_dm_actuator.cpp
             src/can_devices/can_st_imu.cpp
-            src/can_devices/can_manager.cpp)
+            src/can_devices/can_manager.cpp
+            src/common/lp_filter.cpp)
 
 add_dependencies(swingarm_hw_library
         ${catkin_EXPORTED_TARGETS}
@@ -67,6 +68,7 @@ add_executable(${PROJECT_NAME}
         src/can_devices/can_dm_actuator.cpp
         src/can_devices/can_st_imu.cpp
         src/can_devices/can_manager.cpp
+        src/common/lp_filter.cpp
 )
 add_dependencies(${PROJECT_NAME}
         ${catkin_EXPORTED_TARGETS}
