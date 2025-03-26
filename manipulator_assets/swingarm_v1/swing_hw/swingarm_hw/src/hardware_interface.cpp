@@ -7,92 +7,95 @@
 namespace SwingArm {
 
 bool SwingArmHW::init(ros::NodeHandle &rootNh, ros::NodeHandle &robotHwNh) {
-  canManager = std::make_shared<device::CanManager>(robotHwNh);
+  canManager_ = std::make_shared<device::CanManager>(robotHwNh);
 
+//  registerInterface(&jointStateInterface_);
+//  registerInterface(&effortJointInterface_);
+//  registerInterface(&positionJointInterface_);
+  registerInterface(&robotStateInterface_);
+  registerInterface(&imuSensorInterface_);
+
+  registerInterface(&effortActuatorInterface_);
+  registerInterface(&actuatorStateInterface_);
+  
   setupJoints();
   setupUrdf(rootNh);
   setupImus();
-
-  registerInterface(&jointStateInterface);
-  registerInterface(&effortJointInterface);
-  registerInterface(&positionJointInterface);
-  registerInterface(&robotStateInterface);
-  registerInterface(&imuSensorInterface);
-
   return true;
 }
 
 void SwingArmHW::read(const ros::Time &time, const ros::Duration &period) {
-  canManager->read();
+  canManager_->read();
   int jointIndex = 0;
   int imuIndex = 0;
-  for (const auto &joint : jointNames) {
-    auto jointDevice = canManager->getActuatorDevices()[joint];
-    jointDatas[jointIndex].pos = jointDevice->getPosition();
-    jointDatas[jointIndex].vel = jointDevice->getVelocity();
-    jointDatas[jointIndex].tau = jointDevice->getEffort();
+  for (const auto &joint : jointNames_) {
+    auto jointDevice = canManager_->getActuatorDevices()[joint];
+    jointDatas_[jointIndex].pos = jointDevice->getPosition();
+    jointDatas_[jointIndex].vel = jointDevice->getVelocity();
+    jointDatas_[jointIndex].tau = jointDevice->getEffort();
     jointIndex++;
   }
 
-  for (const auto &imu : imuNames) {
-    auto imuDevice = canManager->getSTImuDevices()[imu];
-    imuDatas[imuIndex].angularVel[0] = imuDevice->getAngularVelocity()[0];
-    imuDatas[imuIndex].angularVel[1] = imuDevice->getAngularVelocity()[1];
-    imuDatas[imuIndex].angularVel[2] = imuDevice->getAngularVelocity()[2];
-    imuDatas[imuIndex].linearAcc[0] = imuDevice->getLinearAcceleration()[0];
-    imuDatas[imuIndex].linearAcc[1] = imuDevice->getLinearAcceleration()[1];
-    imuDatas[imuIndex].linearAcc[2] = imuDevice->getLinearAcceleration()[2];
-    imuDatas[imuIndex].ori[0] = imuDevice->getOrientation()[0];
-    imuDatas[imuIndex].ori[1] = imuDevice->getOrientation()[1];
-    imuDatas[imuIndex].ori[2] = imuDevice->getOrientation()[2];
-    imuDatas[imuIndex].ori[3] = imuDevice->getOrientation()[3];
+  for (const auto &imu : imuNames_) {
+    auto imuDevice = canManager_->getSTImuDevices()[imu];
+    imuDatas_[imuIndex].angularVel[0] = imuDevice->getAngularVelocity()[0];
+    imuDatas_[imuIndex].angularVel[1] = imuDevice->getAngularVelocity()[1];
+    imuDatas_[imuIndex].angularVel[2] = imuDevice->getAngularVelocity()[2];
+    imuDatas_[imuIndex].linearAcc[0] = imuDevice->getLinearAcceleration()[0];
+    imuDatas_[imuIndex].linearAcc[1] = imuDevice->getLinearAcceleration()[1];
+    imuDatas_[imuIndex].linearAcc[2] = imuDevice->getLinearAcceleration()[2];
+    imuDatas_[imuIndex].ori[0] = imuDevice->getOrientation()[0];
+    imuDatas_[imuIndex].ori[1] = imuDevice->getOrientation()[1];
+    imuDatas_[imuIndex].ori[2] = imuDevice->getOrientation()[2];
+    imuDatas_[imuIndex].ori[3] = imuDevice->getOrientation()[3];
     imuIndex++;
   }
-  if (isActuatorSpecified)
-    actuatorToJointState->propagate();
-  for (auto effortJointHandle : effortJointHandles)
+  if (isActuatorSpecified_)
+    actuatorToJointState_->propagate();
+  for (auto effortJointHandle : effortJointHandles_)
     effortJointHandle.setCommand(0.);
 }
 
 void SwingArmHW::write(const ros::Time & /*time*/,
                        const ros::Duration &period) {
-  if (isActuatorSpecified) {
-    jointToActuatorEffort->propagate();
+  if (isActuatorSpecified_) {
+    jointToActuatorEffort_->propagate();
 
     int jointIndex = 0;
-    for (const auto &joint : jointNames) {
-      canManager->getActuatorDevices()[joint]->setCommand(
-          jointDatas[jointIndex].cmdPos, jointDatas[jointIndex].cmdVel,
-          jointDatas[jointIndex].cmdKp, jointDatas[jointIndex].cmdKd,
-          jointDatas[jointIndex].cmdTau);
+    for (const auto &joint : jointNames_) {
+      canManager_->getActuatorDevices()[joint]->setCommand(
+          jointDatas_[jointIndex].cmdPos, jointDatas_[jointIndex].cmdVel,
+          jointDatas_[jointIndex].cmdKp, jointDatas_[jointIndex].cmdKd,
+          jointDatas_[jointIndex].cmdTau);
       jointIndex++;
     }
 
-    effortJointSaturationInterface.enforceLimits(period);
-    effortJointSoftLimitsInterface.enforceLimits(period);
-    jointToActuatorEffort->propagate();
+    effortJointSaturationInterface_.enforceLimits(period);
+    effortJointSoftLimitsInterface_.enforceLimits(period);
+    jointToActuatorEffort_->propagate();
   }
-  canManager->write();
+  canManager_->write();
 }
 
 bool SwingArmHW::setupJoints() {
-  jointNames = canManager->getActuatorNames();
+  jointNames_ = canManager_->getActuatorNames();
   int jointIndex = 0;
-  for (const auto &joint : jointNames) {
+  for (const auto &joint : jointNames_) {
     hardware_interface::ActuatorStateHandle actuatorHandle(
-        joint, &jointDatas[jointIndex].pos, &jointDatas[jointIndex].vel,
-        &jointDatas[jointIndex].tau);
+        joint, &jointDatas_[jointIndex].pos, &jointDatas_[jointIndex].vel,
+        &jointDatas_[jointIndex].tau);
     hardware_interface::JointStateHandle jointHandle(
-        joint, &jointDatas[jointIndex].pos, &jointDatas[jointIndex].vel,
-        &jointDatas[jointIndex].tau);
+        joint, &jointDatas_[jointIndex].pos, &jointDatas_[jointIndex].vel,
+        &jointDatas_[jointIndex].tau);
 
-    actuatorStateInterface.registerHandle(actuatorHandle);
-    jointStateInterface.registerHandle(jointHandle);
-    effortActuatorInterface.registerHandle(hardware_interface::ActuatorHandle(
-        actuatorHandle, &jointDatas[jointIndex].cmdTau));
+    actuatorStateInterface_.registerHandle(actuatorHandle);
+    jointStateInterface_.registerHandle(jointHandle);
+
+    effortActuatorInterface_.registerHandle(hardware_interface::ActuatorHandle(
+        actuatorHandle, &jointDatas_[jointIndex].cmdTau));
     jointIndex++;
   }
-  isActuatorSpecified = true;
+  isActuatorSpecified_ = true;
 
   return true;
 }
@@ -114,44 +117,43 @@ bool SwingArmHW::setupUrdf(ros::NodeHandle &rootNh) {
 }
 
 bool SwingArmHW::setupImus() {
-  imuNames = canManager->getImuNames();
+  imuNames_ = canManager_->getImuNames();
   int imuIndex = 0;
-  for (const auto &imu : imuNames) {
-    imuDatas[imuIndex].oriCov[0] = 0.0012;
-    imuDatas[imuIndex].oriCov[4] = 0.0012;
-    imuDatas[imuIndex].oriCov[8] = 0.0012;
+  for (const auto &imu : imuNames_) {
+    imuDatas_[imuIndex].oriCov[0] = 0.0012;
+    imuDatas_[imuIndex].oriCov[4] = 0.0012;
+    imuDatas_[imuIndex].oriCov[8] = 0.0012;
 
-    imuDatas[imuIndex].angularVelCov[0] = 0.0004;
-    imuDatas[imuIndex].angularVelCov[4] = 0.0004;
-    imuDatas[imuIndex].angularVelCov[8] = 0.0004;
+    imuDatas_[imuIndex].angularVelCov[0] = 0.0004;
+    imuDatas_[imuIndex].angularVelCov[4] = 0.0004;
+    imuDatas_[imuIndex].angularVelCov[8] = 0.0004;
 
     hardware_interface::ImuSensorHandle imuSensorHandle(
-        imu, canManager->getSTImuDevices()[imu]->getFrameID(),
-        imuDatas[imuIndex].ori, imuDatas[imuIndex].oriCov,
-        imuDatas[imuIndex].angularVel, imuDatas[imuIndex].angularVelCov,
-        imuDatas[imuIndex].linearAcc, imuDatas[imuIndex].linearAccCov);
-    imuSensorInterface.registerHandle(imuSensorHandle);
+        imu, canManager_->getSTImuDevices()[imu]->getFrameID(),
+        imuDatas_[imuIndex].ori, imuDatas_[imuIndex].oriCov,
+        imuDatas_[imuIndex].angularVel, imuDatas_[imuIndex].angularVelCov,
+        imuDatas_[imuIndex].linearAcc, imuDatas_[imuIndex].linearAccCov);
+    imuSensorInterface_.registerHandle(imuSensorHandle);
     imuIndex++;
   }
   return true;
 }
 
 bool SwingArmHW::loadUrdf(ros::NodeHandle &rootNh) {
-  std::string urdfStringLocal;
-  if (urdfModel == nullptr) {
-    urdfModel = std::make_shared<urdf::Model>();
+  if (urdfModel_ == nullptr) {
+    urdfModel_ = std::make_shared<urdf::Model>();
   }
-  rootNh.getParam("robot_description", urdfStringLocal);
-  return !urdfStringLocal.empty() && urdfModel->initString(urdfStringLocal);
+  rootNh.getParam("robot_description", urdfString_);
+  return !urdfString_.empty() && urdfModel_->initString(urdfString_);
 }
 
 bool SwingArmHW::setupTransmission(ros::NodeHandle &rootNh) {
-  if (!isActuatorSpecified)
+  if (!isActuatorSpecified_)
     return true;
   try {
-    transmissionLoader =
+    transmissionLoader_ =
         std::make_unique<transmission_interface::TransmissionInterfaceLoader>(
-            this, &robotTransmissions);
+            this, &robotTransmissions_);
   } catch (const std::invalid_argument &ex) {
     ROS_ERROR_STREAM("Failed to create transmission interface loader. "
                      << ex.what());
@@ -164,33 +166,33 @@ bool SwingArmHW::setupTransmission(ros::NodeHandle &rootNh) {
     ROS_ERROR_STREAM("Failed to create transmission interface loader. ");
     return false;
   }
-  if (!transmissionLoader->load(urdfString)) {
+  if (!transmissionLoader_->load(urdfString_)) {
     return false;
   }
-  actuatorToJointState =
-      robotTransmissions.get<transmission_interface::ActuatorToJointStateInterface>();
-  jointToActuatorEffort =
-      robotTransmissions.get<transmission_interface::JointToActuatorEffortInterface>();
+  actuatorToJointState_ =
+      robotTransmissions_.get<transmission_interface::ActuatorToJointStateInterface>();
+  jointToActuatorEffort_ =
+      robotTransmissions_.get<transmission_interface::JointToActuatorEffortInterface>();
   auto effortJointInterface =
       this->get<hardware_interface::EffortJointInterface>();
 
   std::vector<std::string> names = effortJointInterface->getNames();
   for (const auto &name : names)
-    effortJointHandles.push_back(effortJointInterface->getHandle(name));
+    effortJointHandles_.push_back(effortJointInterface->getHandle(name));
 
   return true;
 }
 
 bool SwingArmHW::setupJointLimit(ros::NodeHandle &rootNh) {
-  if (!isActuatorSpecified)
+  if (!isActuatorSpecified_)
     return true;
   joint_limits_interface::JointLimits jointLimits;
   joint_limits_interface::SoftJointLimits softLimits;
-  for (const auto &jointHandle : effortJointHandles) {
+  for (const auto &jointHandle : effortJointHandles_) {
     bool hasJointLimits{}, hasSoftLimits{};
     std::string name = jointHandle.getName();
     urdf::JointConstSharedPtr urdfJoint =
-        urdfModel->getJoint(jointHandle.getName());
+        urdfModel_->getJoint(jointHandle.getName());
     if (urdfJoint == nullptr) {
       ROS_ERROR_STREAM("URDF joint not found " << name);
       return false;
@@ -227,12 +229,12 @@ bool SwingArmHW::setupJointLimit(ros::NodeHandle &rootNh) {
     }
     if (hasSoftLimits) {
       ROS_DEBUG_STREAM("Using soft saturation limits");
-      effortJointSoftLimitsInterface.registerHandle(
+      effortJointSoftLimitsInterface_.registerHandle(
           joint_limits_interface::EffortJointSoftLimitsHandle(
               jointHandle, jointLimits, softLimits));
     } else if (hasJointLimits) {
       ROS_DEBUG_STREAM("Using saturation limits (not soft limits)");
-      effortJointSaturationInterface.registerHandle(
+      effortJointSaturationInterface_.registerHandle(
           joint_limits_interface::EffortJointSaturationHandle(jointHandle,
                                                               jointLimits));
     }

@@ -70,34 +70,34 @@ private:
   bool setupImus();
 
   // ROS Interface
-  hardware_interface::JointStateInterface jointStateInterface;
-  hardware_interface::EffortJointInterface effortJointInterface;
-  hardware_interface::PositionJointInterface positionJointInterface;
-  hardware_interface::RobotStateInterface robotStateInterface;
-  hardware_interface::ImuSensorInterface imuSensorInterface;
+  hardware_interface::JointStateInterface jointStateInterface_;
+  hardware_interface::EffortJointInterface effortJointInterface_;
+  hardware_interface::PositionJointInterface positionJointInterface_;
+  hardware_interface::RobotStateInterface robotStateInterface_;
+  hardware_interface::ImuSensorInterface imuSensorInterface_;
 
   // For transmission
-  hardware_interface::EffortActuatorInterface effortActuatorInterface;
-  hardware_interface::HybridJointInterface hybridJointInterface;
-  hardware_interface::ActuatorStateInterface actuatorStateInterface;
-  hardware_interface::ActuatorExtraInterface actuatorExtraInterface;
-  std::vector<hardware_interface::JointHandle> effortJointHandles;
-  std::unique_ptr<transmission_interface::TransmissionInterfaceLoader> transmissionLoader;
-  transmission_interface::RobotTransmissions robotTransmissions;
-  transmission_interface::ActuatorToJointStateInterface* actuatorToJointState{nullptr};
-  transmission_interface::JointToActuatorEffortInterface* jointToActuatorEffort{nullptr};
-  joint_limits_interface::EffortJointSaturationInterface effortJointSaturationInterface;
-  joint_limits_interface::EffortJointSoftLimitsInterface effortJointSoftLimitsInterface;
+  hardware_interface::EffortActuatorInterface effortActuatorInterface_;
+  hardware_interface::HybridJointInterface hybridJointInterface_;
+  hardware_interface::ActuatorStateInterface actuatorStateInterface_;
+  hardware_interface::ActuatorExtraInterface actuatorExtraInterface_;
+  std::vector<hardware_interface::JointHandle> effortJointHandles_;
+  std::unique_ptr<transmission_interface::TransmissionInterfaceLoader> transmissionLoader_;
+  transmission_interface::RobotTransmissions robotTransmissions_;
+  transmission_interface::ActuatorToJointStateInterface* actuatorToJointState_{nullptr};
+  transmission_interface::JointToActuatorEffortInterface* jointToActuatorEffort_{nullptr};
+  joint_limits_interface::EffortJointSaturationInterface effortJointSaturationInterface_;
+  joint_limits_interface::EffortJointSoftLimitsInterface effortJointSoftLimitsInterface_;
 
   // URDF model of the robot
-  std::string urdfString;                  // for transmission
-  std::shared_ptr<urdf::Model> urdfModel;  // for limit
+  std::string urdfString_;                  // for transmission
+  std::shared_ptr<urdf::Model> urdfModel_;  // for limit
 
-  std::shared_ptr<device::CanManager> canManager;
-  bool initFlag{false}, isActuatorSpecified{false};
-  SwingArmJointData jointDatas[8]{};
-  SwingArmImuData imuDatas[3]{};
-  std::vector<std::string> jointNames, imuNames;
+  std::shared_ptr<device::CanManager> canManager_;
+  bool initFlag_{false}, isActuatorSpecified_{false};
+  SwingArmJointData jointDatas_[8]{};
+  SwingArmImuData imuDatas_[3]{};
+  std::vector<std::string> jointNames_, imuNames_;
 };
 
 } // namespace SwingArm
