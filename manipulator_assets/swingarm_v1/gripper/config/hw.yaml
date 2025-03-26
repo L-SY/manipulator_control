@@ -1,12 +1,12 @@
-robot_hw:
-  bus:
-    - can0
+swingarm_hw:
   loop_frequency: 500
   cycle_time_error_threshold: 0.001
   thread_priority: 95
-  actuators:
-    left_gripper_joint_motor:
-      bus: can0
-      id: 0x007
-      type: dm4310
-      lp_cutoff_frequency: 100
+  bus:
+    - can0
+
+  devices:
+    - name: "left_gripper_joint_motor"
+      bus: "can0"
+      id: 0x008
+      model: "dm4310"

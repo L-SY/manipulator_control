@@ -6,13 +6,13 @@
     <xacro:create_link name="gripper_base" mass="0.6"
                        ixx="1.109e+6" ixy="-37483" ixz="1.135e+5"
                        iyy="9.968e+5" iyz="1.969e+5" izz="4.867e+5"
-                       mesh_file="package://gripper/description/meshes/gripper_base.stl" material_name="silver"
+                       mesh_file="package://gripper/description/meshes/gripper_base.stl"
                        inertial_xyz="32.571e-3 -6.298e-3 21.727e-3"/>
 
     <xacro:create_link name="left_gripper" mass="0.1"
                        ixx="26216.462" ixy="-434.473" ixz="2878.188"
                        iyy="1.132e+5" iyz="1528.264" izz="1.203e+5"
-                       mesh_file="package://gripper/description/meshes/left_gripper.stl" material_name="silver"
+                       mesh_file="package://gripper/description/meshes/left_gripper.stl"
                        inertial_xyz="29.508e-3 52.186e-3 0.778e-3"/>
 
     <xacro:create_joint name="left_gripper_joint" type="prismatic" parent="gripper_base" child="left_gripper" origin_xyz="0.08 -0.035 0" origin_rpy="0 0 0" axis_xyz="0 1 0" lower="0" upper="0.035" effort="700" velocity="0.50"/>

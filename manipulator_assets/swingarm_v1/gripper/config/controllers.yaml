@@ -3,12 +3,15 @@ controllers:
     type: joint_state_controller/JointStateController
     publish_rate: 100
 
+  robot_state_controller:
+    type: robot_state_controller/RobotStateController
+    publish_rate: 100
+
 #  gripper_controller:
 #    type: hybrid_controllers/gripperController
 #    joint: left_gripper_joint
 
   gripper_controller:
-    type: effort_controllers/gripperController
+    type: effort_controllers/JointPositionController
     joint: left_gripper_joint
-    pid: { p: 1000.0, i: 0., d: 100.0, i_max: 300.0, i_min: -300.0, antiwindup: false, publish_state: false }
-#    pid: { p: 7000.0, i: 100., d: 1000.0, i_max: 300.0, i_min: -300.0, antiwindup: false, publish_state: false }
+    pid: { p: 3000.0, i: 500., d: 1000.0, i_clamp_max: 800.0, i_clamp_min: -800.0, antiwindup: false, publish_state: false }

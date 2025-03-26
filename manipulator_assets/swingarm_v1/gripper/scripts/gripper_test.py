@@ -2,57 +2,62 @@
 
 import sys
 import os
-workspace_path = "/home/lsy/manipulator_control"
-sys.path.insert(0, os.path.join(workspace_path, "devel/lib/python3/dist-packages"))
-
 import rospy
-from manipulator_msgs.msg import GripperState, GripperCmd
+from sensor_msgs.msg import JointState
+from std_msgs.msg import Float64
 
 class GripperCommandPublisher:
     def __init__(self):
+        # 初始化 ROS 节点
         rospy.init_node('gripper_command_publisher', anonymous=True)
 
-        self.pub = rospy.Publisher('/controllers/gripper_controller/command', GripperCmd, queue_size=10)
+        # 发布器：发布夹爪目标位置到控制器
+        self.pub = rospy.Publisher('/controllers/gripper_controller/command', Float64, queue_size=10)
 
-        rospy.Subscriber('/controllers/gripper_controller/state', GripperState, self.state_callback)
+        # 订阅器：订阅夹爪的状态数据
+        rospy.Subscriber('/joint_states', JointState, self.state_callback)
 
+        # 发布频率
         self.rate = rospy.Rate(10)
 
-        self.gripper_cmd = GripperCmd()
-        self.gripper_cmd.mode = 0
-        self.gripper_cmd.des_pos = 0.033
-        self.gripper_cmd.des_vel = 1
-        self.gripper_cmd.des_eff = 0.0
-        self.gripper_cmd.des_kd = 2
-        self.gripper_cmd.des_kp = 0.02
+        # 初始化目标位置
+        self.des_pos = 0.033  # 默认目标位置
+        self.current_width = 0.0  # 当前夹爪位置
 
-        self.current_width = (self.gripper_cmd.des_pos + 0.002) / 2
-
+        # 初始化状态
         self.init_open = False
 
     def state_callback(self, data):
-        self.current_width = data.gripper_pos
+        # 从 /joint_states 获取夹爪的当前位置
+        try:
+            joint_index = data.name.index("left_gripper_joint")  # 根据具体关节名称修改
+            self.current_width = data.position[joint_index]
+        except ValueError:
+            rospy.logwarn("gripper_joint not found in /joint_states")
 
     def run(self):
         while not rospy.is_shutdown():
+            # 初始化打开夹爪
             if not self.init_open:
-                self.gripper_cmd.des_pos = 0.002
-                self.gripper_cmd.des_vel = 0.1
+                self.des_pos = 0.002
                 if self.current_width < 0.005:
                     self.init_open = True
-                    print("init finish")
-                print("init")
+                    rospy.loginfo("Initialization finished")
+                rospy.loginfo("Initializing...")
+            # 如果夹爪过大，收回
             elif self.current_width > 0.031:
-                self.gripper_cmd.des_pos = 0.002
-                self.gripper_cmd.des_vel = -0.1
-                print("big")
+                self.des_pos = 0.002
+                rospy.loginfo("Gripper too wide, closing")
+            # 如果夹爪过小，打开
             elif self.current_width < 0.005:
-                self.gripper_cmd.des_pos = 0.033
-                self.gripper_cmd.des_vel = 0.1
-                print("small")
+                self.des_pos = 0.033
+                rospy.loginfo("Gripper too narrow, opening")
 
-            self.pub.publish(self.gripper_cmd)
-            print(self.current_width)
+            # 发布目标位置
+            self.pub.publish(self.des_pos)
+            rospy.loginfo("Current width: {:.4f}, Target position: {:.4f}".format(self.current_width, self.des_pos))
+
+            # 按频率休眠
             self.rate.sleep()
 
 if __name__ == '__main__':

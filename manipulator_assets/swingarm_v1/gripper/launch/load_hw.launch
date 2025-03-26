@@ -1,10 +1,9 @@
 <launch>
-    <rosparam file="$(find robot_hw)/config/actuator_coefficient.yaml" command="load" ns = "robot_hw"/>
     <rosparam file="$(find gripper)/config/hw.yaml" command="load" />
 
     <param name="robot_description"
            command="$(find xacro)/xacro $(find gripper)/description/urdf/gripper.xacro"/>
 
-    <node name="robot_hw" pkg="robot_hw" type="robot_hw" respawn="false"
+    <node name="swingarm_hw" pkg="swingarm_hw" type="swingarm_hw" respawn="false"
           clear_params="true" />
 </launch>
