@@ -16,6 +16,10 @@ controllers:
     joint: left_gripper_joint
     pid: { p: 3000.0, i: 500., d: 1000.0, i_clamp_max: 800.0, i_clamp_min: -800.0, antiwindup: false, publish_state: false }
 
+  imu_sensor_controller:
+    type: imu_sensor_controller/ImuSensorController
+    publish_rate: 50
+
 #  button_position_controller:
 #    type: button_position_controller/ButtonPositionController
 #    joint: left_gripper_joint

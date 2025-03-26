@@ -7,8 +7,8 @@
 
 namespace device {
 
-CanButtonPanel::CanButtonPanel(const std::string& name, const std::string& bus, const int id, const std::string& model)
-    : CanDevice(name, bus, id, model, DeviceType::only_read),
+CanButtonPanel::CanButtonPanel(const std::string& name, const std::string& bus, const int id, const std::string& model, const XmlRpc::XmlRpcValue& config)
+    : CanDevice(name, bus, id, model, DeviceType::only_read, config),
       button1_pressed_(false),
       button2_pressed_(false)
 {
@@ -92,8 +92,9 @@ void CanButtonPanel::updateFrequency(const ros::Time& stamp) {
     frequency_ = 0;
 }
 
-void CanButtonPanel::read(const can_frame& frame) {
+void CanButtonPanel::read(const can_interface::CanFrameStamp& frameStamp) {
   ros::Time current_time = ros::Time::now();
+  auto frame = frameStamp.frame;
 
   // 检测按钮1状态
   if(frame.data[0] == 0x00 && frame.data[1] == 0x01) {
@@ -114,11 +115,11 @@ void CanButtonPanel::read(const can_frame& frame) {
   publishButtonState();
 }
 
-void CanButtonPanel::readBuffer(const std::vector<can_interface::CanFrameStamp>& frames)
+void CanButtonPanel::readBuffer(const std::vector<can_interface::CanFrameStamp>& frameStamps)
 {
-  for (const auto& frame : frames) {
+  for (const auto& frame : frameStamps) {
     if (frame.frame.can_id == getId()) {
-      read(frame.frame);
+      read(frame);
     }
   }
 }

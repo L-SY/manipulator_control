@@ -91,12 +91,12 @@ enum class ControlMode {
 
 class CanDmActuator : public CanDevice {
 public:
-  CanDmActuator(const std::string& name, const std::string& bus, int id, const std::string& motor_type);
+  CanDmActuator(const std::string& name, const std::string& bus, int id, const std::string& motor_type, const XmlRpc::XmlRpcValue& config);
   ~CanDmActuator() override = default;
 
   can_frame start() override;
   can_frame close() override;
-  void read(const can_frame& frame) override;
+  void read(const can_interface::CanFrameStamp& frameStamp) override;
   void readBuffer(const std::vector<can_interface::CanFrameStamp> &buffer) override;
   can_frame write() override;
 

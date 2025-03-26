@@ -28,7 +28,8 @@ public:
 
   bool addCanBus(const std::string& bus_name, int thread_priority);
 
-  bool addDevice(const std::string& name, const std::string& bus, int id, const std::string& model);
+  bool addDevice(const std::string& name, const std::string& bus, int id, const std::string& model,
+                 const XmlRpc::XmlRpcValue& config = XmlRpc::XmlRpcValue());
 
   std::shared_ptr<CanDevice> getDevice(const std::string& device_name);
 

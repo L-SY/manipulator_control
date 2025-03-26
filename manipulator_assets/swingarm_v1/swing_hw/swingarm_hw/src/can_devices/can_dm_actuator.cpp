@@ -7,8 +7,8 @@
 
 namespace device {
 
-CanDmActuator::CanDmActuator(const std::string& name, const std::string& bus, int id, const std::string& motor_type)
-    : CanDevice(name, bus, id, motor_type, DeviceType::read_write), coeff_(ActuatorConfig().getActuatorCoefficients(motor_type))
+CanDmActuator::CanDmActuator(const std::string& name, const std::string& bus, int id, const std::string& motor_type, const XmlRpc::XmlRpcValue& config)
+    : CanDevice(name, bus, id, motor_type, DeviceType::read_write, config), coeff_(ActuatorConfig().getActuatorCoefficients(motor_type))
 {
 }
 
@@ -40,8 +40,9 @@ can_frame CanDmActuator::close()
   return frame;
 }
 
-void CanDmActuator::read(const can_frame& frame)
+void CanDmActuator::read(const can_interface::CanFrameStamp& frameStamp)
 {
+  auto frame = frameStamp.frame;
   uint16_t q_raw = (frame.data[1] << 8) | frame.data[2];
   uint16_t qd = (frame.data[3] << 4) | (frame.data[4] >> 4);
   uint16_t cur = ((frame.data[4] & 0xF) << 8) | frame.data[5];
@@ -56,12 +57,12 @@ void CanDmActuator::read(const can_frame& frame)
   seq_++;
 }
 
-void CanDmActuator::readBuffer(const std::vector<can_interface::CanFrameStamp>& frames)
+void CanDmActuator::readBuffer(const std::vector<can_interface::CanFrameStamp>& frameStamps)
 {
-  for (const auto& frameStamp : frames) {
+  for (const auto& frameStamp : frameStamps) {
     if (frameStamp.frame.can_id == 0x000) {
       if ((frameStamp.frame.data[0] & 0b00001111) == id_) {
-        read(frameStamp.frame);
+        read(frameStamp);
         break;
       }
     }

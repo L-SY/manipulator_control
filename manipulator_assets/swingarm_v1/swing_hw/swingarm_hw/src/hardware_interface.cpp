@@ -142,8 +142,8 @@ bool SwingArmHW::setupImus() {
 }
 
 bool SwingArmHW::setupButtonPanels() {
-  buttonPanelNames_ = canManager_->getButtonPanelNames();
-  for (const auto & buttonPanelName : buttonPanelNames_) {
+  std::vector<std::string> buttonPanelNames = canManager_->getButtonPanelNames();
+  for (const auto & buttonPanelName : buttonPanelNames) {
     hardware_interface::ButtonPanelHandle buttonPanelHandle(
         buttonPanelName,
         &(canManager_->getButtonPanelDevices()[buttonPanelName]

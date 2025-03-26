@@ -4,8 +4,9 @@
 
 #pragma once
 
-#include "vector"
 #include "swingarm_hw/can_interface/can_bus.h"
+#include "vector"
+#include <XmlRpcValue.h>
 
 namespace device {
 
@@ -17,13 +18,20 @@ enum class DeviceType {
 
 class CanDevice {
 public:
-  CanDevice(const std::string& name, const std::string& bus, int id, const std::string& model, DeviceType type)
+  CanDevice(const std::string& name, const std::string& bus, int id, const std::string& model, DeviceType type,
+            const XmlRpc::XmlRpcValue& config = XmlRpc::XmlRpcValue())
       : name_(name)
         , bus_(bus)
         , id_(id)
         , model_(model)
         , type_(type)
         , is_halted_(false)
+        , config_(config)
+  {
+  }
+
+  CanDevice(const std::string& name, const std::string& bus, int id, const std::string& model, DeviceType type)
+      : CanDevice(name, bus, id, model, type, XmlRpc::XmlRpcValue())
   {
   }
 
@@ -33,7 +41,7 @@ public:
 
   virtual can_frame close() = 0;
 
-  virtual void read(const can_frame &frame) = 0;
+  virtual void read(const can_interface::CanFrameStamp& frameStamp) = 0;
 
   virtual void readBuffer(const std::vector<can_interface::CanFrameStamp> &buffer) = 0;
 
@@ -56,6 +64,7 @@ protected:
   DeviceType type_;
   std::string model_;
   bool is_halted_;
+  XmlRpc::XmlRpcValue config_;
 };
 
 } // namespace device

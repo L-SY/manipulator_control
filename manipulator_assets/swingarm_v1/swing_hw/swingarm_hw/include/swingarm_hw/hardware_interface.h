@@ -102,7 +102,7 @@ private:
   bool initFlag_{false}, isActuatorSpecified_{false};
   SwingArmJointData jointDatas_[8]{};
   SwingArmImuData imuDatas_[3]{};
-  std::vector<std::string> jointNames_, imuNames_, buttonPanelNames_;
+  std::vector<std::string> jointNames_, imuNames_;
 };
 
 } // namespace SwingArm

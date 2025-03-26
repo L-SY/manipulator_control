@@ -10,7 +10,7 @@ set(CATKIN_PACKAGE_DEPENDENCIES
         transmission_interface
         joint_limits_interface
         controller_manager
-
+        imu_complementary_filter
         swing_hw_msgs
 )
 

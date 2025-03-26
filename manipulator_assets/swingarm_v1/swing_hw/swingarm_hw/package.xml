@@ -21,6 +21,7 @@
   <depend>controller_manager</depend>
   <depend>urdf</depend>
   <depend>realtime_tools</depend>
+  <depend>imu_complementary_filter</depend>
 
   <depend>swing_hw_msgs</depend>
 

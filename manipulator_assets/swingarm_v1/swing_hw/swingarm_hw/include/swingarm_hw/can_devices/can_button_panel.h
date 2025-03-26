@@ -15,13 +15,13 @@ namespace device {
 
 class CanButtonPanel : public CanDevice {
 public:
-  CanButtonPanel(const std::string& name, const std::string& bus, int id, const std::string& model);
+  CanButtonPanel(const std::string& name, const std::string& bus, int id, const std::string& model, const XmlRpc::XmlRpcValue& config);
 
   ~CanButtonPanel() override = default;
 
   can_frame start() override;
   can_frame close() override;
-  void read(const can_frame& frame) override;
+  void read(const can_interface::CanFrameStamp& frameStamp) override;
   void readBuffer(const std::vector<can_interface::CanFrameStamp> &buffer) override;
   can_frame write() override;
 

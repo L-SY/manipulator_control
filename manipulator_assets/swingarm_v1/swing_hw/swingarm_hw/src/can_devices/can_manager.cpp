@@ -83,12 +83,19 @@ bool CanManager::loadDeviceConfig() {
     int id            = static_cast<int>(devices_param[i]["id"]);
     std::string model = static_cast<std::string>(devices_param[i]["model"]);
 
-    if (!addDevice(name, bus, id, model)) {
+    XmlRpc::XmlRpcValue config;
+    if (devices_param[i].hasMember("config") &&
+        devices_param[i]["config"].getType() == XmlRpc::XmlRpcValue::TypeStruct) {
+      config = devices_param[i]["config"];
+    }
+
+    if (!addDevice(name, bus, id, model, config)) {
       ROS_ERROR_STREAM("Failed to add device: " << name);
       return false;
     }
-    else
+    else {
       ROS_INFO_STREAM("Add device: " << name);
+    }
   }
 
   return true;
@@ -128,25 +135,34 @@ bool CanManager::addCanBus(const std::string& bus_name, int thread_priority) {
 bool CanManager::addDevice(const std::string& name,
                            const std::string& bus,
                            int id,
-                           const std::string& model) {
+                           const std::string& model,
+                           const XmlRpc::XmlRpcValue& config) {
   std::shared_ptr<CanDevice> device;
+
   if (model.find("dm") != std::string::npos) {
-    device = std::make_shared<CanDmActuator>(name, bus, id, model);
+    device = std::make_shared<CanDmActuator>(name, bus, id, model, config);
     actuator_devices_[name] = std::dynamic_pointer_cast<CanDmActuator>(device);
     actuator_names_.push_back(name);
   }
   else if (model.find("st") != std::string::npos) {
-    device = std::make_shared<CanSTImu>(name, bus, id, name.substr(0, name.size()-4));
+    std::string frame_id = name.substr(0, name.size()-4); // 默认值
+
+    if (config.hasMember("frame_id")) {
+      frame_id = static_cast<std::string>(config["frame_id"]);
+    }
+
+    device = std::make_shared<CanSTImu>(name, bus, id, frame_id, config);
     st_imu_devices_[name] = std::dynamic_pointer_cast<CanSTImu>(device);
     imu_names_.push_back(name);
   }
   else if (model.find("button") != std::string::npos) {
-    device = std::make_shared<CanButtonPanel>(name, bus, id, model);
+    device = std::make_shared<CanButtonPanel>(name, bus, id, model, config);
     button_panel_devices_[name] = std::dynamic_pointer_cast<CanButtonPanel>(device);
     button_panel_names_.push_back(name);
   }
-  else
+  else {
     ROS_ERROR_STREAM("Unknown device model: " << model);
+  }
 
   if (!device) {
     ROS_ERROR_STREAM("Failed to create device: " << name);
@@ -154,12 +170,12 @@ bool CanManager::addDevice(const std::string& name,
   }
 
   devices_[name] = device;
-
   bus_devices_[bus][id] = device;
 
   ROS_INFO_STREAM("Added device: " << name << " on bus: " << bus);
   return true;
 }
+
 
 std::shared_ptr<CanDevice> CanManager::getDevice(const std::string& device_name) {
   std::lock_guard<std::mutex> lock(devices_mutex_);
