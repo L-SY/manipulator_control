@@ -1,38 +1,32 @@
-robot_hw:
-  bus:
-    - can0
+swingarm_hw:
   loop_frequency: 500
   cycle_time_error_threshold: 0.001
   thread_priority: 95
-  actuators:
-    joint1:
-      bus: can0
+  bus:
+    - can0
+
+  devices:
+    - name: "joint1_motor"
+      bus: "can0"
       id: 0x001
-      type: dm4340
-      control_mode: MIT
-      lp_cutoff_frequency: 10
-    joint2_motor:
-      bus: can0
+      model: "dm4340"
+    - name: "joint2_motor"
+      bus: "can0"
       id: 0x002
-      type: dm4340
-      lp_cutoff_frequency: 10
-    joint3_motor:
-      bus: can0
+      model: "dm4340"
+    - name: "joint3_motor"
+      bus: "can0"
       id: 0x003
-      type: dm4340
-      lp_cutoff_frequency: 10
-    joint4_motor:
-      bus: can0
+      model: "dm4340"
+    - name: "joint4_motor"
+      bus: "can0"
       id: 0x004
-      type: dm4310
-      lp_cutoff_frequency: 10
-    joint5_motor:
-      bus: can0
+      model: "dm4310"
+    - name: "joint5_motor"
+      bus: "can0"
       id: 0x005
-      type: dm4310
-      lp_cutoff_frequency: 10
-    joint6_motor:
-      bus: can0
+      model: "dm4310"
+    - name: "joint6_motor"
+      bus: "can0"
       id: 0x006
-      type: dm4310
-      lp_cutoff_frequency: 10
+      model: "dm4310"
