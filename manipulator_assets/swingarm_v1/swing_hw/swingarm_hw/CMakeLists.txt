@@ -11,7 +11,7 @@ set(CATKIN_PACKAGE_DEPENDENCIES
         joint_limits_interface
         controller_manager
 
-        hw_msgs
+        swing_hw_msgs
 )
 
 find_package(catkin REQUIRED COMPONENTS

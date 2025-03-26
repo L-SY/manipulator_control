@@ -32,89 +32,72 @@
 #include <transmission_interface/transmission_interface_loader.h>
 #include <swingarm_hw/hardware_interface/HybridJointInterface.h>
 
-#include <hw_msgs/ActuatorState.h>
+#include <swing_hw_msgs/ActuatorState.h>
 #include "swingarm_hw/can_devices/can_manager.h"
 #include "swingarm_hw/hardware_interface/robot_state_interface.h"
 
 namespace SwingArm {
 
 struct SwingArmJointData {
-  double pos_, vel_, tau_;                 // state
-  double cmdTau_, cmdPos_, cmdVel_, cmdKp_, cmdKd_;  // command
+  double pos, vel, tau;                 // state
+  double cmdTau, cmdPos, cmdVel, cmdKp, cmdKd;  // command
 };
 
 struct SwingArmImuData {
-  double ori_[4];            // NOLINT(modernize-avoid-c-arrays)
-  double oriCov_[9];         // NOLINT(modernize-avoid-c-arrays)
-  double angularVel_[3];     // NOLINT(modernize-avoid-c-arrays)
-  double angularVelCov_[9];  // NOLINT(modernize-avoid-c-arrays)
-  double linearAcc_[3];      // NOLINT(modernize-avoid-c-arrays)
-  double linearAccCov_[9];   // NOLINT(modernize-avoid-c-arrays)
+  double ori[4];            // NOLINT(modernize-avoid-c-arrays)
+  double oriCov[9];         // NOLINT(modernize-avoid-c-arrays)
+  double angularVel[3];     // NOLINT(modernize-avoid-c-arrays)
+  double angularVelCov[9];  // NOLINT(modernize-avoid-c-arrays)
+  double linearAcc[3];      // NOLINT(modernize-avoid-c-arrays)
+  double linearAccCov[9];   // NOLINT(modernize-avoid-c-arrays)
 };
 
 class SwingArmHW : public hardware_interface::RobotHW {
 public:
   SwingArmHW() = default;
-  /** \brief Get necessary params from param server. Init hardware_interface.
-   *
-   * Get params from param server and check whether these params are set. Load urdf of robot. Set up transmission and
-   * joint limit. Get configuration of can bus and create data pointer which point to data received from Can bus.
-   *
-   * @param root_nh Root node-handle of a ROS node.
-   * @param robot_hw_nh Node-handle for robot hardware.
-   * @return True when init successful, False when failed.
-   */
-  bool init(ros::NodeHandle& root_nh, ros::NodeHandle& robot_hw_nh) override;
 
-  /** \brief Communicate with hardware. Get data, status of robot.
-   *
-   * Call @ref UNITREE_LEGGED_SDK::UDP::Recv() to get robot's state.
-   *
-   * @param time Current time
-   * @param period Current time - last time
-   */
+  bool init(ros::NodeHandle& rootNh, ros::NodeHandle& robotHwNh) override;
   void read(const ros::Time& time, const ros::Duration& period) override;
-
-  /** \brief Comunicate with hardware. Publish command to robot.
-   *
-   * Propagate joint state to actuator state for the stored
-   * transmission. Limit cmd_effort into suitable value. Call @ref UNITREE_LEGGED_SDK::UDP::Recv(). Publish actuator
-   * current state.
-   *
-   * @param time Current time
-   * @param period Current time - last time
-   */
   void write(const ros::Time& time, const ros::Duration& period) override;
 
+  bool setupUrdf(ros::NodeHandle &rootNh);
+  bool setupTransmission(ros::NodeHandle &rootNh);
+  bool setupJointLimit(ros::NodeHandle &rootNh);
+
 private:
-  /** \brief Load urdf of robot from param server.
-   *
-   * Load urdf of robot from param server.
-   *
-   * @param rootNh Root node-handle of a ROS node
-   * @return True if successful.
-   */
   bool loadUrdf(ros::NodeHandle& rootNh);
-
   bool setupJoints();
-
   bool setupImus();
 
-  // Interface
-  hardware_interface::JointStateInterface jointStateInterface_;
-  hardware_interface::EffortJointInterface effortJointInterface_;
-  hardware_interface::PositionJointInterface positionJointInterface_;
-  hardware_interface::RobotStateInterface robotStateInterface_;
-  hardware_interface::ImuSensorInterface imu_sensor_interface_;
+  // ROS Interface
+  hardware_interface::JointStateInterface jointStateInterface;
+  hardware_interface::EffortJointInterface effortJointInterface;
+  hardware_interface::PositionJointInterface positionJointInterface;
+  hardware_interface::RobotStateInterface robotStateInterface;
+  hardware_interface::ImuSensorInterface imuSensorInterface;
+
+  // For transmission
+  hardware_interface::EffortActuatorInterface effortActuatorInterface;
+  hardware_interface::HybridJointInterface hybridJointInterface;
+  hardware_interface::ActuatorStateInterface actuatorStateInterface;
+  hardware_interface::ActuatorExtraInterface actuatorExtraInterface;
+  std::vector<hardware_interface::JointHandle> effortJointHandles;
+  std::unique_ptr<transmission_interface::TransmissionInterfaceLoader> transmissionLoader;
+  transmission_interface::RobotTransmissions robotTransmissions;
+  transmission_interface::ActuatorToJointStateInterface* actuatorToJointState{nullptr};
+  transmission_interface::JointToActuatorEffortInterface* jointToActuatorEffort{nullptr};
+  joint_limits_interface::EffortJointSaturationInterface effortJointSaturationInterface;
+  joint_limits_interface::EffortJointSoftLimitsInterface effortJointSoftLimitsInterface;
 
   // URDF model of the robot
-  std::shared_ptr<urdf::Model> urdfModel_;
+  std::string urdfString;                  // for transmission
+  std::shared_ptr<urdf::Model> urdfModel;  // for limit
 
-  std::shared_ptr<device::CanManager> canManager_;
-  bool init_ = false;
-  SwingArmJointData jointDatas_[8]{};
-  SwingArmImuData imuDates_[3]{};
-  std::vector<std::string> jointNames_, imuNames_;
+  std::shared_ptr<device::CanManager> canManager;
+  bool initFlag{false}, isActuatorSpecified{false};
+  SwingArmJointData jointDatas[8]{};
+  SwingArmImuData imuDatas[3]{};
+  std::vector<std::string> jointNames, imuNames;
 };
 
-}// namespace SwingArm
+} // namespace SwingArm
