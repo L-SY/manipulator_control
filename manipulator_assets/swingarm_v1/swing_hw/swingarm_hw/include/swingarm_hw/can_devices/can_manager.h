@@ -9,6 +9,8 @@
 #include "swingarm_hw/can_interface/can_bus.h"
 #include "swingarm_hw/can_devices/can_dm_actuator.h"
 #include "swingarm_hw/can_devices/can_st_imu.h"
+#include "swingarm_hw/can_devices/can_button_panel.h"
+
 #include <memory>
 #include <unordered_map>
 #include <vector>

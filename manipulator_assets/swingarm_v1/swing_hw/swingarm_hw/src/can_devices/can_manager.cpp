@@ -140,6 +140,9 @@ bool CanManager::addDevice(const std::string& name,
     st_imu_devices_[name] = std::dynamic_pointer_cast<CanSTImu>(device);
     imu_names_.push_back(name);
   }
+  else if (model.find("button") != std::string::npos) {
+    device = std::make_shared<CanButtonPanel>(name, bus, id, model);
+  }
   else
     ROS_ERROR_STREAM("Unknown device model: " << model);
 

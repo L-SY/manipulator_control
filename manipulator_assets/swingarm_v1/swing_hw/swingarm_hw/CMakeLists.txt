@@ -40,16 +40,18 @@ include_directories(
         ${catkin_INCLUDE_DIRS}
 )
 
+file(GLOB COMMON_FILES "${CMAKE_CURRENT_SOURCE_DIR}/src/common/*.cpp")
+file(GLOB CAN_DEVICES_FILES "${CMAKE_CURRENT_SOURCE_DIR}/src/can_devices/*.cpp")
+file(GLOB CAN_INTERFACE_FILES "${CMAKE_CURRENT_SOURCE_DIR}/src/can_interface/*.cpp")
+
 # main library
 add_library(swingarm_hw_library SHARED
             src/control_loop.cpp
             src/hardware_interface.cpp
-            src/can_interface/can_bus.cpp
-            src/can_interface/socketcan.cpp
-            src/can_devices/can_dm_actuator.cpp
-            src/can_devices/can_st_imu.cpp
-            src/can_devices/can_manager.cpp
-            src/common/lp_filter.cpp)
+            ${COMMON_FILES}
+            ${CAN_DEVICES_FILES}
+            ${CAN_INTERFACE_FILES}
+)
 
 add_dependencies(swingarm_hw_library
         ${catkin_EXPORTED_TARGETS}
@@ -63,13 +65,11 @@ add_executable(${PROJECT_NAME}
         src/control_loop.cpp
         src/hardware_interface.cpp
         src/swingarm_hw.cpp
-        src/can_interface/can_bus.cpp
-        src/can_interface/socketcan.cpp
-        src/can_devices/can_dm_actuator.cpp
-        src/can_devices/can_st_imu.cpp
-        src/can_devices/can_manager.cpp
-        src/common/lp_filter.cpp
+        ${COMMON_FILES}
+        ${CAN_DEVICES_FILES}
+        ${CAN_INTERFACE_FILES}
 )
+
 add_dependencies(${PROJECT_NAME}
         ${catkin_EXPORTED_TARGETS}
 )
