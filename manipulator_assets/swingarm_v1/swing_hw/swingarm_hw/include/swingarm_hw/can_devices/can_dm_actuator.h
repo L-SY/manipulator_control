@@ -9,6 +9,8 @@
 #include <iostream>
 #include <memory>
 #include <unordered_map>
+#include <chrono>
+#include <thread>
 
 namespace device {
 
@@ -83,10 +85,9 @@ public:
 
 
 enum class ControlMode {
-  POSITION,
-  VELOCITY,
   EFFORT,
-  MIT
+  MIT,
+  POSITION_VELOCITY
 };
 
 class CanDmActuator : public CanDevice {
@@ -109,6 +110,7 @@ public:
   double getVelocity() const { return velocity_; }
   double getEffort() const { return effort_; }
   double getFrequency() const { return frequency_; }
+  ControlMode getControlMode() const { return control_mode_; }
 
 private:
   const ActuatorCoefficients coeff_;
@@ -126,9 +128,12 @@ private:
   double cmd_kp_{0};
   double cmd_kd_{0};
 
-  ControlMode control_mode_{ControlMode::POSITION};
+  ControlMode control_mode_{ControlMode::EFFORT};
 
   void updateFrequency(const ros::Time& stamp);
+  can_frame writeEffortMIT();
+  can_frame writePositionVelocity();
+  void delayMicroseconds(unsigned int us);
 };
 
 } // namespace device
