@@ -2,7 +2,7 @@
     <rosparam file="$(find gripper)/config/hw.yaml" command="load" />
 
     <param name="robot_description"
-           command="$(find xacro)/xacro $(find gripper)/description/urdf/gripper.xacro"/>
+           command="$(find xacro)/xacro $(find gripper)/description/urdf/gripper.xacro hardware_interface:=EffortJointInterface"/>
 
     <node name="swingarm_hw" pkg="swingarm_hw" type="swingarm_hw" respawn="false"
           clear_params="true" />
