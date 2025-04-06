@@ -8,9 +8,7 @@
 namespace device {
 
 CanDmActuator::CanDmActuator(const std::string& name, const std::string& bus, int id, const std::string& motor_type, const XmlRpc::XmlRpcValue& config)
-    : CanDevice(name, bus, id, motor_type, DeviceType::read_write, config), coeff_(ActuatorConfig().getActuatorCoefficients(motor_type))
-{
-  // 从配置中读取控制模式，默认为EFFORT
+    : CanDevice(name, bus, id, motor_type, DeviceType::read_write, config), coeff_(ActuatorConfig().getActuatorCoefficients(motor_type)) {
   if (config.hasMember("control_mode")) {
     std::string mode_str = static_cast<std::string>(config["control_mode"]);
     if (mode_str == "MIT") {
@@ -18,41 +16,48 @@ CanDmActuator::CanDmActuator(const std::string& name, const std::string& bus, in
     } else if (mode_str == "POSITION_VELOCITY") {
       control_mode_ = ControlMode::POSITION_VELOCITY;
     } else {
-      control_mode_ = ControlMode::EFFORT; // 默认或明确指定为EFFORT
+      control_mode_ = ControlMode::EFFORT;
     }
+  }
+
+  if (config.hasMember("master_id")) {
+    master_id_ = static_cast<int>(config["master_id"]);
+  } else {
+    throw std::invalid_argument("Missing master_id in config");
+  }
+
+  if (config.hasMember("max_velocity")) {
+    max_velocity_ = static_cast<double>(config["max_velocity"]);
+  } else {
+    throw std::invalid_argument("Missing max_velocity in config");
   }
 }
 
-can_frame CanDmActuator::start()
-{
+can_frame CanDmActuator::start() {
   can_frame frame{};
   frame.can_id = id_;
   frame.can_dlc = 8;
 
-  for (int i = 0; i < 7; i++)
-  {
+  for (int i = 0; i < 7; i++) {
     frame.data[i] = 0xFF;
   }
   frame.data[7] = 0xFC;
   return frame;
 }
 
-can_frame CanDmActuator::close()
-{
+can_frame CanDmActuator::close() {
   can_frame frame{};
   frame.can_id = id_;
   frame.can_dlc = 8;
 
-  for (int i = 0; i < 7; i++)
-  {
+  for (int i = 0; i < 7; i++) {
     frame.data[i] = 0xFF;
   }
   frame.data[7] = 0xFD;
   return frame;
 }
 
-void CanDmActuator::read(const can_interface::CanFrameStamp& frameStamp)
-{
+void CanDmActuator::read(const can_interface::CanFrameStamp& frameStamp) {
   auto frame = frameStamp.frame;
   uint16_t q_raw = (frame.data[1] << 8) | frame.data[2];
   uint16_t qd = (frame.data[3] << 4) | (frame.data[4] >> 4);
@@ -68,10 +73,9 @@ void CanDmActuator::read(const can_interface::CanFrameStamp& frameStamp)
   seq_++;
 }
 
-void CanDmActuator::readBuffer(const std::vector<can_interface::CanFrameStamp>& frameStamps)
-{
+void CanDmActuator::readBuffer(const std::vector<can_interface::CanFrameStamp>& frameStamps) {
   for (const auto& frameStamp : frameStamps) {
-    if (frameStamp.frame.can_id == 0x000) {
+    if (frameStamp.frame.can_id == master_id_) {
       if ((frameStamp.frame.data[0] & 0b00001111) == id_) {
         read(frameStamp);
         break;
@@ -80,15 +84,12 @@ void CanDmActuator::readBuffer(const std::vector<can_interface::CanFrameStamp>& 
   }
 }
 
-can_frame CanDmActuator::write()
-{
+can_frame CanDmActuator::write() {
   can_frame frame;
 
-  // 根据控制模式选择不同的写入方法
   if (control_mode_ == ControlMode::POSITION_VELOCITY) {
     frame = writePositionVelocity();
   } else {
-    // EFFORT和MIT模式使用相同的写入方法
     frame = writeEffortMIT();
   }
 
@@ -97,8 +98,7 @@ can_frame CanDmActuator::write()
   return frame;
 }
 
-can_frame CanDmActuator::writeEffortMIT()
-{
+can_frame CanDmActuator::writeEffortMIT() {
   can_frame frame{};
   frame.can_id = id_;
   frame.can_dlc = 8;
@@ -121,34 +121,22 @@ can_frame CanDmActuator::writeEffortMIT()
   return frame;
 }
 
-can_frame CanDmActuator::writePositionVelocity()
-{
-  // TODO: 实现POSITION_VELOCITY模式的写入逻辑
-  // 目前先返回与EFFORT/MIT相同的帧，后续会根据需求修改
+can_frame CanDmActuator::writePositionVelocity() {
   can_frame frame{};
-  frame.can_id = id_;
+  frame.can_id = id_ + 0x100;
   frame.can_dlc = 8;
 
-  uint16_t q_des = static_cast<int>(coeff_.pos2act * (cmd_position_ - coeff_.pos_offset));
-  uint16_t qd_des = static_cast<int>(coeff_.vel2act * (cmd_velocity_ - coeff_.vel_offset));
-  uint16_t kp = static_cast<int>(coeff_.kp2act * cmd_kp_);
-  uint16_t kd = static_cast<int>(coeff_.kd2act * cmd_kd_);
-  uint16_t tau = static_cast<int>(coeff_.effort2act * (cmd_effort_ - coeff_.effort_offset));
+  auto p_des = static_cast<float>(cmd_position_);
+  auto v_des = static_cast<float>(max_velocity_);
 
-  frame.data[0] = q_des >> 8;
-  frame.data[1] = q_des & 0xFF;
-  frame.data[2] = qd_des >> 4;
-  frame.data[3] = ((qd_des & 0xF) << 4) | (kp >> 8);
-  frame.data[4] = kp & 0xFF;
-  frame.data[5] = kd >> 4;
-  frame.data[6] = ((kd & 0xF) << 4) | (tau >> 8);
-  frame.data[7] = tau & 0xFF;
+  memcpy(&frame.data[0], &p_des, sizeof(float));
+  memcpy(&frame.data[4], &v_des, sizeof(float));
 
   return frame;
 }
 
-void CanDmActuator::setCommand(double pos, double vel, double kp, double kd, double effort)
-{
+
+void CanDmActuator::setCommand(double pos, double vel, double kp, double kd, double effort) {
   cmd_position_ = pos;
   cmd_velocity_ = vel;
   cmd_kp_ = kp;
@@ -156,8 +144,7 @@ void CanDmActuator::setCommand(double pos, double vel, double kp, double kd, dou
   cmd_effort_ = effort;
 }
 
-void CanDmActuator::updateFrequency(const ros::Time& stamp)
-{
+void CanDmActuator::updateFrequency(const ros::Time& stamp) {
   try {
     frequency_ = 1.0 / (stamp - last_timestamp_).toSec();
   } catch (const std::runtime_error& ex) {
@@ -165,9 +152,8 @@ void CanDmActuator::updateFrequency(const ros::Time& stamp)
   }
 }
 
-void CanDmActuator::delayMicroseconds(unsigned int us)
-{
-  // 使用C++11的标准库实现微秒级延时
+void CanDmActuator::delayMicroseconds(unsigned int us) {
+  // Using C++11 standard library to achieve microsecond delay
   std::this_thread::sleep_for(std::chrono::microseconds(us));
 }
 

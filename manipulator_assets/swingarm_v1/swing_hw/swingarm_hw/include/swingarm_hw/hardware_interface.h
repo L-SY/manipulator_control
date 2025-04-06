@@ -82,18 +82,26 @@ private:
   hardware_interface::ButtonPanelInterface buttonPanelInterface_;
 
   // For transmission
-  hardware_interface::EffortActuatorInterface effortActuatorInterface_;
+
   hardware_interface::HybridJointInterface hybridJointInterface_;
   hardware_interface::ActuatorStateInterface actuatorStateInterface_;
   hardware_interface::ActuatorExtraInterface actuatorExtraInterface_;
   std::vector<hardware_interface::JointHandle> effortJointHandles_;
-  std::unique_ptr<transmission_interface::TransmissionInterfaceLoader> transmissionLoader_;
   transmission_interface::RobotTransmissions robotTransmissions_;
+  std::unique_ptr<transmission_interface::TransmissionInterfaceLoader> transmissionLoader_;
   transmission_interface::ActuatorToJointStateInterface* actuatorToJointState_{nullptr};
+
+  hardware_interface::EffortActuatorInterface effortActuatorInterface_;
   transmission_interface::JointToActuatorEffortInterface* jointToActuatorEffort_{nullptr};
   joint_limits_interface::EffortJointSaturationInterface effortJointSaturationInterface_;
   joint_limits_interface::EffortJointSoftLimitsInterface effortJointSoftLimitsInterface_;
 
+  hardware_interface::PositionActuatorInterface positionActuatorInterface_;
+  transmission_interface::JointToActuatorPositionInterface* jointToActuatorPosition_{nullptr};
+  joint_limits_interface::PositionJointSaturationInterface positionJointSaturationInterface_;
+  joint_limits_interface::PositionJointSoftLimitsInterface positionJointSoftLimitsInterface_;
+
+  std::vector<hardware_interface::JointHandle> positionJointHandles_;
   // URDF model of the robot
   std::string urdfString_;                  // for transmission
   std::shared_ptr<urdf::Model> urdfModel_;  // for limit

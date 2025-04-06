@@ -128,6 +128,9 @@ private:
   double cmd_kp_{0};
   double cmd_kd_{0};
 
+  uint32_t master_id_;
+  double max_velocity_{0}; // Maximum velocity in POSITION_VELOCITY mode
+
   ControlMode control_mode_{ControlMode::EFFORT};
 
   void updateFrequency(const ros::Time& stamp);
