@@ -92,8 +92,8 @@ void CanSTImu::read(const can_interface::CanFrameStamp& frameStamp) {
                                 linear_acceleration_covariance_.data(), angular_velocity_covariance_.data(), orientation_covariance_diagonal_.data(),
                                 temperature_, false);
 
-    last_timestamp_ = ros::Time::now();
-    updateFrequency(last_timestamp_);
+    last_timestamp_ = frameStamp.stamp;
+    updateFrequency(frameStamp.stamp);
     ROS_DEBUG_STREAM("IMU Accel data updated for device: " << getName());
   }
 }
