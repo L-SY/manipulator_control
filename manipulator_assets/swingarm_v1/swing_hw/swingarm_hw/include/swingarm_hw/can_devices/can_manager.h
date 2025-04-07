@@ -51,6 +51,11 @@ public:
 
   std::vector<std::string> getButtonPanelNames(){return button_panel_names_;};
   std::unordered_map<std::string, std::shared_ptr<CanButtonPanel>> getButtonPanelDevices(){return button_panel_devices_;}
+
+  void delayMicroseconds(unsigned int us) {
+    // Using C++11 standard library to achieve microsecond delay
+    std::this_thread::sleep_for(std::chrono::microseconds(us));
+  }
 private:
   std::vector<can_interface::CanBus*>  can_buses_{};
 

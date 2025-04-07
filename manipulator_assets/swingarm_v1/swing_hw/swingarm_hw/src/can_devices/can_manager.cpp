@@ -107,22 +107,27 @@ bool CanManager::start() {
   std::lock_guard<std::mutex> lock(devices_mutex_);
   bool all_success = true;
 
-  for (auto* can_bus : can_buses_) {
-    if (!can_bus)
-      continue;
+  for (int i = 0; i < 5; i++) {
+    ROS_INFO_STREAM("Starting devices, attempt " << (i+1) << " of 5");
 
-    const std::string& bus_name = can_bus->getName();
-    auto bus_it = bus_devices_.find(bus_name);
+    for (auto* can_bus : can_buses_) {
+      if (!can_bus)
+        continue;
 
-    if (bus_it != bus_devices_.end()) {
-      for (const auto& device_pair : bus_it->second) {
-        can_frame frame = device_pair.second->start();
+      const std::string& bus_name = can_bus->getName();
+      auto bus_it = bus_devices_.find(bus_name);
 
-        can_bus->write(&frame);
+      if (bus_it != bus_devices_.end()) {
+        for (const auto& device_pair : bus_it->second) {
+          can_frame frame = device_pair.second->start();
+          delayMicroseconds(100000);
+          can_bus->write(&frame);
+        }
       }
     }
   }
-  ROS_INFO_STREAM("All devices start right!");
+
+  ROS_INFO_STREAM("All devices start command sent 5 times!");
   return all_success;
 }
 

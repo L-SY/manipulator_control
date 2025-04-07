@@ -22,26 +22,91 @@ CanDmActuator::CanDmActuator(const std::string& name, const std::string& bus, in
 
   if (config.hasMember("master_id")) {
     master_id_ = static_cast<int>(config["master_id"]);
+    if (config.hasMember("max_velocity")) {
+      max_velocity_ = static_cast<double>(config["max_velocity"]);
+    } else {
+      throw std::invalid_argument("Missing max_velocity in config");
+    }
   } else {
     throw std::invalid_argument("Missing master_id in config");
   }
+}
 
-  if (config.hasMember("max_velocity")) {
-    max_velocity_ = static_cast<double>(config["max_velocity"]);
-  } else {
-    throw std::invalid_argument("Missing max_velocity in config");
+can_frame CanDmActuator::createRegisterFrame(uint8_t command, uint8_t reg_addr, uint32_t value) const {
+  can_frame frame{};
+  frame.can_id = 0x7FF;
+
+  if (command == CMD_READ || command == CMD_SAVE) {
+    frame.can_dlc = 4;
+    frame.data[0] = id_ & 0xFF;
+    frame.data[1] = (id_ >> 8) & 0xFF;
+    frame.data[2] = command;
+    frame.data[3] = reg_addr;
+  }
+  else if (command == CMD_WRITE) {
+    frame.can_dlc = 8;
+    frame.data[0] = id_ & 0xFF;
+    frame.data[1] = (id_ >> 8) & 0xFF;
+    frame.data[2] = command;
+    frame.data[3] = reg_addr;
+
+    frame.data[4] = value & 0xFF;
+    frame.data[5] = (value >> 8) & 0xFF;
+    frame.data[6] = (value >> 16) & 0xFF;
+    frame.data[7] = (value >> 24) & 0xFF;
+  }
+
+  return frame;
+}
+
+uint32_t CanDmActuator::controlModeToMotorMode(ControlMode mode) const {
+  constexpr uint32_t MIT_MODE_VALUE = 1;
+  constexpr uint32_t POS_VEL_MODE_VALUE = 2;
+  constexpr uint32_t VEL_MODE_VALUE = 3;
+  constexpr uint32_t POS_FORCE_MODE_VALUE = 4;
+  constexpr uint32_t DEFAULT_MODE_VALUE = 1;
+
+  switch (mode) {
+  case ControlMode::MIT:
+    return MIT_MODE_VALUE;
+
+  case ControlMode::POSITION_VELOCITY:
+    return POS_VEL_MODE_VALUE;
+
+  case ControlMode::EFFORT:
+    return MIT_MODE_VALUE;
+
+  default:
+    ROS_WARN("Unknown control mode requested, using default mode (MIT)");
+    return DEFAULT_MODE_VALUE;
   }
 }
 
-can_frame CanDmActuator::start() {
-  can_frame frame{};
-  frame.can_id = id_;
-  frame.can_dlc = 8;
 
-  for (int i = 0; i < 7; i++) {
-    frame.data[i] = 0xFF;
+can_frame CanDmActuator::start() {
+  can_frame frame;
+
+  if (start_call_count_ == 0) {
+    uint32_t desiredMode = controlModeToMotorMode(control_mode_);
+    frame = createRegisterFrame(CMD_WRITE, CTRL_MODE_REGISTER, desiredMode);
+    ROS_WARN("Setting motor %d mode to %d", id_, desiredMode);
   }
-  frame.data[7] = 0xFC;
+  else if (start_call_count_ == 1) {
+    frame = createRegisterFrame(CMD_SAVE, 0x00);
+    ROS_WARN("Saving motor %d parameters", id_);
+  }
+  else {
+    frame.can_id = id_;
+    frame.can_dlc = 8;
+    for (int i = 0; i < 7; i++) {
+      frame.data[i] = 0xFF;
+    }
+    frame.data[7] = 0xFC;
+    ROS_WARN("Enabling motor %d", id_);
+  }
+
+  start_call_count_ = start_call_count_ + 1;
+
   return frame;
 }
 

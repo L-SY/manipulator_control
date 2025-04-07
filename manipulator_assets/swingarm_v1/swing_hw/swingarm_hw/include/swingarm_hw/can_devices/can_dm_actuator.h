@@ -112,6 +112,9 @@ public:
   double getFrequency() const { return frequency_; }
   ControlMode getControlMode() const { return control_mode_; }
 
+  can_frame createRegisterFrame(uint8_t command, uint8_t reg_addr, uint32_t value = 0) const;
+
+  uint32_t controlModeToMotorMode(ControlMode mode) const;
 private:
   const ActuatorCoefficients coeff_;
 
@@ -137,6 +140,14 @@ private:
   can_frame writeEffortMIT();
   can_frame writePositionVelocity();
   void delayMicroseconds(unsigned int us);
+
+  static constexpr uint8_t CTRL_MODE_REGISTER = 0x0A;
+
+  static constexpr uint8_t CMD_READ = 0x33;
+  static constexpr uint8_t CMD_WRITE = 0x55;
+  static constexpr uint8_t CMD_SAVE = 0xAA;
+
+  int start_call_count_;
 };
 
 } // namespace device
