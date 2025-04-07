@@ -184,6 +184,16 @@ void SwingArmHW::write(const ros::Time & /*time*/, const ros::Duration &period) 
         }
       }
 
+      if (jointToActuatorPosition_) {
+        try {
+          jointToActuatorPosition_->propagate();
+        } catch (const std::exception& e) {
+          ROS_ERROR_STREAM("Exception propagating joint to actuator position: " << e.what());
+        } catch (...) {
+          ROS_ERROR("Unknown exception propagating joint to actuator position");
+        }
+      }
+
       if (!jointNames_.empty()) {
         int jointIndex = 0;
         for (const auto &joint : jointNames_) {
