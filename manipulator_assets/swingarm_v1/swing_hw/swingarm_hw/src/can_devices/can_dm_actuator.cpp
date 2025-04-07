@@ -119,6 +119,7 @@ can_frame CanDmActuator::close() {
     frame.data[i] = 0xFF;
   }
   frame.data[7] = 0xFD;
+  ROS_WARN("Disabling motor %d", id_);
   return frame;
 }
 

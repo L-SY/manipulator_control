@@ -101,7 +101,9 @@ bool CanManager::loadDeviceConfig() {
   return true;
 }
 
-CanManager::~CanManager() {}
+CanManager::~CanManager() {
+  close();
+}
 
 bool CanManager::start() {
   std::lock_guard<std::mutex> lock(devices_mutex_);
@@ -129,6 +131,28 @@ bool CanManager::start() {
 
   ROS_INFO_STREAM("All devices start command sent 5 times!");
   return all_success;
+}
+
+void CanManager::close() {
+  std::lock_guard<std::mutex> lock(devices_mutex_);
+
+  for (int i = 0; i < 5; i++) {
+    for (auto* can_bus : can_buses_) {
+      if (!can_bus)
+        continue;
+
+      const std::string& bus_name = can_bus->getName();
+      auto bus_it = bus_devices_.find(bus_name);
+
+      if (bus_it != bus_devices_.end()) {
+        for (const auto& device_pair : bus_it->second) {
+          can_frame frame = device_pair.second->close();
+          delayMicroseconds(100000);
+          can_bus->write(&frame);
+        }
+      }
+    }
+  }
 }
 
 bool CanManager::addCanBus(const std::string& bus_name, int thread_priority) {
