@@ -147,7 +147,7 @@ private:
   static constexpr uint8_t CMD_WRITE = 0x55;
   static constexpr uint8_t CMD_SAVE = 0xAA;
 
-  int start_call_count_;
+  int start_call_count_{0};
 };
 
 } // namespace device
