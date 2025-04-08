@@ -4,7 +4,7 @@ project(gripper_controller)
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-add_definitions(-Wall -Werror)
+#add_definitions(-Wall -Werror)
 
 set(CATKIN_PACKAGE_DEPENDENCIES
         roscpp
@@ -48,7 +48,7 @@ include_directories(
 
 ## Declare cpp executables
 add_library(${PROJECT_NAME}
-        src/GripperController.cpp
+        src/gripper_controller.cpp
 )
 
 target_link_libraries(${PROJECT_NAME}

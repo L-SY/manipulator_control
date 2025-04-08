@@ -1,17 +1,25 @@
 <library path="lib/libgripper_controller">
-    <!-- controller_interface types -->
-    <class name="effort_controllers/gripperController"
-           type="effort_controllers::gripperController"
+    <class name="position_controllers/GripperController"
+           type="position_controllers::GripperController"
            base_class_type="controller_interface::ControllerBase">
         <description>
-            This gripper controller to show a basic content.
+            基于位置接口的夹爪控制器，支持速度限制和位置插值。
         </description>
     </class>
-    <class name="hybrid_controllers/gripperController"
-           type="hybrid_controllers::gripperController"
+
+    <class name="effort_controllers/GripperController"
+           type="effort_controllers::GripperController"
            base_class_type="controller_interface::ControllerBase">
         <description>
-            This gripper controller to show a basic content.
+            基于力矩接口的夹爪控制器，使用PID控制器实现位置控制，支持速度限制和位置插值。
+        </description>
+    </class>
+
+    <class name="hybrid_controllers/GripperController"
+           type="hybrid_controllers::GripperController"
+           base_class_type="controller_interface::ControllerBase">
+        <description>
+            基于混合接口的夹爪控制器，支持位置、速度和力的混合控制，包含速度限制和位置插值功能。
         </description>
     </class>
 </library>
