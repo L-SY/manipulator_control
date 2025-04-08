@@ -1,0 +1,15 @@
+# Goal
+float64 position      # 目标位置（米）
+float64 max_effort    # 最大力度（牛顿）
+---
+# Result
+float64 position      # 最终到达的位置
+float64 effort        # 最终施加的力度
+bool success          # 操作是否成功
+string message        # 结果描述或错误信息
+---
+# Feedback
+float64 position      # 当前位置
+float64 effort        # 当前力度
+float64 stalled       # 是否停滞不动
+float64 reached_goal  # 是否达到目标

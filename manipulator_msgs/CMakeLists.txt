@@ -15,6 +15,11 @@ add_service_files(
 
 )
 
+add_action_files(
+        FILES
+        GripperCommand.action
+)
+
 add_message_files(
         FILES
         GripperState.msg
