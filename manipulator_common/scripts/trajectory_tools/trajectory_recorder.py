@@ -29,7 +29,7 @@ class TrajectoryRecorder:
         relative_time = (current_time - self.start_time).to_sec()
 
         # 定义需要的关节名称
-        required_joints = ['joint1', 'joint2', 'joint3', 'joint4', 'joint5', 'joint6']
+        required_joints = ['joint1', 'joint2', 'joint3', 'joint4', 'joint5', 'joint6','joint7']
         # 找到需要的关节的索引
         indices = [msg.name.index(joint) for joint in required_joints if joint in msg.name]
 

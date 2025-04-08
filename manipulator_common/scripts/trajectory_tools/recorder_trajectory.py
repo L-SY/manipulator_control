@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import rospy
-from .trajectory_recorder import TrajectoryRecorderCSV, TrajectoryRecorderYAML
+from trajectory_tools.trajectory_recorder import TrajectoryRecorderCSV, TrajectoryRecorderYAML
 
 def main():
     rospy.init_node('record_trajectory')  # 初始化 ROS 节点

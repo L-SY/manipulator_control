@@ -2,8 +2,8 @@
 
 import rospy
 import os
-from .trajectory_client import TrajectoryClient,create_goal
-from .trajectory_reader import read_trajectory_from_csv,read_trajectory_from_yaml
+from trajectory_tools.trajectory_client import TrajectoryClient,create_goal
+from trajectory_tools.trajectory_reader import read_trajectory_from_csv,read_trajectory_from_yaml
 
 def main():
     rospy.init_node('send_trajectory')
