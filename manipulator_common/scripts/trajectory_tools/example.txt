@@ -1,0 +1,5 @@
+#recorder trajectory
+rosrun manipulator_common recorder_trajectory.py _recorder_type:=yaml _output_file:=../trajectory/recorded_trajectory.yaml _interval:=0.5 _threshold:=0.01
+
+#send trajectory
+rosrun manipulator_common send_trajectory.py _file_type:=yaml _file_path:=../trajectory/recorded_trajectory.yaml
