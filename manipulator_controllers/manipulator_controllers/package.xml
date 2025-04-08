@@ -13,6 +13,7 @@
   <exec_depend>joint_trajectory_controller</exec_depend>
   <exec_depend>rm_calibration_controllers</exec_depend>
   <exec_depend>robot_state_controller</exec_depend>
+  <exec_depend>gripper_action_controller</exec_depend>
   <!--  <exec_depend>arm_hybrid_controller</exec_depend>-->
 
   <export>
