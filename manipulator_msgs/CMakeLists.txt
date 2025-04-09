@@ -24,6 +24,7 @@ add_message_files(
         FILES
         GripperState.msg
         GripperCmd.msg
+        GripperStallStatus.msg
 )
 #
 #add_action_files(
