@@ -89,47 +89,66 @@ void GripperController<HardwareInterface>::stopping(const ros::Time& /*time*/)
 template <class HardwareInterface>
 void GripperController<HardwareInterface>::update(const ros::Time& /*time*/, const ros::Duration& period)
 {
-  // 获取当前状态
-  double current_position = joint_.getPosition();
-  double current_effort = joint_.getEffort();
-
-  // 状态机逻辑
   switch (state_)
   {
   case GripperState::MOVING:
-    // 检查是否到达目标位置
-    if (isAtPosition(target_position_, position_tolerance_)) {
-      transitionTo(GripperState::HOLDING);
-    }
-    // 检查是否堵转
-    else if (isStalled()) {
-      if (isForceExceeded(target_effort_)) {
-        transitionTo(GripperState::HOLDING);
-      } else {
-        transitionTo(GripperState::ERROR);
-      }
-    }
+    handleMovingState();
     break;
 
   case GripperState::ERROR:
-    // 在错误状态下不执行任何操作
+    handleErrorState();
     break;
 
   case GripperState::HOLDING:
-    // 检查是否仍然保持在位置
-    if (!isAtPosition(target_position_, position_tolerance_)) {
-      transitionTo(GripperState::MOVING);
-    }
+    handleHoldingState();
     break;
 
   case GripperState::IDLE:
-    // 空闲状态下不执行任何操作
+    handleIdleState();
     break;
   }
 
-  // 更新命令
   hw_iface_adapter_.updateCommand(period, target_position_, target_effort_);
 }
+
+template <class HardwareInterface>
+void GripperController<HardwareInterface>::handleMovingState()
+{
+  if (isAtPosition(target_position_, position_tolerance_)) {
+    transitionTo(GripperState::HOLDING);
+    return;
+  }
+
+  if (isStalled()) {
+    if (isForceExceeded(target_effort_)) {
+      transitionTo(GripperState::HOLDING);
+    } else {
+      transitionTo(GripperState::ERROR);
+    }
+  }
+}
+
+template <class HardwareInterface>
+void GripperController<HardwareInterface>::handleErrorState()
+{
+  // 错误状态下不执行任何操作
+}
+
+template <class HardwareInterface>
+void GripperController<HardwareInterface>::handleHoldingState()
+{
+  // 检查是否仍然保持在位置
+  if (!isAtPosition(target_position_, position_tolerance_)) {
+    transitionTo(GripperState::MOVING);
+  }
+}
+
+template <class HardwareInterface>
+void GripperController<HardwareInterface>::handleIdleState()
+{
+  // 空闲状态下不执行任何操作
+}
+
 
 template <class HardwareInterface>
 void GripperController<HardwareInterface>::commandCB(const std_msgs::Float64::ConstPtr& msg)

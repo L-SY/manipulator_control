@@ -57,6 +57,11 @@ public:
   static std::string stateToString(GripperState state);
 
 private:
+  void handleMovingState();
+  void handleErrorState();
+  void handleHoldingState();
+  void handleIdleState();
+
   typedef HardwareInterfaceAdapter<HardwareInterface> HwIfaceAdapter;
   typedef typename HardwareInterface::ResourceHandleType HandleType;
 
