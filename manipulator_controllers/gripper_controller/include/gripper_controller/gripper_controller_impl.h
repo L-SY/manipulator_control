@@ -140,6 +140,10 @@ bool GripperController<HardwareInterface>::init(hardware_interface::RobotHW* rob
         "command", 1, &GripperController::commandCB, this);
     state_publisher_ = controller_nh_.advertise<std_msgs::String>("state", 1);
     stall_status_pub_ = controller_nh.advertise<manipulator_msgs::GripperStallStatus>("stall_status", 10);
+    // 在init方法中添加
+    self_test_service_ = controller_nh_.advertiseService("trigger_self_test",
+                                                         &GripperController::triggerSelfTestCallback, this);
+
 
     if (verbose_) {
       ROS_INFO_STREAM_NAMED(name_, "Successfully initialized gripper controller");
@@ -162,6 +166,100 @@ bool GripperController<HardwareInterface>::init(hardware_interface::RobotHW* rob
     ROS_ERROR_STREAM_NAMED(name_, "Unknown exception during init");
     return false;
   }
+}
+
+template <class HardwareInterface>
+void GripperController<HardwareInterface>::triggerSelfTest()
+{
+  if (state_ != GripperState::IDLE) {
+    ROS_WARN_STREAM_NAMED(name_, "Cannot start self-test: gripper is not in IDLE state");
+    return;
+  }
+
+  startSelfTest();
+}
+
+template <class HardwareInterface>
+void GripperController<HardwareInterface>::startSelfTest()
+{
+  ROS_INFO_STREAM_NAMED(name_, "Starting gripper self-test mode");
+
+  // 初始化自检参数
+  self_test_active_ = true;
+  self_test_cycle_count_ = 0;
+  self_test_speed_factor_ = 1.0;
+  self_test_phase_ = SelfTestPhase::OPENING;
+  self_test_start_time_ = ros::Time::now();
+  self_test_last_action_time_ = ros::Time::now();
+
+  // 切换到自检状态
+  transitionTo(GripperState::SELF_TEST);
+}
+
+template <class HardwareInterface>
+void GripperController<HardwareInterface>::handleSelfTestState(const ros::Time& time, const ros::Duration& period)
+{
+  if (!self_test_active_) {
+    transitionTo(GripperState::IDLE);
+    return;
+  }
+
+  // 检查是否完成所有循环
+  if (self_test_cycle_count_ >= self_test_max_cycles_) {
+    ROS_INFO_STREAM_NAMED(name_, "Self-test completed successfully after "
+                                     << self_test_cycle_count_ << " cycles");
+    self_test_active_ = false;
+    transitionTo(GripperState::IDLE);
+    return;
+  }
+
+  // 计算当前速度因子 (每个循环增加50%的速度)
+  self_test_speed_factor_ = 1.0 + (self_test_cycle_count_ * 0.5);
+
+  // 获取当前位置
+  double current_position = joint_.getPosition();
+
+  // 根据当前阶段执行动作
+  switch (self_test_phase_) {
+    case SelfTestPhase::OPENING:
+      // 设置目标为最大打开位置
+      target_position_ = max_position_;
+      target_effort_ = max_effort_ * 0.7;  // 使用70%的最大力矩
+
+      // 检查是否到达目标位置
+      if (isAtPosition(max_position_, position_tolerance_)) {
+        ROS_WARN_STREAM_NAMED(name_, "Self-test cycle " << (self_test_cycle_count_ + 1)
+                                                        << ": Gripper fully opened");
+        self_test_phase_ = SelfTestPhase::CLOSING;
+        self_test_last_action_time_ = time;
+      }
+      break;
+
+    case SelfTestPhase::CLOSING:
+      // 设置目标为最小关闭位置
+      target_position_ = min_position_;
+      target_effort_ = max_effort_ * 0.7;  // 使用70%的最大力矩
+
+      // 检查是否到达目标位置或发生堵转
+      if (isAtPosition(min_position_, position_tolerance_)) {
+        ROS_WARN_STREAM_NAMED(name_, "Self-test cycle " << (self_test_cycle_count_ + 1)
+                                                        << ": Gripper fully closed");
+        self_test_phase_ = SelfTestPhase::OPENING;
+        self_test_cycle_count_++;  // 完成一个循环
+        self_test_last_action_time_ = time;
+      }
+      break;
+
+    case SelfTestPhase::COMPLETED:
+      // 这个状态不应该被触发，因为我们在循环计数器检查中已经处理了完成情况
+      self_test_active_ = false;
+      transitionTo(GripperState::IDLE);
+      break;
+    }
+
+  // 应用速度因子 - 通过调整PID控制器的参数来实现
+  // 注意：这需要硬件接口适配器支持动态调整PID参数
+//  hw_iface_adapter_.setSpeedFactor(self_test_speed_factor_);
 }
 
 template <class HardwareInterface>
@@ -297,6 +395,9 @@ void GripperController<HardwareInterface>::update(const ros::Time& time, const r
 
   case GripperState::IDLE:
     handleIdleState();
+    break;
+  case GripperState::SELF_TEST:
+    handleSelfTestState(time, period);
     break;
   }
 
@@ -455,12 +556,30 @@ std::string GripperController<HardwareInterface>::stateToString(GripperState sta
 {
   switch (state)
   {
-  case GripperState::IDLE:    return "IDLE";
-  case GripperState::MOVING:   return "MOVING";
-  case GripperState::HOLDING:  return "HOLDING";
-  case GripperState::ERROR:    return "ERROR";
-  default:                     return "UNKNOWN";
+  case GripperState::IDLE:      return "IDLE";
+  case GripperState::MOVING:    return "MOVING";
+  case GripperState::HOLDING:   return "HOLDING";
+  case GripperState::ERROR:     return "ERROR";
+  case GripperState::SELF_TEST: return "SELF_TEST";
+  default:                      return "UNKNOWN";
   }
+}
+
+
+template <class HardwareInterface>
+bool GripperController<HardwareInterface>::triggerSelfTestCallback(std_srvs::Trigger::Request& req,
+                                                                   std_srvs::Trigger::Response& res)
+{
+  if (state_ != GripperState::IDLE && state_ != GripperState::HOLDING) {
+    res.success = false;
+    res.message = "Cannot start self-test: gripper is not in IDLE or HOLDING state";
+    return true;
+  }
+
+  triggerSelfTest();
+  res.success = true;
+  res.message = "Self-test started";
+  return true;
 }
 
 } // namespace gripper_controller

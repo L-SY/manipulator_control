@@ -9,6 +9,7 @@
 #include <std_msgs/String.h>
 #include <std_msgs/Float64.h>
 #include <std_msgs/Bool.h>
+#include <std_srvs/Trigger.h>
 #include <manipulator_msgs/GripperStallStatus.h>
 
 #include <controller_interface/controller.h>
@@ -31,7 +32,8 @@ enum class GripperState {
   IDLE,       // 空闲状态
   MOVING,     // 运动状态
   HOLDING,    // 夹持状态
-  ERROR       // 错误状态
+  ERROR,       // 错误状态
+  SELF_TEST   // 新增：自检状态
 };
 
 template <class HardwareInterface>
@@ -61,11 +63,31 @@ public:
      * \brief 将状态转换为字符串
    */
   static std::string stateToString(GripperState state);
+  void triggerSelfTest();
 private:
   void handleMovingState();
   void handleErrorState();
   void handleHoldingState();
   void handleIdleState();
+  void handleSelfTestState(const ros::Time& time, const ros::Duration& period);
+  void startSelfTest();
+
+  ros::ServiceServer self_test_service_;
+  bool triggerSelfTestCallback(std_srvs::Trigger::Request& req, std_srvs::Trigger::Response& res);
+
+  // 自检相关变量
+  bool self_test_active_ = false;
+  int self_test_cycle_count_ = 0;
+  int self_test_max_cycles_ = 3;
+  double self_test_speed_factor_ = 1.0;
+  ros::Time self_test_start_time_;
+  ros::Time self_test_last_action_time_;
+  enum class SelfTestPhase {
+    OPENING,
+    CLOSING,
+    COMPLETED
+  };
+  SelfTestPhase self_test_phase_ = SelfTestPhase::OPENING;
 
   typedef HardwareInterfaceAdapter<HardwareInterface> HwIfaceAdapter;
   typedef typename HardwareInterface::ResourceHandleType HandleType;
