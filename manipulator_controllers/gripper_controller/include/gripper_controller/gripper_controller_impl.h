@@ -228,7 +228,7 @@ void GripperController<HardwareInterface>::handleSelfTestState(const ros::Time& 
 
       // 检查是否到达目标位置
       if (isAtPosition(max_position_, position_tolerance_)) {
-        ROS_WARN_STREAM_NAMED(name_, "Self-test cycle " << (self_test_cycle_count_ + 1)
+        ROS_INFO_STREAM_NAMED(name_, "Self-test cycle " << (self_test_cycle_count_ + 1)
                                                         << ": Gripper fully opened");
         self_test_phase_ = SelfTestPhase::CLOSING;
         self_test_last_action_time_ = time;
@@ -242,7 +242,7 @@ void GripperController<HardwareInterface>::handleSelfTestState(const ros::Time& 
 
       // 检查是否到达目标位置或发生堵转
       if (isAtPosition(min_position_, position_tolerance_)) {
-        ROS_WARN_STREAM_NAMED(name_, "Self-test cycle " << (self_test_cycle_count_ + 1)
+        ROS_INFO_STREAM_NAMED(name_, "Self-test cycle " << (self_test_cycle_count_ + 1)
                                                         << ": Gripper fully closed");
         self_test_phase_ = SelfTestPhase::OPENING;
         self_test_cycle_count_++;  // 完成一个循环
@@ -307,19 +307,11 @@ void GripperController<HardwareInterface>::dynamicReconfigureCallback(
   stall_timeout_ = config.stall_timeout;
 }
 
-// 检查瞬时堵转条件（原来的isStalled逻辑）
-template <class HardwareInterface>
-bool GripperController<HardwareInterface>::checkStallCondition() const
-{
-  return (std::abs(joint_.getVelocity()) < stalled_velocity_ &&
-          std::abs(joint_.getEffort()) > stalled_force_);
-}
-
 // 更新堵转检测状态
 template <class HardwareInterface>
 void GripperController<HardwareInterface>::updateStallDetection(const ros::Time& current_time)
 {
-  bool current_condition = checkStallCondition();
+  bool current_condition = isInstantStalled();
 
   // 如果当前满足堵转条件
   if (current_condition) {
@@ -413,7 +405,7 @@ void GripperController<HardwareInterface>::handleMovingState()
     return;
   }
 
-  if (checkStallCondition()) {
+  if (isInstantStalled()) {
     if (isForceExceeded(target_effort_)) {
       transitionTo(GripperState::HOLDING);
     } else {
@@ -504,10 +496,20 @@ void GripperController<HardwareInterface>::publishState()
 }
 
 template <class HardwareInterface>
+bool GripperController<HardwareInterface>::isInstantStalled() const
+{
+  return (std::abs(joint_.getVelocity()) < stalled_velocity_ &&
+          std::abs(joint_.getEffort()) > stalled_force_);
+}
+
+template <class HardwareInterface>
 void GripperController<HardwareInterface>::publishStallInformation(const ros::Time& current_time)
 {
-  // 检查当前堵转状态
+  // 检查当前持续堵转状态
   bool is_stalled = isStalled(current_time);
+
+  // 检查当前瞬时堵转状态(新增)
+  bool is_instant_stalled = isInstantStalled();
 
   // 创建堵转信息消息
   manipulator_msgs::GripperStallStatus stall_msg;
@@ -516,6 +518,7 @@ void GripperController<HardwareInterface>::publishStallInformation(const ros::Ti
   stall_msg.header.stamp = current_time;
   stall_msg.header.frame_id = joint_.getName();
   stall_msg.is_stalled = is_stalled;
+  stall_msg.is_instant_stalled = is_instant_stalled; // 新增
   stall_msg.joint_name = joint_.getName();
 
   // 填充当前状态
@@ -539,6 +542,9 @@ void GripperController<HardwareInterface>::publishStallInformation(const ros::Ti
 
   // 如果状态发生变化，记录日志
   static bool last_stall_state = false;
+  static bool last_instant_stall_state = false;
+
+  // 记录持续堵转状态变化
   if (is_stalled != last_stall_state) {
     if (is_stalled) {
       ROS_WARN("Gripper stall detected on joint '%s'! Velocity: %.4f (threshold: %.4f), Effort: %.4f (threshold: %.4f)",
@@ -548,6 +554,17 @@ void GripperController<HardwareInterface>::publishStallInformation(const ros::Ti
       ROS_INFO("Gripper stall condition cleared on joint '%s'", joint_.getName().c_str());
     }
     last_stall_state = is_stalled;
+  }
+
+  // 记录瞬时堵转状态变化(新增)
+  if (is_instant_stalled != last_instant_stall_state) {
+    if (is_instant_stalled) {
+      ROS_DEBUG("Gripper instant stall condition met on joint '%s'. Velocity: %.4f, Effort: %.4f",
+                joint_.getName().c_str(), stall_msg.current_velocity, stall_msg.current_effort);
+    } else {
+      ROS_DEBUG("Gripper instant stall condition cleared on joint '%s'", joint_.getName().c_str());
+    }
+    last_instant_stall_state = is_instant_stalled;
   }
 }
 

@@ -100,7 +100,6 @@ private:
   void transitionTo(GripperState new_state);
 
   // 状态检查
-  bool checkStallCondition() const; // 检查瞬时堵转条件
   void updateStallDetection(const ros::Time& current_time); // 更新堵转检测状态
   bool isStalled(const ros::Time& current_time); // 带时间参数的堵转检测
 
@@ -123,6 +122,7 @@ private:
   bool is_stalled_;              // 堵转状态标志
   double last_position_error_;   // 上一次的位置误差
   double stall_position_threshold_; // 位置变化阈值，用于判断是否堵转
+  bool isInstantStalled() const;
   void publishStallInformation(const ros::Time& current_time);
 
   // 限制参数（从URDF读取）

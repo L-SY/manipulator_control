@@ -1,5 +1,6 @@
 Header header
-bool is_stalled                # 是否处于堵转状态
+bool is_stalled                # 是否处于持续堵转状态
+bool is_instant_stalled        # 是否处于瞬时堵转状态(新增)
 float64 current_velocity       # 当前速度绝对值
 float64 current_effort         # 当前力矩绝对值
 float64 velocity_threshold     # 速度阈值
