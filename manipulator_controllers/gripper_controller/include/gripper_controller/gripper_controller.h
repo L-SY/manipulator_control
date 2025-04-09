@@ -205,6 +205,8 @@ private:
   void publishState();
   void completeGoal(bool success, const std::string& message);
   void checkForSuccess(const ros::Time& time, double error_position, double current_position, double current_velocity);
+  typedef typename HardwareInterface::ResourceHandleType HandleType;
+  HandleType joint_;
 };
 
 } // namespace gripper_controller

@@ -67,9 +67,11 @@ bool GripperController<HardwareInterface>::init(hardware_interface::RobotHW* rob
   controller_nh_.param("default_max_effort", default_max_effort_, default_max_effort_);
   controller_nh_.param("release_offset", release_offset_, release_offset_);
 
-  hw_iface_adapter_.init(robot_hw->get<HardwareInterface>(), controller_nh_);
+  auto hardwareInterface = robot_hw->get<HardwareInterface>();
+  joint_ = hardwareInterface->getHandle(joint_name);
+  hw_iface_adapter_.init(joint_, controller_nh_);
 
-  command_struct_.position_ = hw_iface_adapter_.getPosition();
+  command_struct_.position_ = joint_.getPosition();
   command_struct_.max_effort_ = default_max_effort_;
   command_struct_.speed_ = default_speed_;
   command_.initRT(command_struct_);
@@ -128,9 +130,9 @@ void GripperController<HardwareInterface>::update(const ros::Time& time, const r
   command_struct_rt_ = *(command_.readFromRT());
 
   // 获取当前状态
-  double current_position = hw_iface_adapter_.getPosition();
-  double current_velocity = hw_iface_adapter_.getVelocity();
-  double current_effort = hw_iface_adapter_.getEffort();
+  double current_position = joint_.getPosition();
+  double current_velocity = joint_.getVelocity();
+  double current_effort = joint_.getEffort();
 
   // 状态机逻辑
   switch (state_)
@@ -246,7 +248,7 @@ void GripperController<HardwareInterface>::updateCommand(const ros::Time& /*time
   case GripperState::STALLED:
   case GripperState::SELF_TEST_FAILED:
     // 保持当前位置
-    computed_command_ = hw_iface_adapter_.getPosition();
+    computed_command_ = joint_.getPosition();
     break;
   }
 
@@ -254,7 +256,7 @@ void GripperController<HardwareInterface>::updateCommand(const ros::Time& /*time
   hw_iface_adapter_.updateCommand(period, computed_command_, target_effort_);
 
   // 更新最后移动时间
-  double velocity = hw_iface_adapter_.getVelocity();
+  double velocity = joint_.getVelocity();
   if (std::abs(velocity) > stall_velocity_threshold_) {
     last_movement_time_ = ros::Time::now();
   }
@@ -335,7 +337,7 @@ void GripperController<HardwareInterface>::handleReleaseCommand()
 {
   if (state_ == GripperState::HOLDING) {
     // 微微张开，让物体掉落
-    double current_position = hw_iface_adapter_.getPosition();
+    double current_position = joint_.getPosition();
     target_position_ = current_position + release_offset_;
     if (target_position_ > max_position_)
       target_position_ = max_position_;
@@ -482,21 +484,21 @@ bool GripperController<HardwareInterface>::isStalled(const ros::Time& time)
   double time_since_last_movement = (time - last_movement_time_).toSec();
 
   // 如果速度低于阈值并且超过超时时间，认为堵转
-  return (std::abs(hw_iface_adapter_.getVelocity()) < stall_velocity_threshold_ &&
+  return (std::abs(joint_.getVelocity()) < stall_velocity_threshold_ &&
           time_since_last_movement > stall_timeout_);
 }
 
 template <class HardwareInterface>
 bool GripperController<HardwareInterface>::isAtPosition(double target_position, double tolerance)
 {
-  double current_position = hw_iface_adapter_.getPosition();
+  double current_position = joint_.getPosition();
   return std::abs(current_position - target_position) < tolerance;
 }
 
 template <class HardwareInterface>
 bool GripperController<HardwareInterface>::isForceExceeded(double max_force)
 {
-  double current_effort = std::abs(hw_iface_adapter_.getEffort());
+  double current_effort = std::abs(joint_.getEffort());
   return current_effort >= max_force;
 }
 
@@ -567,7 +569,7 @@ template <class HardwareInterface>
 void GripperController<HardwareInterface>::setHoldPosition(const ros::Time& /*time*/)
 {
   // 获取当前位置
-  double current_position = hw_iface_adapter_.getPosition();
+  double current_position = joint_.getPosition();
 
   // 更新命令
   command_struct_.position_ = current_position;
@@ -586,8 +588,8 @@ void GripperController<HardwareInterface>::publishFeedback(const ros::Time& time
   if (!rt_active_goal_) return;
 
   // 获取当前状态
-  double current_position = hw_iface_adapter_.getPosition();
-  double current_effort = hw_iface_adapter_.getEffort();
+  double current_position = joint_.getPosition();
+  double current_effort = joint_.getEffort();
 
   // 创建并填充反馈
   manipulator_msgs::GripperCommandFeedback feedback;
@@ -624,8 +626,8 @@ void GripperController<HardwareInterface>::completeGoal(bool success, const std:
   if (!rt_active_goal_) return;
 
   // 获取当前状态
-  double current_position = hw_iface_adapter_.getPosition();
-  double current_effort = hw_iface_adapter_.getEffort();
+  double current_position = joint_.getPosition();
+  double current_effort = joint_.getEffort();
 
   // 填充结果
   manipulator_msgs::GripperCommandResult result;
