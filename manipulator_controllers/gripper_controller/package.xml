@@ -19,6 +19,7 @@
   <depend>manipulator_msgs</depend>
   <depend>urdf</depend>
   <depend>manipulator_common</depend>
+  <depend>dynamic_reconfigure</depend>
 
   <export>
     <controller_interface plugin="${prefix}/gripper_controller_plugins.xml"/>

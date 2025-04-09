@@ -8,12 +8,18 @@
 #include <ros/time.h>
 #include <std_msgs/String.h>
 #include <std_msgs/Float64.h>
+#include <std_msgs/Bool.h>
+#include <manipulator_msgs/GripperStallStatus.h>
 
 #include <controller_interface/controller.h>
 #include <hardware_interface/joint_command_interface.h>
 #include <controller_interface/multi_interface_controller.h>
 
 #include <gripper_controller/hardware_interface_adapter.h>
+#include <urdf/model.h>
+#include <dynamic_reconfigure/server.h>
+#include <gripper_controller/GripperControllerConfig.h>
+
 
 namespace gripper_controller
 {
@@ -55,7 +61,6 @@ public:
      * \brief 将状态转换为字符串
    */
   static std::string stateToString(GripperState state);
-
 private:
   void handleMovingState();
   void handleErrorState();
@@ -73,7 +78,10 @@ private:
   void transitionTo(GripperState new_state);
 
   // 状态检查
-  bool isStalled() const;
+  bool checkStallCondition() const; // 检查瞬时堵转条件
+  void updateStallDetection(const ros::Time& current_time); // 更新堵转检测状态
+  bool isStalled(const ros::Time& current_time); // 带时间参数的堵转检测
+
   bool isAtPosition(double target_position, double tolerance) const;
   bool isForceExceeded(double max_force) const;
   void publishState();
@@ -81,13 +89,30 @@ private:
   void commandCB(const std_msgs::Float64::ConstPtr& msg);
 
   // 参数
+  std::string urdf_string_;
+  std::shared_ptr<urdf::Model> urdf_model_;
+
+  // 修改参数名称
+  double stalled_velocity_;
+  double stalled_force_;
+  double stall_timeout_;
+  ros::Time stall_condition_met_time_; // 开始满足堵转条件的时间
+  bool stall_condition_active_;  // 是否正在满足堵转条件
+  bool is_stalled_;              // 堵转状态标志
+  double last_position_error_;   // 上一次的位置误差
+  double stall_position_threshold_; // 位置变化阈值，用于判断是否堵转
+  void publishStallInformation(const ros::Time& current_time);
+
+  // 限制参数（从URDF读取）
+  double max_position_;
+  double min_position_;
+  double max_effort_;
+  double max_velocity_;
+
   bool verbose_;                    // 调试标志
   std::string name_;               // 控制器名称
-  double max_position_;            // 夹爪最大开度
-  double min_position_;            // 夹爪最小开度
+
   double position_tolerance_;       // 位置容差
-  double force_threshold_;         // 力阈值
-  double default_max_effort_;      // 默认最大力
 
   // 运行时数据
   double target_position_;         // 目标位置
@@ -102,8 +127,15 @@ private:
 
   // ROS API
   ros::NodeHandle controller_nh_;
-  ros::Publisher state_publisher_;
+  ros::Publisher state_publisher_, stall_status_pub_;
   ros::Subscriber command_subscriber_;
+
+  // 动态重构相关
+  std::unique_ptr<dynamic_reconfigure::Server<gripper_controller::GripperControllerConfig>> dyn_reconfig_server_;
+  void dynamicReconfigureCallback(gripper_controller::GripperControllerConfig& config, uint32_t level);
+
+  // 添加URDF加载函数
+  bool loadUrdf(ros::NodeHandle& root_nh);
 };
 
 } // namespace gripper_controller

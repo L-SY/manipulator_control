@@ -16,6 +16,7 @@ set(CATKIN_PACKAGE_DEPENDENCIES
         manipulator_msgs
         urdf
         manipulator_common
+        dynamic_reconfigure
 )
 
 ## Find catkin macros and libraries
@@ -24,6 +25,10 @@ find_package(catkin REQUIRED COMPONENTS
 )
 
 find_package(Eigen3 REQUIRED)
+
+generate_dynamic_reconfigure_options(
+        cfg/GripperController.cfg
+)
 
 ###################################
 ## catkin specific configuration ##
@@ -49,6 +54,12 @@ include_directories(
 ## Declare cpp executables
 add_library(${PROJECT_NAME}
         src/gripper_controller.cpp
+)
+
+add_dependencies(${PROJECT_NAME}
+        ${${PROJECT_NAME}_EXPORTED_TARGETS}
+        ${catkin_EXPORTED_TARGETS}
+        ${PROJECT_NAME}_gencfg
 )
 
 target_link_libraries(${PROJECT_NAME}
