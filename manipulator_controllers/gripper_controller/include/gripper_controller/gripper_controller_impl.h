@@ -294,16 +294,7 @@ template <class HardwareInterface>
 void GripperController<HardwareInterface>::handleMovingState()
 {
   if (isAtPosition(target_position_)) {
-    transitionTo(GripperState::HOLDING);
-    return;
-  }
-
-  if (isInstantStalled()) {
-    if (isForceExceeded(target_effort_)) {
-      transitionTo(GripperState::HOLDING);
-    } else {
-      transitionTo(GripperState::ERROR);
-    }
+    transitionTo(GripperState::IDLE);
   }
 }
 
@@ -334,8 +325,6 @@ void GripperController<HardwareInterface>::startSelfTest()
   self_test_cycle_count_ = 0;
   self_test_speed_factor_ = 1.0;
   self_test_phase_ = SelfTestPhase::OPENING;
-  self_test_start_time_ = ros::Time::now();
-  self_test_last_action_time_ = ros::Time::now();
 
   transitionTo(GripperState::SELF_TEST);
 }
@@ -369,7 +358,6 @@ void GripperController<HardwareInterface>::handleSelfTestState(const ros::Time& 
       ROS_INFO_STREAM_NAMED(name_, "Self-test cycle " << (self_test_cycle_count_ + 1)
                                                       << ": Gripper fully opened");
       self_test_phase_ = SelfTestPhase::CLOSING;
-      self_test_last_action_time_ = time;
     }
     break;
 
@@ -382,7 +370,6 @@ void GripperController<HardwareInterface>::handleSelfTestState(const ros::Time& 
                                                       << ": Gripper fully closed");
       self_test_phase_ = SelfTestPhase::OPENING;
       self_test_cycle_count_++;
-      self_test_last_action_time_ = time;
     }
     break;
 
@@ -459,6 +446,10 @@ bool GripperController<HardwareInterface>::isStalled(const ros::Time& current_ti
   if (stall_condition_active_ &&
       !stall_condition_met_time_.isZero() &&
       (current_time - stall_condition_met_time_).toSec() >= stall_timeout_) {
+    if (self_test_active_)
+      transitionTo(GripperState::ERROR);
+    else
+      transitionTo(GripperState::HOLDING);
     return true;
   }
 
@@ -583,4 +574,5 @@ bool GripperController<HardwareInterface>::handleGripperCommandService(
 
   return true;
 }
+
 } // namespace gripper_controller
