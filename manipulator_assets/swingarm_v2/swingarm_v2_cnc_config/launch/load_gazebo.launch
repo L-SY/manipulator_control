@@ -1,9 +1,8 @@
 <launch>
-    <param name="robot_description"
-           command="$(find xacro)/xacro $(find swingarm_v2_cnc_config)/description/urdf/robot.xacro"/>
+    <arg name="hardware_interface" default="PositionJointInterface"/>
 
-    <param name="swingarm_description"
-           command="$(find xacro)/xacro $(find swingarm_v2_cnc_config)/description/urdf/robot.xacro"/>
+    <param name="robot_description"
+           command="$(find xacro)/xacro $(find swingarm_v2_cnc_config)/description/urdf/robot.xacro hardware_interface:=$(arg hardware_interface)"/>
 
     <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher">
         <param name="publish_frequency" type="double" value="50.0"/>
@@ -16,7 +15,7 @@
     <!-- push robot_description to factory and spawn robot in gazebo -->
     <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" clear_params="true"
           output="screen"
-          args="-param swingarm_description -urdf -model swingarm_v2
+          args="-param robot_description -urdf -model swingarm_v2
         -z 0.
         "
     />

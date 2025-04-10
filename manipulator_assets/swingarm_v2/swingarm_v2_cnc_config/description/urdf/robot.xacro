@@ -1,7 +1,11 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://ros.org/wiki/xacro" name="swingarm_v2">
 
+    <xacro:arg name="hardware_interface" default="PositionJointInterface"/>
+
     <xacro:include filename="$(find swingarm_v2_cnc_config)/description/urdf/arm.urdf.xacro"/>
-    <xacro:include filename="$(find swingarm_v2_cnc_config)/description/urdf/gazebo.xacro"/>
+    <xacro:include filename="$(find swingarm_v2_cnc_config)/description/urdf/gazebo.xacro">
+        <xacro:arg name="hardware_interface" value="$(arg hardware_interface)"/>
+    </xacro:include>
 
 </robot>

@@ -1,8 +1,10 @@
 <launch>
     <rosparam file="$(find swingarm_v2_cnc_config)/config/hw.yaml" command="load" />
 
+    <arg name="hardware_interface" default="PositionJointInterface"/>
+
     <param name="robot_description"
-           command="$(find xacro)/xacro $(find swingarm_v2_cnc_config)/description/urdf/robot.xacro"/>
+           command="$(find xacro)/xacro $(find swingarm_v2_cnc_config)/description/urdf/robot.xacro hardware_interface:=$(arg hardware_interface)"/>
 
     <node name="swingarm_hw" pkg="swingarm_hw" type="swingarm_hw" respawn="false"
           clear_params="true" />

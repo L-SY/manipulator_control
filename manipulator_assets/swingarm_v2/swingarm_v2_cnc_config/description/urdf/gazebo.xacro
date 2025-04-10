@@ -3,13 +3,15 @@
     <xacro:include filename="$(find manipulator_common)/include/manipulator_common/utilities/urdf/common.xacro"/>
 
     <!-- Transmission definitions -->
-    <xacro:create_transmission joint_name="joint1" mechanical_reduction="1"/>
-    <xacro:create_transmission joint_name="joint2" mechanical_reduction="1"/>
-    <xacro:create_transmission joint_name="joint3" mechanical_reduction="-1"/>
-    <xacro:create_transmission joint_name="joint4" mechanical_reduction="1"/>
-    <xacro:create_transmission joint_name="joint5" mechanical_reduction="1"/>
-    <xacro:create_transmission joint_name="joint6" mechanical_reduction="-1"/>
-    <xacro:create_transmission joint_name="joint7" mechanical_reduction="-1"/>
+    <xacro:arg name="hardware_interface" default="PositionJointInterface"/>
+
+    <xacro:create_transmission joint_name="joint1" mechanical_reduction="1" hardware_interface="$(arg hardware_interface)"/>
+    <xacro:create_transmission joint_name="joint2" mechanical_reduction="-1" hardware_interface="$(arg hardware_interface)"/>
+    <xacro:create_transmission joint_name="joint3" mechanical_reduction="-1" hardware_interface="$(arg hardware_interface)"/>
+    <xacro:create_transmission joint_name="joint4" mechanical_reduction="-1" hardware_interface="$(arg hardware_interface)"/>
+    <xacro:create_transmission joint_name="joint5" mechanical_reduction="1" hardware_interface="$(arg hardware_interface)"/>
+    <xacro:create_transmission joint_name="joint6" mechanical_reduction="1" hardware_interface="$(arg hardware_interface)"/>
+    <xacro:create_transmission joint_name="joint7" mechanical_reduction="1" hardware_interface="$(arg hardware_interface)"/>
 
     <gazebo reference="joint1">
         <dynamics damping="0.4" friction="0.4"/>
@@ -40,8 +42,9 @@
     </gazebo>
 
     <gazebo>
-        <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
+        <plugin name="manipulator_ros_control" filename="libmanipulator_hw_sim.so">
             <robotNamespace>/</robotNamespace>
+            <robotSimType>manipulator_gazebo/ManipulatorHWSim</robotSimType>
         </plugin>
     </gazebo>
 </robot>

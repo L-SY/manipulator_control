@@ -1,6 +1,6 @@
 swingarm_hw:
   loop_frequency: 500
-  cycle_time_error_threshold: 0.001
+  cycle_time_error_threshold: 0.002
   thread_priority: 95
   bus:
     - can0
@@ -10,27 +10,55 @@ swingarm_hw:
       bus: "can0"
       id: 0x001
       model: "dm4340"
+      config:
+        control_mode: "POSITION_VELOCITY"
+        master_id: 0x011
+        max_velocity: 3.0
     - name: "joint2_motor"
       bus: "can0"
       id: 0x002
       model: "dm4340"
+      config:
+        control_mode: "POSITION_VELOCITY"
+        master_id: 0x012
+        max_velocity: 3.0
     - name: "joint3_motor"
       bus: "can0"
       id: 0x003
       model: "dm4340"
+      config:
+        control_mode: "POSITION_VELOCITY"
+        master_id: 0x013
+        max_velocity: 3.0
     - name: "joint4_motor"
       bus: "can0"
       id: 0x004
       model: "dm4340"
+      config:
+        control_mode: "POSITION_VELOCITY"
+        master_id: 0x014
+        max_velocity: 3.0
     - name: "joint5_motor"
       bus: "can0"
       id: 0x005
       model: "dm4310"
+      config:
+        control_mode: "POSITION_VELOCITY"
+        master_id: 0x015
+        max_velocity: 3.0
     - name: "joint6_motor"
       bus: "can0"
       id: 0x006
       model: "dm4310"
+      config:
+        control_mode: "POSITION_VELOCITY"
+        master_id: 0x016
+        max_velocity: 3.0
     - name: "joint7_motor"
       bus: "can0"
       id: 0x007
       model: "dm4310"
+      config:
+        control_mode: "POSITION_VELOCITY"
+        master_id: 0x017
+        max_velocity: 3.0
