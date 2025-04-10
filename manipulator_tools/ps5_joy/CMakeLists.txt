@@ -40,3 +40,7 @@ target_link_libraries(joy_twist ${catkin_LIBRARIES} ${PROJECT_NAME})
 add_executable(joy_rl src/joyRLCommand.cpp)
 
 target_link_libraries(joy_rl ${catkin_LIBRARIES} ${PROJECT_NAME})
+
+add_executable(joy_gripper src/joyGripperCommand.cpp)
+
+target_link_libraries(joy_gripper ${catkin_LIBRARIES} ${PROJECT_NAME})
