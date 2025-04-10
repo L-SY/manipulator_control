@@ -62,7 +62,6 @@ public:
 
   void setCommand(double position, double effort);
   bool isAtPosition(double target_position) const;
-  bool isForceExceeded(double max_force) const;
 
   void handleHoldingState();
   void handleIdleState();
@@ -106,20 +105,20 @@ private:
 
   std::string urdf_string_;
   std::shared_ptr<urdf::Model> urdf_model_;
-  double max_position_;
-  double min_position_;
-  double max_effort_;
-  double max_velocity_;
-  double position_tolerance_;
-  double stalled_velocity_;
-  double stalled_force_;
-  double stall_timeout_;
+  double max_position_{};
+  double min_position_{};
+  double max_effort_{};
+  double max_velocity_{};
+  double position_tolerance_{};
+  double stalled_velocity_{};
+  double stalled_force_{};
+  double stall_timeout_{};
   double release_offset_{0.01};
   ros::Time stall_condition_met_time_;
-  bool stall_condition_active_;
-  bool is_stalled_;
-  double target_position_;
-  double target_effort_;
+  bool stall_condition_active_{};
+  bool is_stalled_{};
+  double target_position_{};
+  double target_effort_{};
   Commands command_struct_;
 
   ros::NodeHandle controller_nh_;
@@ -130,7 +129,7 @@ private:
 
   std::string name_;
   std::string current_command_;
-  bool verbose_;
+  bool verbose_{};
 };
 
 } // namespace gripper_controller

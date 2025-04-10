@@ -1,10 +1,10 @@
 cmake_minimum_required(VERSION 3.10)
 project(gripper_controller)
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-#add_definitions(-Wall -Werror)
+add_definitions(-Wall -Werror)
 
 set(CATKIN_PACKAGE_DEPENDENCIES
         roscpp
