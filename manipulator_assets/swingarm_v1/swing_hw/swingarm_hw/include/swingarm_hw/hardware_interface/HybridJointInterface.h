@@ -89,4 +89,4 @@ class HybridJointHandle : public hardware_interface::JointStateHandle {
 
 class HybridJointInterface : public hardware_interface::HardwareResourceManager<HybridJointHandle, hardware_interface::ClaimResources> {};
 
-}  // namespace legged
+}  // namespace hardware_interface
