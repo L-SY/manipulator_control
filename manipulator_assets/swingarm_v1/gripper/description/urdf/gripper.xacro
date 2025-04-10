@@ -17,7 +17,7 @@
                        mesh_file="package://gripper/description/meshes/left_gripper.stl"
                        inertial_xyz="29.508e-3 52.186e-3 0.778e-3"/>
 
-    <xacro:create_joint name="left_gripper_joint" type="prismatic" parent="gripper_base" child="left_gripper" origin_xyz="0.08 -0.035 0" origin_rpy="0 0 0" axis_xyz="0 1 0" lower="0" upper="0.035" effort="700" velocity="0.50"/>
+    <xacro:create_joint name="left_gripper_joint" type="prismatic" parent="gripper_base" child="left_gripper" origin_xyz="0.08 -0.035 0" origin_rpy="0 0 0" axis_xyz="0 1 0" lower="0.0001" upper="0.032" effort="700" velocity="0.50"/>
     <xacro:create_joint name="fixed_world" type="fixed" parent="world" child="gripper_base" origin_xyz="0 0 0.3" origin_rpy="0 0 0" />
 
     <xacro:create_transmission joint_name="left_gripper_joint" mechanical_reduction="-100" hardware_interface="$(arg hardware_interface)"/>

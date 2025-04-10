@@ -8,17 +8,30 @@ controllers:
     publish_rate: 100
 
 #  gripper_controller:
-#    type: hybrid_controllers/gripperController
+#    type: position_controllers/JointPositionController
 #    joint: left_gripper_joint
-
-  gripper_controller:
-    type: position_controllers/JointPositionController
-    joint: left_gripper_joint
 
 #  gripper_controller:
 #    type: effort_controllers/JointPositionController
 #    joint: left_gripper_joint
 #    pid: { p: 3000.0, i: 500., d: 1000.0, i_clamp_max: 800.0, i_clamp_min: -800.0, antiwindup: false, publish_state: false }
+
+  gripper_controller:
+    type: position_controllers/GripperController
+    joint: left_gripper_joint  # 控制器将控制的关节名称
+
+    verbose: true
+    position_tolerance: 0.001  # 位置容差（米）
+    stalled_velocity: 0.01
+    stalled_force_: 15
+    stall_timeout: 0.1         # 停滞超时时间（秒）
+
+    release_offset: 0.01
+    force_filter: 0.9
+    force_step: 0.00005
+
+    # PID 控制器参数（如果使用 EffortJointInterface）
+    pid: { p: 3000.0, i: 500., d: 1000.0, i_clamp_max: 800.0, i_clamp_min: -800.0, antiwindup: false, publish_state: false }
 
   imu_sensor_controller:
     type: imu_sensor_controller/ImuSensorController
