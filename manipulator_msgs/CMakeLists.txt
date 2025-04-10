@@ -12,6 +12,7 @@ find_package(catkin REQUIRED COMPONENTS
 
 add_service_files(
         FILES
+        GripperCommand.srv
 
 )
 
@@ -22,9 +23,7 @@ add_action_files(
 
 add_message_files(
         FILES
-        GripperState.msg
-        GripperCmd.msg
-        GripperStallStatus.msg
+        GripperStatus.msg
 )
 #
 #add_action_files(

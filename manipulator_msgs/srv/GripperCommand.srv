@@ -1,0 +1,9 @@
+# 夹爪命令服务
+
+# 请求
+string command      # 命令类型: "open", "close", "self_test"
+float64 max_effort  # 最大允许力矩
+---
+# 响应
+bool success        # 命令是否成功接收
+string message      # 响应消息

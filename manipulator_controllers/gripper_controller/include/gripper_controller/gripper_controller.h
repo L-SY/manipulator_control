@@ -11,16 +11,18 @@
 #include <std_msgs/Bool.h>
 #include <std_srvs/Trigger.h>
 #include <manipulator_msgs/GripperStallStatus.h>
+#include <manipulator_msgs/GripperStatus.h>
+#include <manipulator_msgs/GripperCommand.h>
 
 #include <controller_interface/controller.h>
 #include <hardware_interface/joint_command_interface.h>
 #include <controller_interface/multi_interface_controller.h>
+#include <realtime_tools/realtime_publisher.h>
 
 #include <gripper_controller/hardware_interface_adapter.h>
 #include <urdf/model.h>
 #include <dynamic_reconfigure/server.h>
 #include <gripper_controller/GripperControllerConfig.h>
-
 
 namespace gripper_controller
 {
@@ -32,8 +34,8 @@ enum class GripperState {
   IDLE,       // 空闲状态
   MOVING,     // 运动状态
   HOLDING,    // 夹持状态
-  ERROR,       // 错误状态
-  SELF_TEST   // 新增：自检状态
+  ERROR,      // 错误状态
+  SELF_TEST,  // 自检状态
 };
 
 template <class HardwareInterface>
@@ -55,12 +57,12 @@ public:
   void update(const ros::Time& time, const ros::Duration& period) override;
 
   /**
-     * \brief 获取当前夹爪状态
+   * \brief 获取当前夹爪状态
    */
   GripperState getState() const { return state_; }
 
   /**
-     * \brief 将状态转换为字符串
+   * \brief 将状态转换为字符串
    */
   static std::string stateToString(GripperState state);
   void triggerSelfTest();
@@ -70,10 +72,17 @@ private:
   void handleHoldingState();
   void handleIdleState();
   void handleSelfTestState(const ros::Time& time, const ros::Duration& period);
-  void startSelfTest();
 
-  ros::ServiceServer self_test_service_;
-  bool triggerSelfTestCallback(std_srvs::Trigger::Request& req, std_srvs::Trigger::Response& res);
+  void startSelfTest();
+  bool isForceExceeded(double max_force) const;
+  // 命令设置
+  void setCommand(double position, double effort);
+
+  // 服务回调
+  ros::ServiceServer gripper_command_server_;
+  bool handleGripperCommandService(
+      manipulator_msgs::GripperCommand::Request& req,
+      manipulator_msgs::GripperCommand::Response& res);
 
   // 自检相关变量
   bool self_test_active_ = false;
@@ -102,10 +111,11 @@ private:
   // 状态检查
   void updateStallDetection(const ros::Time& current_time); // 更新堵转检测状态
   bool isStalled(const ros::Time& current_time); // 带时间参数的堵转检测
+  bool isInstantStalled() const; // 瞬时堵转检测
 
-  bool isAtPosition(double target_position, double tolerance) const;
-  bool isForceExceeded(double max_force) const;
-  void publishState();
+  bool isAtPosition(double target_position) const;
+  void publishStatus(const ros::Time& current_time);
+
   // 命令回调
   void commandCB(const std_msgs::Float64::ConstPtr& msg);
 
@@ -120,10 +130,6 @@ private:
   ros::Time stall_condition_met_time_; // 开始满足堵转条件的时间
   bool stall_condition_active_;  // 是否正在满足堵转条件
   bool is_stalled_;              // 堵转状态标志
-  double last_position_error_;   // 上一次的位置误差
-  double stall_position_threshold_; // 位置变化阈值，用于判断是否堵转
-  bool isInstantStalled() const;
-  void publishStallInformation(const ros::Time& current_time);
 
   // 限制参数（从URDF读取）
   double max_position_;
@@ -149,7 +155,7 @@ private:
 
   // ROS API
   ros::NodeHandle controller_nh_;
-  ros::Publisher state_publisher_, stall_status_pub_;
+  std::shared_ptr<realtime_tools::RealtimePublisher<manipulator_msgs::GripperStatus>> status_pub_;
   ros::Subscriber command_subscriber_;
 
   // 动态重构相关
@@ -158,6 +164,12 @@ private:
 
   // 添加URDF加载函数
   bool loadUrdf(ros::NodeHandle& root_nh);
+
+  // 抓取相关参数
+  std::string current_command_;
+  double release_offset_{0.01};
+
+  ros::Time grip_phase_start_time_;
 };
 
 } // namespace gripper_controller
