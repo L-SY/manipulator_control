@@ -15,20 +15,13 @@ GripperController<HardwareInterface>::GripperController()
 template <class HardwareInterface>
 void GripperController<HardwareInterface>::starting(const ros::Time& time)
 {
-  double current_position = joint_.getPosition();
-
-  target_position_ = current_position;
-  target_effort_ = max_effort_;
-
+  setCommand(joint_.getPosition(), stalled_force_);
   state_ = GripperState::IDLE;
   previous_state_ = GripperState::IDLE;
   is_stalled_ = false;
+  constant_force_ = false;
   stall_condition_active_ = false;
   self_test_active_ = false;
-
-  if (verbose_) {
-    ROS_INFO_STREAM_NAMED(name_, "Starting gripper controller at position " << current_position);
-  }
 }
 
 template <class HardwareInterface>
@@ -77,7 +70,7 @@ bool GripperController<HardwareInterface>::init(hardware_interface::RobotHW* rob
     controller_nh_.param("verbose", verbose_, false);
     controller_nh_.param("position_tolerance", position_tolerance_, 0.01);
     controller_nh_.param("stalled_velocity", stalled_velocity_, 0.001);
-    controller_nh_.param("stalled_force", stalled_force_, 0.5 * max_effort_);
+    controller_nh_.param("stalled_force", stalled_force_, 50.0);
     controller_nh_.param("stall_timeout", stall_timeout_, 0.5);
     controller_nh_.param<double>("release_offset", release_offset_, 0.01);
 
@@ -89,12 +82,11 @@ bool GripperController<HardwareInterface>::init(hardware_interface::RobotHW* rob
     command_struct_.position_ = joint_.getPosition();
     command_struct_.max_effort_ = max_effort_;
 
-    target_position_ = joint_.getPosition();
-    target_effort_ = max_effort_;
-
+    setCommand(joint_.getPosition(), stalled_force_);
     command_subscriber_ = controller_nh_.subscribe<std_msgs::Float64>(
         "command", 1, &GripperController::commandCB, this);
-
+    normalized_command_subscriber_ = controller_nh_.subscribe<std_msgs::Float64>(
+        "normalized_command", 1, &GripperController::normalizedCommandCB, this);
     gripper_command_server_ = controller_nh_.advertiseService(
         "gripper_command", &GripperController::handleGripperCommandService, this);
 
@@ -144,7 +136,7 @@ void GripperController<HardwareInterface>::update(const ros::Time& time, const r
   }
 
   publishStatus(time);
-  hw_iface_adapter_.updateCommand(period, target_position_, target_effort_);
+  hw_iface_adapter_.updateCommand(period, target_position_, target_effort_, constant_force_);
 }
 
 template <class HardwareInterface>
@@ -207,9 +199,8 @@ bool GripperController<HardwareInterface>::isAtPosition(double target_position) 
 template <class HardwareInterface>
 void GripperController<HardwareInterface>::handleHoldingState()
 {
-  if (!isAtPosition(target_position_)) {
-    transitionTo(GripperState::MOVING);
-  }
+  constant_force_ = true;
+  setCommand(joint_.getPosition(), stalled_force_ * 0.25);
 }
 
 template <class HardwareInterface>
@@ -268,8 +259,7 @@ void GripperController<HardwareInterface>::handleSelfTestState(const ros::Time& 
 
   switch (self_test_phase_) {
   case SelfTestPhase::OPENING:
-    target_position_ = max_position_;
-    target_effort_ = max_effort_ * 0.7;
+    setCommand(max_position_, stalled_force_);
 
     if (isAtPosition(max_position_)) {
       self_test_phase_ = SelfTestPhase::CLOSING;
@@ -277,8 +267,7 @@ void GripperController<HardwareInterface>::handleSelfTestState(const ros::Time& 
     break;
 
   case SelfTestPhase::CLOSING:
-    target_position_ = min_position_;
-    target_effort_ = max_effort_ * 0.7;
+    setCommand(min_position_, stalled_force_);
 
     if (isAtPosition(min_position_)) {
       self_test_phase_ = SelfTestPhase::OPENING;
@@ -297,9 +286,12 @@ template <class HardwareInterface>
 void GripperController<HardwareInterface>::transitionTo(GripperState new_state)
 {
   if (state_ == new_state) return;
-
   previous_state_ = state_;
+
   state_ = new_state;
+
+  if(state_ != GripperState::HOLDING)
+    constant_force_ = false;
 
   if (verbose_)
     ROS_INFO_STREAM_NAMED(name_, "State transition: "
@@ -326,7 +318,11 @@ std::string GripperController<HardwareInterface>::stateToString(GripperState sta
 template <class HardwareInterface>
 bool GripperController<HardwareInterface>::isInstantStalled() const
 {
-  return (std::abs(joint_.getVelocity()) < stalled_velocity_ &&
+  if (state_ == GripperState::HOLDING)
+    return (std::abs(joint_.getVelocity()) < stalled_velocity_ &&
+            std::abs(joint_.getEffort()) > 5);
+  else
+    return (std::abs(joint_.getVelocity()) < stalled_velocity_ &&
           std::abs(joint_.getEffort()) > stalled_force_);
 }
 
@@ -356,9 +352,25 @@ bool GripperController<HardwareInterface>::isStalled(const ros::Time& current_ti
       (current_time - stall_condition_met_time_).toSec() >= stall_timeout_) {
     if (self_test_active_)
       transitionTo(GripperState::ERROR);
-    else
+    else if (state_ == GripperState::MOVING)
       transitionTo(GripperState::HOLDING);
     return true;
+  }
+  else
+  {
+    if (state_ == GripperState::HOLDING) {
+      if (!stall_cleared_timing_active_) {
+        stall_cleared_time_ = current_time;
+        stall_cleared_timing_active_ = true;
+      }
+      else if ((current_time - stall_cleared_time_).toSec() >= stall_timeout_ / 2.0) {
+        transitionTo(GripperState::IDLE);
+        stall_cleared_timing_active_ = false;
+      }
+    }
+    else {
+      stall_cleared_timing_active_ = false;
+    }
   }
 
   return false;
@@ -374,6 +386,8 @@ void GripperController<HardwareInterface>::publishStatus(const ros::Time& curren
     msg.header.frame_id = joint_.getName();
 
     msg.state = stateToString(state_);
+    msg.current_state = static_cast<int8_t>(state_);
+    msg.previous_state = static_cast<int8_t>(previous_state_);
     msg.position = joint_.getPosition();
     msg.velocity = joint_.getVelocity();
     msg.effort = joint_.getEffort();
@@ -405,10 +419,34 @@ void GripperController<HardwareInterface>::dynamicReconfigureCallback(
 
 template <class HardwareInterface>
 void GripperController<HardwareInterface>::commandCB(const std_msgs::Float64ConstPtr& msg) {
-  target_position_ = std::clamp(msg->data, min_position_, max_position_);
-  previous_state_ = state_;
-  state_ = GripperState::MOVING;
+  double target_position = std::clamp(msg->data, min_position_, max_position_);
+
+  if (((state_ == GripperState::HOLDING && target_position > target_position_) ||
+      state_ == GripperState::IDLE ||state_ == GripperState::MOVING)  && target_position != target_position_)
+  {
+    setCommand(target_position, stalled_force_);
+    transitionTo(GripperState::MOVING);
+  }
+
   if (verbose_) ROS_INFO_STREAM_NAMED(name_, "Received command: position=" << target_position_);
+}
+
+template <class HardwareInterface>
+void GripperController<HardwareInterface>::normalizedCommandCB(const std_msgs::Float64ConstPtr& msg) {
+  double normalized_cmd = std::clamp(msg->data, -1.0, 1.0);
+
+  //output = min + (input - inputMin) * (max - min) / (inputMax - inputMin)
+  double target_position = min_position_ + (normalized_cmd - (-1.0)) * (max_position_ - min_position_) / (1.0 - (-1.0));
+
+  if (((state_ == GripperState::HOLDING && target_position > target_position_) ||
+       state_ == GripperState::IDLE ||state_ == GripperState::MOVING)  && target_position != target_position_)
+  {
+    setCommand(target_position, stalled_force_);
+    transitionTo(GripperState::MOVING);
+  }
+
+  if (verbose_) ROS_INFO_STREAM_NAMED(name_, "Received normalized command: " << normalized_cmd
+                                                                 << " -> position=" << target_position);
 }
 
 template <class HardwareInterface>
@@ -419,17 +457,17 @@ bool GripperController<HardwareInterface>::handleGripperCommandService(
   target_effort_ = req.max_effort > 0 ? req.max_effort : max_effort_;
 
   if (req.command == "open") {
-    target_position_ = max_position_;
+    setCommand(max_position_, stalled_force_);
     transitionTo(GripperState::MOVING);
     res.success = true;
     res.message = "Opening gripper to position " + std::to_string(max_position_);
   } else if (req.command == "close") {
-    target_position_ = min_position_;
+    setCommand(min_position_, stalled_force_);
     transitionTo(GripperState::MOVING);
     res.success = true;
     res.message = "Closing gripper";
   } else if (req.command == "self_test") {
-    if (state_ == GripperState::IDLE || state_ == GripperState::HOLDING) {
+    if (state_ == GripperState::IDLE) {
       triggerSelfTest();
       res.success = true;
       res.message = "Self-test started";

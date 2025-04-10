@@ -82,6 +82,7 @@ public:
 
   void dynamicReconfigureCallback(gripper_controller::GripperControllerConfig& config, uint32_t level);
   void commandCB(const std_msgs::Float64::ConstPtr& msg);
+  void normalizedCommandCB(const std_msgs::Float64ConstPtr& msg);
   bool handleGripperCommandService(
       manipulator_msgs::GripperCommand::Request& req,
       manipulator_msgs::GripperCommand::Response& res);
@@ -114,16 +115,17 @@ private:
   double stalled_force_{};
   double stall_timeout_{};
   double release_offset_{0.01};
-  ros::Time stall_condition_met_time_;
-  bool stall_condition_active_{};
+  ros::Time stall_condition_met_time_, stall_cleared_time_;
+  bool stall_condition_active_{}, stall_cleared_timing_active_{};
   bool is_stalled_{};
+  bool constant_force_{};
   double target_position_{};
   double target_effort_{};
   Commands command_struct_;
 
   ros::NodeHandle controller_nh_;
   ros::ServiceServer gripper_command_server_;
-  ros::Subscriber command_subscriber_;
+  ros::Subscriber command_subscriber_, normalized_command_subscriber_;
   std::shared_ptr<realtime_tools::RealtimePublisher<manipulator_msgs::GripperStatus>> status_pub_;
   std::unique_ptr<dynamic_reconfigure::Server<gripper_controller::GripperControllerConfig>> dyn_reconfig_server_;
 
