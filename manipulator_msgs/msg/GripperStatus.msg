@@ -2,7 +2,9 @@
 Header header
 
 # 基本状态
-string state           # 当前状态 (IDLE, MOVING, HOLDING, ERROR, SELF_TEST, GRIPPING, RELEASING)
+string state           # 当前状态 (IDLE, MOVING, HOLDING, ERROR, SELF_TEST)
+int8 current_state
+int8 previous_state
 float64 position       # 当前位置
 float64 velocity       # 当前速度
 float64 effort         # 当前力矩
