@@ -6,6 +6,7 @@
 
 #include "can_devices/can_device.h"
 #include "unified_hw/can_manager/can_devices/can_dm_actuator.h"
+#include "unified_hw/can_manager/can_devices/can_rm_actuator.h"
 #include "unified_hw/can_manager/can_interface/can_bus.h"
 #include <ros/ros.h>
 
@@ -42,7 +43,7 @@ public:
   std::unordered_map<std::string, std::shared_ptr<CanDevice>> getDevices(){return devices_;}
 
   std::vector<std::string> getActuatorNames(){return actuator_names_;};
-  std::unordered_map<std::string, std::shared_ptr<CanDmActuator>> getActuatorDevices(){return actuator_devices_;}
+  std::unordered_map<std::string, std::shared_ptr<CanActuator>> getActuatorDevices(){return actuator_devices_;}
 
   void delayMicroseconds(unsigned int us) {
     // Using C++11 standard library to achieve microsecond delay
@@ -54,7 +55,7 @@ private:
   std::unordered_map<std::string, std::shared_ptr<CanDevice>> devices_;
 
   std::vector<std::string> actuator_names_;
-  std::unordered_map<std::string, std::shared_ptr<CanDmActuator>> actuator_devices_;
+  std::unordered_map<std::string, std::shared_ptr<CanActuator>> actuator_devices_;
 
   std::unordered_map<std::string, std::unordered_map<int, std::shared_ptr<CanDevice>>> bus_devices_;
 

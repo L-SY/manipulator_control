@@ -93,13 +93,13 @@ can_frame CanRmActuator::write() {
 }
 
 ActuatorCoefficients CanRmActuator::getCoefficientsFor() const {
-  if (model_ == "rm_3508") {
+  if (model_ == "RM3508") {
     return ActuatorCoefficients(0.0007669903, 0.1047197551, 1.90702994e-5, 0.0,
                                 0.0, 0.0, 0.0, 52437.561519, 0.0, 0.0, 0.0);
-  } else if (model_ == "rm_6020") {
+  } else if (model_ == "RM6020") {
     return ActuatorCoefficients(0.0007670840, 0.1047197551, 5.880969e-5, 0.0,
                                 0.0, 0.0, 0.0, 25000.0, 0.0, 0.0, 0.0);
-  } else if (model_ == "rm_2006") {
+  } else if (model_ == "RM2006") {
     return ActuatorCoefficients(2.13078897e-5, 0.0029088820, 0.00018, 0.0, 0.0,
                                 0.0, 0.0, 5555.5555555, 0.0, 0.0, 0.0);
   } else {

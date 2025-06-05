@@ -173,11 +173,16 @@ bool CanManager::addDevice(const std::string& name,
                            int id,
                            const std::string& model,
                            const XmlRpc::XmlRpcValue& config) {
-  std::shared_ptr<CanDevice> device;
+  std::shared_ptr<CanActuator> device;
 
-  if (model.find("dm") != std::string::npos) {
+  if (model.find("DM") != std::string::npos) {
     device = std::make_shared<CanDmActuator>(name, bus, id, model, config);
-    actuator_devices_[name] = std::dynamic_pointer_cast<CanDmActuator>(device);
+    actuator_devices_[name] = device;
+    actuator_names_.push_back(name);
+  }
+  else if (model.find("RM") != std::string::npos) {
+    device = std::make_shared<CanRmActuator>(name, bus, id, model, config);
+    actuator_devices_[name] = device;
     actuator_names_.push_back(name);
   }
   else {
@@ -234,17 +239,51 @@ void CanManager::write() {
     if (!can_bus) continue;
 
     const std::string& bus_name = can_bus->getName();
-
     auto bus_it = bus_devices_.find(bus_name);
-    if (bus_it != bus_devices_.end()) {
-      for (const auto& device_pair : bus_it->second) {
-        if (device_pair.second->getType() != DeviceType::only_read) {
-          can_frame frame = device_pair.second->write();
-          can_bus->write(&frame);
+    if (bus_it == bus_devices_.end()) continue;
+
+    can_frame rm_frame0_{}, rm_frame1_{};
+    rm_frame0_.can_id  = 0x200;
+    rm_frame0_.can_dlc = 8;
+    rm_frame1_.can_id  = 0x1FF;
+    rm_frame1_.can_dlc = 8;
+    bool has_write_frame0 = false, has_write_frame1 = false;
+
+    for (const auto& device_pair : bus_it->second) {
+      auto device_ptr = device_pair.second;
+      if (device_ptr->getType() == DeviceType::only_read) continue;
+
+      can_frame frame = device_ptr->write();
+
+      if (frame.can_id == 0x200) {
+        for (int i = 0; i < 8; ++i) {
+          if (frame.data[i] != 0) {
+            rm_frame0_.data[i] = frame.data[i];
+            has_write_frame0 = true;
+          }
         }
       }
+      else if (frame.can_id == 0x1FF) {
+        for (int i = 0; i < 8; ++i) {
+          if (frame.data[i] != 0) {
+            rm_frame1_.data[i] = frame.data[i];
+            has_write_frame1 = true;
+          }
+        }
+      }
+      else {
+        can_bus->write(&frame);
+      }
+    }
+
+    if (has_write_frame0) {
+      can_bus->write(&rm_frame0_);
+    }
+    if (has_write_frame1) {
+      can_bus->write(&rm_frame1_);
     }
   }
 }
+
 
 } // namespace device

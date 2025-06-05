@@ -201,14 +201,14 @@ can_frame CanDmActuator::writePositionVelocity() {
 
 ActuatorCoefficients CanDmActuator::getCoefficientsFor() const
 {
-  if (model_ == "dm4310") {
+  if (model_ == "DM4310") {
     return ActuatorCoefficients(
         0.00038147, 0.00510742, 0.0034188,
         8.19, 819.0, 2621.43812,
         195.793571, 292.500293,
         -12.5, -10.46, -7.0);
   }
-  else if (model_ == "dm4340") {
+  else if (model_ == "DM4340") {
     return ActuatorCoefficients(
         0.00038147, 0.00265625, 0.01318359,
         8.19, 819.0, 2621.43812,
