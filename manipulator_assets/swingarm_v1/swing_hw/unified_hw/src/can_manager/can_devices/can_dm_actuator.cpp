@@ -118,17 +118,27 @@ can_frame CanDmActuator::close() {
 
 void CanDmActuator::read(const can_interface::CanFrameStamp& frameStamp) {
   const can_frame& frame = frameStamp.frame;
-  uint16_t q_raw = (static_cast<uint16_t>(frame.data[1]) << 8) | static_cast<uint16_t>(frame.data[2]);
-  uint16_t qd = (static_cast<uint16_t>(frame.data[3]) << 4) | (static_cast<uint16_t>(frame.data[4]) >> 4);
+  q_raw_ = (static_cast<uint16_t>(frame.data[1]) << 8) | static_cast<uint16_t>(frame.data[2]);
+  qd_raw_ = (static_cast<uint16_t>(frame.data[3]) << 4) | (static_cast<uint16_t>(frame.data[4]) >> 4);
   uint16_t cur = ((static_cast<uint16_t>(frame.data[4]) & 0xF) << 8) | static_cast<uint16_t>(frame.data[5]);
 
-  position_ = coeff_.actuator2pos(q_raw);
-  velocity_ = coeff_.actuator2vel(qd);
+  // Multiple circle
+  if (seq_ != 0)  // not the first receive
+  {
+    if (q_raw_ - q_raw_last_ > 4096)
+      q_circle_--;
+    else if (q_raw_ - q_raw_last_ < -4096)
+      q_circle_++;
+  }
+
+  position_ = coeff_.actuator2pos(q_raw_) + q_circle_ * 2 * M_PI;
+  velocity_ = coeff_.actuator2vel(qd_raw_);
   effort_   = coeff_.actuator2effort(cur);
 
-  ros::Time current_time = ros::Time::now();
+  ros::Time current_time = frameStamp.stamp;
   updateFrequency(current_time);
   last_timestamp_ = current_time;
+  q_raw_last_ = q_raw_;
   seq_++;
 }
 

@@ -3,6 +3,7 @@
 #pragma once
 
 #include "can_device.h"
+#include "unified_hw/common/lp_filter.h"
 #include "ros/ros.h"
 #include <XmlRpcValue.h>
 #include <iostream>
@@ -102,12 +103,21 @@ public:
         position_(0.0),
         velocity_(0.0),
         effort_(0.0),
+        lp_filter_(100),
         control_mode_(ControlMode::EFFORT)
   {
     if (config.hasMember("master_id")) {
       master_id_ = static_cast<int>(config["master_id"]);
     } else {
       throw std::invalid_argument("Missing master_id in config");
+    }
+
+    if (config.hasMember("cutoff_freq")) {
+        double new_cutoff = static_cast<double>(config["cutoff_freq"]);
+        cutoff_freq_ = new_cutoff;
+        lp_filter_ = LowPassFilter{cutoff_freq_};
+    } else {
+      ROS_INFO("No cutoff_freq in config; using default = 100");
     }
 
     if (config.hasMember("control_mode")) {
@@ -171,7 +181,13 @@ protected:
 
   uint32_t master_id_;
   ControlMode control_mode_;
+  double cutoff_freq_;
+  LowPassFilter lp_filter_;
 
+  uint16_t q_raw_, q_raw_last_;
+  uint16_t qd_raw_;
+  uint8_t temp_;
+  int64_t q_circle_;
 };
 
 } // namespace device
