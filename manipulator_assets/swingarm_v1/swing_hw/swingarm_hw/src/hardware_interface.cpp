@@ -559,11 +559,6 @@ bool SwingArmHW::setupTransmission(ros::NodeHandle &rootNh) {
       return true;
     }
 
-    if (urdfString_.empty()) {
-      ROS_WARN("Empty URDF string, skipping transmission setup");
-      return false;
-    }
-
     try {
       transmissionLoader_ =
           std::make_unique<transmission_interface::TransmissionInterfaceLoader>(

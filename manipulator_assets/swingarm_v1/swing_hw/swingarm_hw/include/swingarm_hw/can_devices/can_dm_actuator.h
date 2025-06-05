@@ -11,49 +11,9 @@
 #include <unordered_map>
 #include <chrono>
 #include <thread>
+#include "actuator.h"
 
 namespace device {
-
-class ActuatorCoefficients {
-public:
-  double act2pos;
-  double act2vel;
-  double act2effort;
-  double kp2act;
-  double kd2act;
-  double pos2act;
-  double vel2act;
-  double effort2act;
-  double pos_offset;
-  double vel_offset;
-  double effort_offset;
-
-  ActuatorCoefficients()
-      : act2pos(0.), act2vel(0.), act2effort(0.),
-        kp2act(0.), kd2act(0.), pos2act(0.),
-        vel2act(0.), effort2act(0.),
-        pos_offset(0.), vel_offset(0.), effort_offset(0.) {}
-
-  ActuatorCoefficients(
-      double act2pos, double act2vel, double act2effort,
-      double kp2act, double kd2act, double pos2act,
-      double vel2act, double effort2act,
-      double pos_offset, double vel_offset, double effort_offset)
-      : act2pos(act2pos), act2vel(act2vel), act2effort(act2effort),
-        kp2act(kp2act), kd2act(kd2act), pos2act(pos2act),
-        vel2act(vel2act), effort2act(effort2act),
-        pos_offset(pos_offset), vel_offset(vel_offset), effort_offset(effort_offset) {}
-
-  void printCoefficients() const {
-    std::cout << "act2pos: " << act2pos << ", act2vel: " << act2vel
-              << ", act2effort: " << act2effort << std::endl;
-    std::cout << "kp2act: " << kp2act << ", kd2act: " << kd2act << std::endl;
-    std::cout << "pos2act: " << pos2act << ", vel2act: " << vel2act
-              << ", effort2act: " << effort2act << std::endl;
-    std::cout << "pos_offset: " << pos_offset << ", vel_offset: " << vel_offset
-              << ", effort_offset: " << effort_offset << std::endl;
-  }
-};
 
 class ActuatorConfig {
 private:

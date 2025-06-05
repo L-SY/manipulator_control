@@ -122,6 +122,9 @@ bool CanManager::start() {
       if (bus_it != bus_devices_.end()) {
         for (const auto& device_pair : bus_it->second) {
           can_frame frame = device_pair.second->start();
+          if (frame.can_dlc == 0) {
+            continue;
+          }
           delayMicroseconds(100000);
           can_bus->write(&frame);
         }
@@ -147,6 +150,9 @@ void CanManager::close() {
       if (bus_it != bus_devices_.end()) {
         for (const auto& device_pair : bus_it->second) {
           can_frame frame = device_pair.second->close();
+          if (frame.can_dlc == 0) {
+            continue;
+          }
           delayMicroseconds(100000);
           can_bus->write(&frame);
         }
@@ -154,6 +160,7 @@ void CanManager::close() {
     }
   }
 }
+
 
 bool CanManager::addCanBus(const std::string& bus_name, int thread_priority) {
   can_buses_.push_back(new can_interface::CanBus(bus_name, thread_priority));

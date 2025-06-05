@@ -129,9 +129,9 @@ void CanDmActuator::read(const can_interface::CanFrameStamp& frameStamp) {
   uint16_t qd = (frame.data[3] << 4) | (frame.data[4] >> 4);
   uint16_t cur = ((frame.data[4] & 0xF) << 8) | frame.data[5];
 
-  position_ = coeff_.act2pos * static_cast<double>(q_raw) + coeff_.pos_offset;
-  velocity_ = coeff_.act2vel * static_cast<double>(qd) + coeff_.vel_offset;
-  effort_ = coeff_.act2effort * static_cast<double>(cur) + coeff_.effort_offset;
+  position_ = coeff_.actuator2pos(q_raw);
+  velocity_ = coeff_.actuator2vel(qd);
+  effort_ = coeff_.actuator2effort(cur);
 
   ros::Time current_time = ros::Time::now();
   updateFrequency(current_time);
@@ -169,11 +169,11 @@ can_frame CanDmActuator::writeEffortMIT() {
   frame.can_id = id_;
   frame.can_dlc = 8;
 
-  uint16_t q_des = static_cast<int>(coeff_.pos2act * (cmd_position_ - coeff_.pos_offset));
-  uint16_t qd_des = static_cast<int>(coeff_.vel2act * (cmd_velocity_ - coeff_.vel_offset));
-  uint16_t kp = static_cast<int>(coeff_.kp2act * cmd_kp_);
-  uint16_t kd = static_cast<int>(coeff_.kd2act * cmd_kd_);
-  uint16_t tau = static_cast<int>(coeff_.effort2act * (cmd_effort_ - coeff_.effort_offset));
+  uint16_t q_des = coeff_.pos2actuator(cmd_position_);
+  uint16_t qd_des = coeff_.pos2actuator(cmd_velocity_);
+  uint16_t kp = coeff_.pos2actuator(cmd_kd_);
+  uint16_t kd = coeff_.vel2actuator(cmd_kd_);
+  uint16_t tau = coeff_.effort2actuator(cmd_effort_);
 
   frame.data[0] = q_des >> 8;
   frame.data[1] = q_des & 0xFF;
