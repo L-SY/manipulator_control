@@ -38,37 +38,6 @@ void UnifiedHW::read(const ros::Time &time, const ros::Duration &period) {
   try {
     canManager_->read();
 
-    if (!jointNames_.empty()) {
-      int jointIndex = 0;
-      for (const auto &joint : jointNames_) {
-        if (jointIndex >= 8) {
-          ROS_WARN_STREAM("Joint index out of bounds, skipping joint: " << joint);
-          break;
-        }
-
-        try {
-          if (canManager_->getActuatorDevices().find(joint) != canManager_->getActuatorDevices().end()) {
-            auto jointDevice = canManager_->getActuatorDevices()[joint];
-            if (jointDevice) {
-              jointDatas_[jointIndex].pos = jointDevice->getPosition();
-              jointDatas_[jointIndex].vel = jointDevice->getVelocity();
-              jointDatas_[jointIndex].tau = jointDevice->getEffort();
-            } else {
-              ROS_WARN_STREAM("Joint device is null for joint: " << joint);
-            }
-          } else {
-            ROS_WARN_STREAM("Joint not found in actuator devices: " << joint);
-          }
-        } catch (const std::exception& e) {
-          ROS_ERROR_STREAM("Exception reading joint " << joint << ": " << e.what());
-        } catch (...) {
-          ROS_ERROR_STREAM("Unknown exception reading joint " << joint);
-        }
-
-        jointIndex++;
-      }
-    }
-
     if (isActuatorSpecified_ && actuatorToJointState_) {
       try {
         actuatorToJointState_->propagate();
@@ -129,40 +98,6 @@ void UnifiedHW::write(const ros::Time & /*time*/, const ros::Duration &period) {
           ROS_ERROR_STREAM("Exception propagating joint to actuator position: " << e.what());
         } catch (...) {
           ROS_ERROR("Unknown exception propagating joint to actuator position");
-        }
-      }
-
-      if (!jointNames_.empty()) {
-        int jointIndex = 0;
-        for (const auto &joint : jointNames_) {
-          if (jointIndex >= 8) {
-            ROS_WARN_STREAM("Joint index out of bounds, skipping joint: " << joint);
-            break;
-          }
-
-          try {
-            if (canManager_->getActuatorDevices().find(joint) != canManager_->getActuatorDevices().end()) {
-              auto jointDevice = canManager_->getActuatorDevices()[joint];
-              if (jointDevice) {
-                jointDevice->setCommand(
-                    jointDatas_[jointIndex].cmdPos,
-                    jointDatas_[jointIndex].cmdVel,
-                    jointDatas_[jointIndex].cmdKp,
-                    jointDatas_[jointIndex].cmdKd,
-                    jointDatas_[jointIndex].cmdTau);
-              } else {
-                ROS_WARN_STREAM("Joint device is null for joint: " << joint);
-              }
-            } else {
-              ROS_WARN_STREAM("Joint not found in actuator devices: " << joint);
-            }
-          } catch (const std::exception& e) {
-            ROS_ERROR_STREAM("Exception setting command for joint " << joint << ": " << e.what());
-          } catch (...) {
-            ROS_ERROR_STREAM("Unknown exception setting command for joint " << joint);
-          }
-
-          jointIndex++;
         }
       }
 
@@ -235,66 +170,70 @@ void UnifiedHW::write(const ros::Time & /*time*/, const ros::Duration &period) {
 
 bool UnifiedHW::setupJoints() {
   try {
-    jointNames_ = canManager_->getActuatorNames();
-
-    if (jointNames_.empty()) {
+    const auto& actuator_maps = canManager_->getActuatorDevices();
+    if (actuator_maps.empty()) {
       ROS_WARN("No actuator joints found");
       isActuatorSpecified_ = false;
       return true;
     }
+    else{
+      isActuatorSpecified_ = true;
+      registerInterface(&effortActuatorInterface_);
+      registerInterface(&positionActuatorInterface_);
+      registerInterface(&hybridJointInterface_);
+    }
 
-    int jointIndex = 0;
-    for (const auto &joint : jointNames_) {
-      if (jointIndex >= 8) {
-        ROS_WARN_STREAM("Reached maximum number of joints (8). Ignoring joint: " << joint);
-        continue;
-      }
+    for (const auto& actuator_pair : actuator_maps) {
+      const std::string& joint = actuator_pair.first;
+      auto actuator = actuator_pair.second;
+      if (!actuator) continue;
 
       try {
-        jointDatas_[jointIndex].cmdTau = 0.0;
-        jointDatas_[jointIndex].cmdPos = 0.0;
-        jointDatas_[jointIndex].cmdVel = 0.0;
-        jointDatas_[jointIndex].cmdKp = 0.0;
-        jointDatas_[jointIndex].cmdKd = 0.0;
-
         hardware_interface::ActuatorStateHandle actuatorHandle(
-            joint, &jointDatas_[jointIndex].pos, &jointDatas_[jointIndex].vel,
-            &jointDatas_[jointIndex].tau);
-
+            joint,
+            actuator->getPositionPtr(),
+            actuator->getVelocityPtr(),
+            actuator->getEffortPtr()
+        );
         actuatorStateInterface_.registerHandle(actuatorHandle);
 
         hardware_interface::JointStateHandle jointHandle(
-            joint, &jointDatas_[jointIndex].pos, &jointDatas_[jointIndex].vel,
-            &jointDatas_[jointIndex].tau);
-
+            joint,
+            actuator->getPositionPtr(),
+            actuator->getVelocityPtr(),
+            actuator->getEffortPtr()
+        );
         jointStateInterface_.registerHandle(jointHandle);
 
-        effortActuatorInterface_.registerHandle(hardware_interface::ActuatorHandle(
-            actuatorHandle, &jointDatas_[jointIndex].cmdTau));
+        effortActuatorInterface_.registerHandle(
+            hardware_interface::ActuatorHandle(
+                actuatorHandle,
+                actuator->getCmdEffortPtr()
+                    )
+        );
 
-        positionActuatorInterface_.registerHandle(hardware_interface::ActuatorHandle(
-            actuatorHandle, &jointDatas_[jointIndex].cmdPos));
+        positionActuatorInterface_.registerHandle(
+            hardware_interface::ActuatorHandle(
+                actuatorHandle,
+                actuator->getCmdPosPtr()
+                    )
+        );
 
-        hybridJointInterface_.registerHandle(hardware_interface::HybridJointHandle(
-            jointHandle, &jointDatas_[jointIndex].cmdPos, &jointDatas_[jointIndex].cmdVel,
-            &jointDatas_[jointIndex].cmdTau, &jointDatas_[jointIndex].cmdKp, &jointDatas_[jointIndex].cmdKd));
-
-        jointIndex++;
+        hybridJointInterface_.registerHandle(
+            hardware_interface::HybridJointHandle(
+                jointHandle,
+                actuator->getCmdPosPtr(),
+                actuator->getCmdVelPtr(),
+                actuator->getCmdEffortPtr(),
+                actuator->getCmdKpPtr(),
+                actuator->getCmdKdPtr()
+                    )
+        );
       }
       catch (const std::exception& e) {
         ROS_ERROR_STREAM("Exception setting up joint " << joint << ": " << e.what());
       }
     }
-
-    if (jointIndex > 0) {
-      isActuatorSpecified_ = true;
-      registerInterface(&effortActuatorInterface_);
-      registerInterface(&positionActuatorInterface_);
-      registerInterface(&hybridJointInterface_);
-    } else {
-      isActuatorSpecified_ = false;
-    }
-
     return true;
   }
   catch (const std::exception& e) {

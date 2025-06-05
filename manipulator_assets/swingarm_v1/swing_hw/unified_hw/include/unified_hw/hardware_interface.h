@@ -35,20 +35,6 @@
 
 namespace Unified {
 
-struct UnifiedJointData {
-  double pos, vel, tau;                 // state
-  double cmdTau, cmdPos, cmdVel, cmdKp, cmdKd;  // command
-};
-
-struct UnifiedImuData {
-  double ori[4];            // NOLINT(modernize-avoid-c-arrays)
-  double oriCov[9];         // NOLINT(modernize-avoid-c-arrays)
-  double angularVel[3];     // NOLINT(modernize-avoid-c-arrays)
-  double angularVelCov[9];  // NOLINT(modernize-avoid-c-arrays)
-  double linearAcc[3];      // NOLINT(modernize-avoid-c-arrays)
-  double linearAccCov[9];   // NOLINT(modernize-avoid-c-arrays)
-};
-
 class UnifiedHW : public hardware_interface::RobotHW {
 public:
   UnifiedHW() = default;
@@ -104,8 +90,6 @@ private:
 
   std::shared_ptr<device::CanManager> canManager_;
   bool initFlag_{false}, isActuatorSpecified_{false};
-  UnifiedJointData jointDatas_[8]{};
-  UnifiedImuData imuDatas_[3]{};
   std::vector<std::string> jointNames_, imuNames_;
 };
 

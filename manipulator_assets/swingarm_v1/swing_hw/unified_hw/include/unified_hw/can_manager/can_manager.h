@@ -30,8 +30,6 @@ public:
   bool addDevice(const std::string& name, const std::string& bus, int id, const std::string& model,
                  const XmlRpc::XmlRpcValue& config = XmlRpc::XmlRpcValue());
 
-  std::shared_ptr<CanDevice> getDevice(const std::string& device_name);
-
   bool start();
 
   void close();
@@ -40,10 +38,17 @@ public:
 
   void write();
 
-  std::unordered_map<std::string, std::shared_ptr<CanDevice>> getDevices(){return devices_;}
+  const std::unordered_map<std::string, std::shared_ptr<CanDevice>>&getDevices() const {
+    return devices_;
+  }
 
-  std::vector<std::string> getActuatorNames(){return actuator_names_;};
-  std::unordered_map<std::string, std::shared_ptr<CanActuator>> getActuatorDevices(){return actuator_devices_;}
+  const std::vector<std::string>& getActuatorNames() const {
+    return actuator_names_;
+  }
+
+  const std::unordered_map<std::string, std::shared_ptr<CanActuator>>& getActuatorDevices() const {
+    return actuator_devices_;
+  }
 
   void delayMicroseconds(unsigned int us) {
     // Using C++11 standard library to achieve microsecond delay

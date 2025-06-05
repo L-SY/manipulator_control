@@ -201,13 +201,6 @@ bool CanManager::addDevice(const std::string& name,
   return true;
 }
 
-
-std::shared_ptr<CanDevice> CanManager::getDevice(const std::string& device_name) {
-  std::lock_guard<std::mutex> lock(devices_mutex_);
-  auto it = devices_.find(device_name);
-  return (it != devices_.end()) ? it->second : nullptr;
-}
-
 void CanManager::read() {
   std::lock_guard<std::mutex> lock(devices_mutex_);
   ros::Time now = ros::Time::now();

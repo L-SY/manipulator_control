@@ -158,6 +158,15 @@ public:
     control_mode_ = mode;
   }
 
+  double* getPositionPtr()   { return &position_; }
+  double* getVelocityPtr()   { return &velocity_; }
+  double* getEffortPtr()     { return &effort_; }
+  double* getCmdPosPtr()     { return &cmd_position_; }
+  double* getCmdVelPtr()     { return &cmd_velocity_; }
+  double* getCmdEffortPtr()  { return &cmd_effort_; }
+  double* getCmdKpPtr()      { return &cmd_kp_; }
+  double* getCmdKdPtr()      { return &cmd_kd_; }
+
   double getPosition() const   { return position_; }
   double getVelocity() const   { return velocity_; }
   double getEffort() const     { return effort_; }
