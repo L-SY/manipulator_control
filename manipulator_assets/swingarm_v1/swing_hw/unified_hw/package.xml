@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>unified_hw</name>
+  <version>0.0.0</version>
+  <description>use for abstracting hardware</description>
+  <maintainer email="liusiyang.cn@gmail.com">4yang</maintainer>
+
+  <license>BSD</license>
+  <author email="liusiyang.cn@gmail.com">4yang</author>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <depend>roscpp</depend>
+
+  <depend>robot_common</depend>
+  <depend>robot_msgs</depend>
+  <depend>hardware_interface</depend>
+  <depend>transmission_interface</depend>
+  <depend>joint_limits_interface</depend>
+  <depend>controller_interface</depend>
+  <depend>controller_manager</depend>
+  <depend>urdf</depend>
+  <depend>realtime_tools</depend>
+  <depend>imu_complementary_filter</depend>
+
+  <depend>swing_hw_msgs</depend>
+
+  <!--    <export>
+          <transmission_interface plugin="${prefix}/rm_hw_loader_plugins.xml"/>
+      </export> -->
+</package>
