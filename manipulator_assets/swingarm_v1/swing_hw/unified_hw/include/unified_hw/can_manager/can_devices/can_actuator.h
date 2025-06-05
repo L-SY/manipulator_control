@@ -109,10 +109,27 @@ public:
     } else {
       throw std::invalid_argument("Missing master_id in config");
     }
+
+    if (config.hasMember("control_mode")) {
+      std::string mode_str = static_cast<std::string>(config["control_mode"]);
+      if (mode_str == "MIT") {
+        control_mode_ = ControlMode::MIT;
+      } else if (mode_str == "POSITION_VELOCITY") {
+        control_mode_ = ControlMode::POSITION_VELOCITY;
+      } else if (mode_str == "VELOCITY") {
+        control_mode_ = ControlMode::VELOCITY;
+      } else if (mode_str == "POSITION") {
+        control_mode_ = ControlMode::POSITION;
+      } else {
+        control_mode_ = ControlMode::EFFORT;
+      }
+    }
+
   }
 
   virtual ~CanActuator() override = default;
 
+  virtual ActuatorCoefficients getCoefficientsFor() const = 0;
   virtual can_frame start() override = 0;
   virtual can_frame close() override = 0;
   virtual void read(const can_interface::CanFrameStamp& frameStamp) override = 0;
@@ -138,6 +155,7 @@ public:
   ControlMode getControlMode() const { return control_mode_; }
 
 protected:
+  ActuatorCoefficients coeff_;
   double position_;
   double velocity_;
   double effort_;

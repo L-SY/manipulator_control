@@ -1,34 +1,28 @@
-//
-// Created by lsy on 24-12-16.
-//
-
 // can_dm_actuator.cpp
+
 #include "unified_hw/can_manager/can_devices/can_dm_actuator.h"
+#include <cstring>
 
 namespace device {
 
-CanDmActuator::CanDmActuator(const std::string& name, const std::string& bus, int id, const std::string& motor_type, const XmlRpc::XmlRpcValue& config)
-    : CanDevice(name, bus, id, motor_type, DeviceType::read_write, config), coeff_(ActuatorConfig().getActuatorCoefficients(motor_type)) {
-  if (config.hasMember("control_mode")) {
-    std::string mode_str = static_cast<std::string>(config["control_mode"]);
-    if (mode_str == "MIT") {
-      control_mode_ = ControlMode::MIT;
-    } else if (mode_str == "POSITION_VELOCITY") {
-      control_mode_ = ControlMode::POSITION_VELOCITY;
-    } else {
-      control_mode_ = ControlMode::EFFORT;
-    }
-  }
+CanDmActuator::CanDmActuator(const std::string& name,
+                             const std::string& bus,
+                             int id,
+                             const std::string& motor_type,
+                             const XmlRpc::XmlRpcValue& config)
+    : CanActuator(name,
+                  bus,
+                  id,
+                  motor_type,
+                  DeviceType::read_write,
+                  config)
+{
+  coeff_ = getCoefficientsFor();
 
-  if (config.hasMember("master_id")) {
-    master_id_ = static_cast<int>(config["master_id"]);
-    if (config.hasMember("max_velocity")) {
-      max_velocity_ = static_cast<double>(config["max_velocity"]);
-    } else {
-      throw std::invalid_argument("Missing max_velocity in config");
-    }
+  if (config.hasMember("max_velocity")) {
+    max_velocity_ = static_cast<double>(config["max_velocity"]);
   } else {
-    throw std::invalid_argument("Missing master_id in config");
+    throw std::invalid_argument("Missing max_velocity in config");
   }
 }
 
@@ -114,8 +108,7 @@ can_frame CanDmActuator::close() {
   can_frame frame{};
   frame.can_id = id_;
   frame.can_dlc = 8;
-
-  for (int i = 0; i < 7; i++) {
+  for (int i = 0; i < 7; ++i) {
     frame.data[i] = 0xFF;
   }
   frame.data[7] = 0xFD;
@@ -124,14 +117,14 @@ can_frame CanDmActuator::close() {
 }
 
 void CanDmActuator::read(const can_interface::CanFrameStamp& frameStamp) {
-  auto frame = frameStamp.frame;
-  uint16_t q_raw = (frame.data[1] << 8) | frame.data[2];
-  uint16_t qd = (frame.data[3] << 4) | (frame.data[4] >> 4);
-  uint16_t cur = ((frame.data[4] & 0xF) << 8) | frame.data[5];
+  const can_frame& frame = frameStamp.frame;
+  uint16_t q_raw = (static_cast<uint16_t>(frame.data[1]) << 8) | static_cast<uint16_t>(frame.data[2]);
+  uint16_t qd = (static_cast<uint16_t>(frame.data[3]) << 4) | (static_cast<uint16_t>(frame.data[4]) >> 4);
+  uint16_t cur = ((static_cast<uint16_t>(frame.data[4]) & 0xF) << 8) | static_cast<uint16_t>(frame.data[5]);
 
   position_ = coeff_.actuator2pos(q_raw);
   velocity_ = coeff_.actuator2vel(qd);
-  effort_ = coeff_.actuator2effort(cur);
+  effort_   = coeff_.actuator2effort(cur);
 
   ros::Time current_time = ros::Time::now();
   updateFrequency(current_time);
@@ -142,7 +135,7 @@ void CanDmActuator::read(const can_interface::CanFrameStamp& frameStamp) {
 void CanDmActuator::readBuffer(const std::vector<can_interface::CanFrameStamp>& frameStamps) {
   for (const auto& frameStamp : frameStamps) {
     if (frameStamp.frame.can_id == master_id_) {
-      if ((frameStamp.frame.data[0] & 0b00001111) == id_) {
+      if ((frameStamp.frame.data[0] & 0x0F) == static_cast<uint8_t>(id_)) {
         read(frameStamp);
         break;
       }
@@ -151,16 +144,12 @@ void CanDmActuator::readBuffer(const std::vector<can_interface::CanFrameStamp>& 
 }
 
 can_frame CanDmActuator::write() {
-  can_frame frame;
-
+  can_frame frame{};
   if (control_mode_ == ControlMode::POSITION_VELOCITY) {
     frame = writePositionVelocity();
   } else {
     frame = writeEffortMIT();
   }
-
-  delayMicroseconds(100);
-
   return frame;
 }
 
@@ -169,20 +158,20 @@ can_frame CanDmActuator::writeEffortMIT() {
   frame.can_id = id_;
   frame.can_dlc = 8;
 
-  uint16_t q_des = coeff_.pos2actuator(cmd_position_);
-  uint16_t qd_des = coeff_.pos2actuator(cmd_velocity_);
-  uint16_t kp = coeff_.pos2actuator(cmd_kd_);
-  uint16_t kd = coeff_.vel2actuator(cmd_kd_);
-  uint16_t tau = coeff_.effort2actuator(cmd_effort_);
+  uint16_t q_des  = coeff_.pos2actuator(cmd_position_);
+  uint16_t qd_des = coeff_.vel2actuator(cmd_velocity_);
+  uint16_t kp     = coeff_.kp2actuator(cmd_kp_);
+  uint16_t kd     = coeff_.kd2actuator(cmd_kd_);
+  uint16_t tau    = coeff_.effort2actuator(cmd_effort_);
 
-  frame.data[0] = q_des >> 8;
-  frame.data[1] = q_des & 0xFF;
-  frame.data[2] = qd_des >> 4;
-  frame.data[3] = ((qd_des & 0xF) << 4) | (kp >> 8);
-  frame.data[4] = kp & 0xFF;
-  frame.data[5] = kd >> 4;
-  frame.data[6] = ((kd & 0xF) << 4) | (tau >> 8);
-  frame.data[7] = tau & 0xFF;
+  frame.data[0] = static_cast<uint8_t>(q_des >> 8);
+  frame.data[1] = static_cast<uint8_t>(q_des & 0xFF);
+  frame.data[2] = static_cast<uint8_t>(qd_des >> 4);
+  frame.data[3] = static_cast<uint8_t>(((qd_des & 0xF) << 4) | static_cast<uint8_t>(kp >> 8));
+  frame.data[4] = static_cast<uint8_t>(kp & 0xFF);
+  frame.data[5] = static_cast<uint8_t>(kd >> 4);
+  frame.data[6] = static_cast<uint8_t>(((kd & 0xF) << 4) | static_cast<uint8_t>(tau >> 8));
+  frame.data[7] = static_cast<uint8_t>(tau & 0xFF);
 
   return frame;
 }
@@ -192,35 +181,30 @@ can_frame CanDmActuator::writePositionVelocity() {
   frame.can_id = id_ + 0x100;
   frame.can_dlc = 8;
 
-  auto p_des = static_cast<float>(cmd_position_);
-  auto v_des = static_cast<float>(max_velocity_);
-
-  memcpy(&frame.data[0], &p_des, sizeof(float));
-  memcpy(&frame.data[4], &v_des, sizeof(float));
+  float p_des = static_cast<float>(cmd_position_);
+  float v_des = static_cast<float>(max_velocity_);
+  std::memcpy(&frame.data[0], &p_des, sizeof(float));
+  std::memcpy(&frame.data[4], &v_des, sizeof(float));
 
   return frame;
 }
 
-
-void CanDmActuator::setCommand(double pos, double vel, double kp, double kd, double effort) {
-  cmd_position_ = pos;
-  cmd_velocity_ = vel;
-  cmd_kp_ = kp;
-  cmd_kd_ = kd;
-  cmd_effort_ = effort;
-}
-
-void CanDmActuator::updateFrequency(const ros::Time& stamp) {
-  try {
-    frequency_ = 1.0 / (stamp - last_timestamp_).toSec();
-  } catch (const std::runtime_error& ex) {
-    frequency_ = 0.0;
+ActuatorCoefficients CanDmActuator::getCoefficientsFor() const
+{
+  if (model_ == "dm4310") {
+    return ActuatorCoefficients(
+        0.00038147, 0.00510742, 0.0034188,
+        8.19, 819.0, 2621.43812,
+        195.793571, 292.500293,
+        -12.5, -10.46, -7.0);
   }
+  else if (model_ == "dm4340") {
+    return ActuatorCoefficients(
+        0.00038147, 0.00265625, 0.01318359,
+        8.19, 819.0, 2621.43812,
+        376.470588, 75.8518734,
+        -12.5, -5.44, -27.0);
+  }
+  throw std::invalid_argument("Unsupported motor_type: " + model_);
 }
-
-void CanDmActuator::delayMicroseconds(unsigned int us) {
-  // Using C++11 standard library to achieve microsecond delay
-  std::this_thread::sleep_for(std::chrono::microseconds(us));
-}
-
 } // namespace device
