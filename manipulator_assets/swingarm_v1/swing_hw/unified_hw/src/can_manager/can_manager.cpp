@@ -234,7 +234,6 @@ void CanManager::write() {
     const std::string& bus_name = can_bus->getName();
     auto bus_it = bus_devices_.find(bus_name);
     if (bus_it == bus_devices_.end()) continue;
-
     can_frame rm_frame0_{}, rm_frame1_{};
     rm_frame0_.can_id  = 0x200;
     rm_frame0_.can_dlc = 8;
@@ -252,16 +251,16 @@ void CanManager::write() {
         for (int i = 0; i < 8; ++i) {
           if (frame.data[i] != 0) {
             rm_frame0_.data[i] = frame.data[i];
-            has_write_frame0 = true;
           }
+          has_write_frame0 = true;
         }
       }
       else if (frame.can_id == 0x1FF) {
         for (int i = 0; i < 8; ++i) {
           if (frame.data[i] != 0) {
             rm_frame1_.data[i] = frame.data[i];
-            has_write_frame1 = true;
           }
+          has_write_frame1 = true;
         }
       }
       else {

@@ -1,0 +1,13 @@
+controllers:
+  joint_state_controller:
+    type: joint_state_controller/JointStateController
+    publish_rate: 100
+
+  robot_state_controller:
+    type: robot_state_controller/RobotStateController
+    publish_rate: 100
+
+  velocity_controller:
+    type: effort_controllers/JointVelocityController
+    joint: joint1
+    pid: { p: 10.0, i: 0., d: 0.0, i_clamp_max: 800.0, i_clamp_min: -800.0, antiwindup: false, publish_state: false }

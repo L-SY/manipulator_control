@@ -1,0 +1,11 @@
+<launch>
+    <rosparam file="$(find unified_hw)/test/hw.yaml" command="load" />
+
+    <arg name="hardware_interface" default="EffortJointInterface"/>
+
+    <param name="robot_description"
+           command="$(find xacro)/xacro $(find unified_hw)/test/test.xacro hardware_interface:=$(arg hardware_interface)"/>
+
+    <node name="unified_hw" pkg="unified_hw" type="unified_hw" respawn="false"
+          clear_params="true" />
+</launch>

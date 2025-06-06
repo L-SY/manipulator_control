@@ -1,0 +1,16 @@
+unified_hw:
+  loop_frequency: 1000
+  cycle_time_error_threshold: 0.001
+  thread_priority: 95
+  bus:
+    - can0
+
+  devices:
+    - name: "joint1_motor"
+      bus: "can0"
+      id: 0x001
+      model: "RM2006"
+      config:
+        control_mode: "EFFORT"
+        master_id: 0x201
+        max_out: 10000

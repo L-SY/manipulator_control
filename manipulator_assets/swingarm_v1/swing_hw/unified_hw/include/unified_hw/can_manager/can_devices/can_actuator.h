@@ -175,7 +175,7 @@ public:
 
 protected:
   ActuatorCoefficients coeff_;
-  double position_;
+  double position_, position_last_;
   double velocity_;
   double effort_;
   double frequency_;
@@ -193,8 +193,6 @@ protected:
   double cutoff_freq_;
   LowPassFilter lp_filter_;
 
-  uint16_t q_raw_, q_raw_last_;
-  uint16_t qd_raw_;
   uint8_t temp_;
   int64_t q_circle_;
 };

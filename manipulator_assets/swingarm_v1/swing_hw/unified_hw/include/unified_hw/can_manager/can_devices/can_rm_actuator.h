@@ -27,7 +27,9 @@ public:
   ActuatorCoefficients getCoefficientsFor() const override;
 
 private:
-  uint16_t max_out_;
+  double max_out_;
+  uint16_t q_raw_, q_raw_last_;
+  int16_t qd_raw_;
 };
 
 } // namespace device

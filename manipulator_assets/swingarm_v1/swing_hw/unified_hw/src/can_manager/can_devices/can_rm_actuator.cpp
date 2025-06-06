@@ -18,44 +18,42 @@ CanRmActuator::CanRmActuator(const std::string &name, const std::string &bus,
   }
 }
 
-can_frame CanRmActuator::start() { return can_frame{}; }
+can_frame CanRmActuator::start() { is_halted_ = false; return can_frame{}; }
 
 can_frame CanRmActuator::close() { return can_frame{}; }
 
 void CanRmActuator::read(const can_interface::CanFrameStamp &frameStamp) {
   const can_frame &frame = frameStamp.frame;
-
-  if (frameStamp.frame.can_id == master_id_) {
-    if ((frameStamp.stamp - last_timestamp_).toSec() < 0.0005)
-      return;
-
-    q_raw_ = (frame.data[0] << 8u) | frame.data[1];
-    qd_raw_ = (frame.data[2] << 8u) | frame.data[3];
-    int16_t cur = (frame.data[4] << 8u) | frame.data[5];
-    temp_ = frame.data[6];
-
-    // Multiple circle
-    if (seq_ != 0)  // not the first receive
-    {
-      if (q_raw_ - q_raw_last_ > 4096)
-        q_circle_--;
-      else if (q_raw_ - q_raw_last_ < -4096)
-        q_circle_++;
-    }
-
-    position_ = coeff_.actuator2pos(q_raw_) + q_circle_ * 2 * M_PI;
-    velocity_ = coeff_.actuator2vel(qd_raw_);
-    effort_   = coeff_.actuator2effort(cur);
-    // Low pass filter
-    lp_filter_.input(velocity_, frameStamp.stamp);
-    velocity_ = lp_filter_.output();
-
-    ros::Time current_time = frameStamp.stamp;
-    updateFrequency(current_time);
-    last_timestamp_ = current_time;
-    q_raw_last_ = q_raw_;
-    seq_++;
+  if ((frameStamp.stamp - last_timestamp_).toSec() < 0.0005)
+  {
+    return;
   }
+
+  q_raw_ = (frame.data[0] << 8u) | frame.data[1];
+  qd_raw_ = (frame.data[2] << 8u) | frame.data[3];
+  int16_t cur = (frame.data[4] << 8u) | frame.data[5];
+  temp_ = frame.data[6];
+
+  // Multiple circle
+  if (seq_ != 0)  // not the first receive
+  {
+    if (q_raw_ - q_raw_last_ > 4096)
+      q_circle_--;
+    else if (q_raw_ - q_raw_last_ < -4096)
+      q_circle_++;
+  }
+
+  position_ = coeff_.act2pos * static_cast<double>(q_raw_ + 8191 * q_circle_) + coeff_.pos_offset;
+  velocity_ = coeff_.act2vel * static_cast<double>(qd_raw_) ;
+  effort_   =  coeff_.act2effort * static_cast<double>(cur);
+  // Low pass filter
+  lp_filter_.input(velocity_, frameStamp.stamp);
+  velocity_ = lp_filter_.output();
+
+  ros::Time current_time = frameStamp.stamp;
+  updateFrequency(current_time);
+  q_raw_last_ = q_raw_;
+  seq_++;
 }
 
 void CanRmActuator::readBuffer(
@@ -74,19 +72,20 @@ can_frame CanRmActuator::write() {
     return frame;
 
   frame.can_dlc = 8;
-  uint16_t cmd = minAbs(coeff_.pos2actuator(cmd_effort_), max_out_);  // add max_range to act_data
-
-  if (-1 < id_ && id_ < 4)
+  double cmd = minAbs(coeff_.effort2act * cmd_effort_, max_out_);
+  ROS_INFO_STREAM(cmd);
+  int index = id_ -1 ;
+  if (-1 < index && index < 4)
   {
     frame.can_id = 0x200;
-    frame.data[2 * id_] = static_cast<uint8_t>(cmd >> 8u);
-    frame.data[2 * id_ + 1] = static_cast<uint8_t>(cmd & 0xFF);
+    frame.data[2 * index] = static_cast<uint8_t>(static_cast<int16_t>(cmd) >> 8u);
+    frame.data[2 * index + 1] = static_cast<uint8_t>(cmd);
   }
-  else if (3 < id_ && id_ < 8)
+  else if (3 < index && index < 8)
   {
     frame.can_id = 0x1FF;
-    frame.data[2 * (id_ - 4)] = static_cast<uint8_t>(cmd >> 8u);
-    frame.data[2 * (id_ - 4) + 1] = static_cast<uint8_t>(cmd & 0xFF);
+    frame.data[2 * (index - 4)] = static_cast<uint8_t>(static_cast<int16_t>(cmd) >> 8u);
+    frame.data[2 * (index - 4) + 1] = static_cast<uint8_t>(cmd);
   }
 
   return frame;

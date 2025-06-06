@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro" name="test">
+    <xacro:include filename="$(find unified_hw)/test/common.xacro"/>
+
+    <xacro:arg name="hardware_interface" default="EffortJointInterface"/>
+
+    <link name="base"></link>
+    <link name="link1"></link>
+
+    <xacro:create_joint name="joint1" type="revolute" parent="base" child="link1" origin_xyz="0.08 -0.035 0" origin_rpy="0 0 0" axis_xyz="0 1 0" lower="-100000" upper="100000" effort="1" velocity="30"/>
+
+    <xacro:create_transmission joint_name="joint1" mechanical_reduction="1" hardware_interface="$(arg hardware_interface)"/>
+
+    <gazebo>
+        <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
+            <robotNamespace>/</robotNamespace>
+        </plugin>
+    </gazebo>
+</robot>

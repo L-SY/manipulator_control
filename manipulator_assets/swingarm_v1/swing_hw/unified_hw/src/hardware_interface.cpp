@@ -11,8 +11,8 @@ bool UnifiedHW::init(ros::NodeHandle &rootNh, ros::NodeHandle &robotHwNh) {
     canManager_ = std::make_shared<device::CanManager>(robotHwNh);
 
     registerInterface(&robotStateInterface_);
-    registerInterface(&imuSensorInterface_);
-    registerInterface(&buttonPanelInterface_);
+//    registerInterface(&imuSensorInterface_);
+//    registerInterface(&buttonPanelInterface_);
     registerInterface(&actuatorStateInterface_);
 
     bool setupJointsSuccess = setupJoints();
@@ -117,16 +117,6 @@ void UnifiedHW::write(const ros::Time & /*time*/, const ros::Duration &period) {
         ROS_ERROR("Unknown exception enforcing effort soft limits");
       }
 
-      if (jointToActuatorEffort_) {
-        try {
-          jointToActuatorEffort_->propagate();
-        } catch (const std::exception& e) {
-          ROS_ERROR_STREAM("Exception propagating joint to actuator effort (second time): " << e.what());
-        } catch (...) {
-          ROS_ERROR("Unknown exception propagating joint to actuator effort (second time)");
-        }
-      }
-
       try {
         positionJointSaturationInterface_.enforceLimits(period);
       } catch (const std::exception& e) {
@@ -141,16 +131,6 @@ void UnifiedHW::write(const ros::Time & /*time*/, const ros::Duration &period) {
         ROS_ERROR_STREAM("Exception enforcing position soft limits: " << e.what());
       } catch (...) {
         ROS_ERROR("Unknown exception enforcing position soft limits");
-      }
-
-      if (jointToActuatorPosition_) {
-        try {
-          jointToActuatorPosition_->propagate();
-        } catch (const std::exception& e) {
-          ROS_ERROR_STREAM("Exception propagating joint to actuator position: " << e.what());
-        } catch (...) {
-          ROS_ERROR("Unknown exception propagating joint to actuator position");
-        }
       }
     }
 
@@ -197,14 +177,6 @@ bool UnifiedHW::setupJoints() {
         );
         actuatorStateInterface_.registerHandle(actuatorHandle);
 
-        hardware_interface::JointStateHandle jointHandle(
-            joint,
-            actuator->getPositionPtr(),
-            actuator->getVelocityPtr(),
-            actuator->getEffortPtr()
-        );
-        jointStateInterface_.registerHandle(jointHandle);
-
         effortActuatorInterface_.registerHandle(
             hardware_interface::ActuatorHandle(
                 actuatorHandle,
@@ -219,16 +191,16 @@ bool UnifiedHW::setupJoints() {
                     )
         );
 
-        hybridJointInterface_.registerHandle(
-            hardware_interface::HybridJointHandle(
-                jointHandle,
-                actuator->getCmdPosPtr(),
-                actuator->getCmdVelPtr(),
-                actuator->getCmdEffortPtr(),
-                actuator->getCmdKpPtr(),
-                actuator->getCmdKdPtr()
-                    )
-        );
+//        hybridJointInterface_.registerHandle(
+//            hardware_interface::HybridJointHandle(
+//                jointHandle,
+//                actuator->getCmdPosPtr(),
+//                actuator->getCmdVelPtr(),
+//                actuator->getCmdKpPtr(),
+//                actuator->getCmdKdPtr(),
+//                actuator->getCmdEffortPtr()
+//                    )
+//        );
       }
       catch (const std::exception& e) {
         ROS_ERROR_STREAM("Exception setting up joint " << joint << ": " << e.what());

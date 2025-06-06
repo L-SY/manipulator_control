@@ -67,7 +67,6 @@ public:
       frequency_ = 1.0 / dt;
     }
     last_timestamp_ = stamp;
-    seq_++;
   }
 
   uint32_t getSeq() const { return seq_; }

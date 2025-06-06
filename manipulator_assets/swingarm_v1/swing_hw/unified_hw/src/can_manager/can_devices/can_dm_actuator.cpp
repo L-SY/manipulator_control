@@ -118,27 +118,27 @@ can_frame CanDmActuator::close() {
 
 void CanDmActuator::read(const can_interface::CanFrameStamp& frameStamp) {
   const can_frame& frame = frameStamp.frame;
-  q_raw_ = (static_cast<uint16_t>(frame.data[1]) << 8) | static_cast<uint16_t>(frame.data[2]);
-  qd_raw_ = (static_cast<uint16_t>(frame.data[3]) << 4) | (static_cast<uint16_t>(frame.data[4]) >> 4);
+  uint16_t q_raw = (static_cast<uint16_t>(frame.data[1]) << 8) | static_cast<uint16_t>(frame.data[2]);
+  uint16_t qd_raw = (static_cast<uint16_t>(frame.data[3]) << 4) | (static_cast<uint16_t>(frame.data[4]) >> 4);
   uint16_t cur = ((static_cast<uint16_t>(frame.data[4]) & 0xF) << 8) | static_cast<uint16_t>(frame.data[5]);
 
   // Multiple circle
   if (seq_ != 0)  // not the first receive
   {
-    if (q_raw_ - q_raw_last_ > 4096)
+    double new_position = coeff_.act2pos * static_cast<double>(q_raw) + coeff_.pos_offset + q_circle_ * 2 * M_PI;
+    if (new_position - position_ > M_PI)
       q_circle_--;
-    else if (q_raw_ - q_raw_last_ < -4096)
+    else if (new_position - position_ < -M_PI)
       q_circle_++;
   }
 
-  position_ = coeff_.actuator2pos(q_raw_) + q_circle_ * 2 * M_PI;
-  velocity_ = coeff_.actuator2vel(qd_raw_);
+  position_ = coeff_.actuator2pos(q_raw) + q_circle_ * 2 * M_PI;
+  velocity_ = coeff_.actuator2vel(qd_raw);
   effort_   = coeff_.actuator2effort(cur);
 
   ros::Time current_time = frameStamp.stamp;
   updateFrequency(current_time);
   last_timestamp_ = current_time;
-  q_raw_last_ = q_raw_;
   seq_++;
 }
 

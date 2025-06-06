@@ -1,0 +1,10 @@
+<launch>
+    <rosparam file="$(find unified_hw)/test/controllers.yaml" command="load"/>
+
+    <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false"
+          output="screen" ns="/" args="
+          controllers/joint_state_controller
+          controllers/robot_state_controller
+          controllers/velocity_controller" />
+
+</launch>
